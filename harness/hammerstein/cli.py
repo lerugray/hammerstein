@@ -16,6 +16,17 @@ import time
 from importlib import resources as importlib_resources
 from pathlib import Path
 
+# Force UTF-8 stdout/stderr on Windows. Python's default cp1252 codepage
+# can't encode em-dashes / smart quotes that the response often contains,
+# which crashes the CLI when output is piped (e.g. from a daily brief
+# script). Safe on POSIX (already UTF-8 by default).
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+        sys.stderr.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+    except (AttributeError, OSError):
+        pass
+
 try:
     import yaml  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover
