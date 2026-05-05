@@ -119,13 +119,17 @@ hquery "framework"        # pre-populate the search field
 hlog                      # last 20 calls, column-aligned
 hlog 50                   # last N calls
 hlog | grep audit         # filter by template / query substring
+hstats                    # last 7 days usage stats (calls, cost, templates, hosts)
+hstats --gate             # 7-day window + explicit Phase A → Phase B verdict
+hstats --by-host          # cross-machine usage breakdown
 ```
 
 `hquery` requires `fzf` (`brew install fzf` on Mac, `apt install fzf` on
 Linux). `bat` is preferred for syntax-highlighted preview; falls back to
-`cat` if absent. `hlog` requires `jq` (effectively ubiquitous). The call
-log lives at `~/.hammerstein/logs/hammerstein-calls.jsonl` (auto-created
-on first call; not in cwd).
+`cat` if absent. `hlog` and `hstats` require `jq` (effectively ubiquitous).
+The call log lives at `~/.hammerstein/logs/hammerstein-calls.jsonl`
+(auto-created on first call; not in cwd). Each entry stamps the host,
+so `hstats --by-host` works across machines if you sync the log.
 
 ## How the layers compose
 

@@ -7,6 +7,7 @@ Format locked by `tech/STACK-DECISION.md` § "Logging format locked".
 from __future__ import annotations
 
 import json
+import socket
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -30,6 +31,7 @@ class CallRecord:
     cost_usd: float = 0.0
     mode: str = "default"  # default | no-corpus | corpus-only
     error: str | None = None
+    hostname: str = field(default_factory=socket.gethostname)
 
 
 def now_iso() -> str:
