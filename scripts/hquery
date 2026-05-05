@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# hquery — fuzzy-search the Hammerstein corpus.
+#
+# Phase A of the TUI roadmap (ham-012). Companion query tool over the
+# corpus directory shipped with this clone. POSIX shell + fzf + bat;
+# zero UI framework. Validates the friction premise empirically before
+# any heavier REPL/TUI work.
+#
+# Deps: fzf (required), bat (preferred; falls back to cat).
+#
+# Usage:
+#   hquery                    # interactive fuzzy search of corpus
+#   hquery <seed-term>        # pre-populate the search field
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+CORPUS_DIR="$REPO_ROOT/corpus/entries"
+
+if [[ ! -d "$CORPUS_DIR" ]]; then
+  echo "error: corpus not found at $CORPUS_DIR" >&2
+  exit 1
+fi
+
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "error: fzf is required for hquery." >&2
+  echo "install via: brew install fzf  (mac)  |  apt install fzf  (linux)" >&2
+  exit 2
+fi
+
+if command -v bat >/dev/null 2>&1; then
+  preview_cmd='bat --color=always --style=plain --paging=never "$CORPUS_DIR/{}"'
+else
+  preview_cmd='cat "$CORPUS_DIR/{}"'
+fi
+
+export CORPUS_DIR
+cd "$CORPUS_DIR"
+ls *.md 2>/dev/null | fzf \
+    --query="${1:-}" \
+    --preview="$preview_cmd" \
+    --preview-window=right:60%:wrap \
+    --height=80% \
+    --layout=reverse \
+    --header='hammerstein corpus — ENTER prints path, ESC cancels' \
+    | while read -r selection; do
+        echo "$CORPUS_DIR/$selection"
+      done

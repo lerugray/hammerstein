@@ -105,6 +105,28 @@ OpenRouter (qwen3.6-plus) by default, with auto-fallover to DeepSeek and
 Ollama if the primary fails. See `harness/README.md` for the full flag set
 and `tests/test_continuity_chain.py` for the smoke-test harness.
 
+## Companion shell utilities
+
+Two thin shell scripts surface the corpus and call log for terminal-native
+workflows. POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
+
+```bash
+# Add scripts/ to PATH (or symlink hquery / hlog into ~/.local/bin/)
+export PATH="$PATH:$(pwd)/scripts"
+
+hquery                    # fuzzy-search corpus entries (fzf + bat preview)
+hquery "framework"        # pre-populate the search field
+hlog                      # last 20 calls, column-aligned
+hlog 50                   # last N calls
+hlog | grep audit         # filter by template / query substring
+```
+
+`hquery` requires `fzf` (`brew install fzf` on Mac, `apt install fzf` on
+Linux). `bat` is preferred for syntax-highlighted preview; falls back to
+`cat` if absent. `hlog` requires `jq` (effectively ubiquitous). The call
+log lives at `~/.hammerstein/logs/hammerstein-calls.jsonl` (auto-created
+on first call; not in cwd).
+
 ## How the layers compose
 
 | Layer | Where | What |
