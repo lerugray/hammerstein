@@ -104,6 +104,56 @@ The harness reads `providers.yaml` for the fallback chain and routes through
 OpenRouter (qwen3.6-plus) by default, with auto-fallover to a secondary OpenRouter model, DeepSeek, and Ollama if the primary fails. See `harness/README.md` for the full flag set
 and `tests/test_continuity_chain.py` for the smoke-test harness.
 
+## `hsh` — Hammerstein Shell (Continuity Track Phase 2)
+
+For operators who prefer a conversational, stay-in-the-environment workflow,
+`hsh` drops you into an interactive REPL with bounded prior-turn context.
+Type prose, get an audit, push back with more prose, get a refined audit —
+the iteration pattern that makes strategic-reasoning tools actually useful
+in real work.
+
+```
+$ hsh
+Hammerstein Shell (hsh) — interactive strategic-reasoning environment
+Type :help for commands, :exit or Ctrl-D to quit.
+Rolling context capped at 3 turns.
+
+hsh:my-project> should I refactor the auth flow this week?
+[runs audit-this-plan with full adversarial review streamed live]
+
+hsh:my-project> what if the auth flow is downstream of a billing change?
+[runs audit again, with prior turn injected as background context]
+
+hsh:my-project> :d add a TODO comment to auth.py noting the dependency
+[invokes `hd` for actual code work — full audit + aider dispatch]
+
+hsh:my-project> !git status
+[bash passthrough]
+
+hsh:my-project> :exit
+```
+
+Architectural design (override of audit 3's strict reading; preserves spirit):
+
+- **Each Hammerstein-template call is still a discrete fresh invocation.**
+  No conversation history dumped into the few-shot template; corpus
+  retrieval is fresh per turn.
+- **Bounded prior-turn context (last 3 turns)** is injected as a prefix to
+  each new query so operator iteration works ("apply the same fix to X",
+  "given Y, retry"). Capped to prevent unbounded conversation hosting.
+- **Default action on plain prose is `audit-this-plan`** (read-only
+  thinking). Dispatch (which mutates files + commits) requires explicit
+  `:d` verb to prevent accidental execution — the one piece of audit 3's
+  verb-friction guidance that is preserved as load-bearing.
+- **Aider still owns conversation state, file edits, git operations** when
+  invoked via `:d`. State-ownership boundary is intact.
+
+Falsification gate: if `hsh` produces noticeably worse audits than
+fresh-from-cold `hammerstein` calls — i.e., the bounded-context injection
+corrupts framework reasoning — kill the rolling-context injection and fall
+back to verb-only mode. Empirically testable: compare hsh audit quality vs
+fresh audit on the same query.
+
 ## `hd` — Hammerstein Dispatch (Continuity Track Phase 1)
 
 A second console command, `hd`, ships alongside `hammerstein`. It's the
