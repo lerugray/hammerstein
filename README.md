@@ -105,6 +105,70 @@ OpenRouter (qwen3.6-plus) by default, with auto-fallover to DeepSeek and
 Ollama if the primary fails. See `harness/README.md` for the full flag set
 and `tests/test_continuity_chain.py` for the smoke-test harness.
 
+## `hd` — Hammerstein Dispatch (Continuity Track Phase 1)
+
+A second console command, `hd`, ships alongside `hammerstein`. It's the
+Continuity Track's Phase 1: a thin wrapper that takes operator prose,
+runs it through Hammerstein's audit-this-plan pre-flight, and dispatches
+to [aider](https://aider.chat/) for the actual file editing + git work.
+The intent is to make Hammerstein viable as a daily driver substitute
+for tools like Claude Code when the underlying provider is unavailable
+or quota-constrained.
+
+```bash
+# Default: audit, confirm, dispatch via OpenRouter Qwen3.6-plus
+hd "fix the typing-collision bug in cli.py"
+
+# Skip the audit pre-flight for trivial tasks
+hd --no-audit "rename foo to bar across these files"
+
+# Force a specific provider
+hd --provider claude "design pass on the auth flow"
+hd --provider deepseek-chat "draft a README section about X"
+hd --provider openrouter-coder "refactor the parser for readability"
+
+# Show planned aider invocation without executing
+hd --dry-run "..."
+
+# List the routing table
+hd --list-providers
+```
+
+State-ownership boundary (load-bearing): Hammerstein owns audit + scope +
+route + dispatch. Aider owns file editing, conversation state, tool-use
+loops, git operations. The wrapper does NOT track chat history, manage
+.git, or parse LLM tool-calls — those are aider's job. If the wrapper
+starts doing them, it has crossed into reinventing Claude Code.
+
+Provider routing table:
+
+| Provider           | Model                              | Key env             |
+|--------------------|------------------------------------|---------------------|
+| `openrouter`       | `openrouter/qwen/qwen3.6-plus`     | `OPENROUTER_API_KEY`|
+| `openrouter-coder` | `openrouter/qwen/qwen3-coder-plus` | `OPENROUTER_API_KEY`|
+| `deepseek`         | `deepseek/deepseek-chat`           | `DEEPSEEK_API_KEY`  |
+| `claude`           | `claude-sonnet-4-6`                | `ANTHROPIC_API_KEY` |
+| `claude-opus`      | `claude-opus-4-7`                  | `ANTHROPIC_API_KEY` |
+| `ollama`           | `ollama/qwen3:8b`                  | (none — local)      |
+
+Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl` (separate
+from the audit-call log at `hammerstein-calls.jsonl`).
+
+### Phase 1 scope (this release)
+
+- Single-shot dispatch (no multi-turn conversation state in the wrapper)
+- Single-tool downstream (aider only — cursor-agent in Phase 2)
+- Explicit provider selection (auto / quota-aware routing in Phase 3)
+- No file-detection logic (operator passes `--file` flags or aider's
+  repo-map handles it)
+
+### Falsification gate
+
+Phase 1 is on a 14-day window. If the operator hasn't dispatched at
+least one real coding task via `hd` in 14 days, the architecture is
+wrong (the orchestrator vision doesn't match observed behavior) and
+the Continuity Track should be reconsidered.
+
 ## Companion shell utilities
 
 Two thin shell scripts surface the corpus and call log for terminal-native

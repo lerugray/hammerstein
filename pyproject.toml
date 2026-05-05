@@ -21,6 +21,7 @@ dev = ["pytest>=8"]
 
 [project.scripts]
 hammerstein = "hammerstein_cli:main"
+hd = "hammerstein_cli.dispatch:main"
 
 [tool.setuptools]
 include-package-data = true
