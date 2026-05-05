@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+env/
+
+# Project state
+state/
+*.private.md
+.local/
+.cache/
+
+# Corpus seed data (high-density operator reasoning artifacts; private only)
+corpus/seeds/private/
+
+# Eval outputs (grow large fast; not version-controlled)
+eval/runs/
+eval/output/
+eval/results/
+*.eval.jsonl
+
+# Models (large; pull via Ollama, don't commit)
+models/
+*.gguf
+*.bin
+*.safetensors
+
+# Embeddings (regenerable from corpus)
+*.faiss
+*.embeddings
+embeddings/
+
+# Logs
+logs/
+*.log
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Claude Code worktree state
+.claude/worktrees/
+.claude/scheduled_tasks.lock
+
+# Secret config (defensive — should never be in repo regardless)
+.env
+*.key
+*_token
+
+# Operational coordination messages (not for public)
+docs/MESSAGES-FOR-RAY.md
+
+*.egg-info/
+logs/
