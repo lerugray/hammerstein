@@ -61,14 +61,31 @@ def now_iso() -> str:
 # ---------------------------------------------------------------------------
 
 
+PROJECT_ROOT_MARKERS = (
+    ".git",
+    "pyproject.toml",
+    "package.json",
+    "Cargo.toml",
+    "go.mod",
+    "Gemfile",
+    "requirements.txt",
+)
+
+
 def find_project_root(start_dir: Path | None = None) -> Path:
-    """Walk up from start_dir looking for .git or pyproject.toml."""
+    """Walk up from start_dir looking for any project-root marker.
+
+    Markers checked: .git, pyproject.toml, package.json, Cargo.toml, go.mod,
+    Gemfile, requirements.txt. Returns the directory containing the nearest
+    marker, or start_dir itself if none found before hitting filesystem root.
+    """
     if start_dir is None:
         start_dir = Path.cwd()
     current = start_dir.resolve()
     for parent in [current] + list(current.parents):
-        if (parent / ".git").exists() or (parent / "pyproject.toml").exists():
-            return parent
+        for marker in PROJECT_ROOT_MARKERS:
+            if (parent / marker).exists():
+                return parent
     return current
 
 
@@ -85,14 +102,46 @@ def load_state_preamble(state_file: Path) -> str:
         return ""
 
 
-def show_or_edit_state(state_file: Path) -> None:
+def show_or_edit_state(state_file: Path, mode: str = "") -> None:
+    """Show or edit the project state file.
+
+    mode == "" → show contents (or "no file" message if missing).
+    mode == "edit" → open in $EDITOR (or nano fallback). Creates file at
+    state_file path if missing, so the file lands at project root rather
+    than wherever cwd currently is.
+    """
+    mode = (mode or "").strip().lower()
+    if mode == "edit":
+        if not state_file.exists():
+            try:
+                state_file.parent.mkdir(parents=True, exist_ok=True)
+                state_file.write_text("", encoding="utf-8")
+                print(f"Created empty state file at {state_file}")
+            except OSError as e:
+                print(f"error creating state file: {e}", file=sys.stderr)
+                return
+        editor = os.environ.get("EDITOR", "nano")
+        try:
+            subprocess.run([editor, str(state_file)], check=False)
+        except FileNotFoundError:
+            print(
+                f"error: editor '{editor}' not found. "
+                f"set $EDITOR to a valid editor or install nano.",
+                file=sys.stderr,
+            )
+        return
+
+    if mode and mode != "edit":
+        print(f"unknown :state arg '{mode}' (try :state or :state edit)")
+        return
+
     if state_file.exists():
         print(f"--- {state_file} ---")
         print(state_file.read_text(encoding="utf-8"))
         print("--- end ---")
     else:
         print(f"No state file found at {state_file}")
-        print("Create it to persist project context across hsh sessions.")
+        print("Create it via `:state edit` to persist project context across hsh sessions.")
 
 
 # ---------------------------------------------------------------------------
@@ -325,6 +374,8 @@ Hammerstein Shell — verbs and patterns:
   :clear                  Reset the rolling-context buffer.
   :state                  Show project state file (.hammerstein-state.md)
                           if present in the project root.
+  :state edit             Open the state file in $EDITOR (or nano fallback).
+                          Creates the file at project root if missing.
   :help, :?               This message.
   :exit, :quit            Quit. Ctrl-D also works.
 
@@ -383,7 +434,7 @@ def parse_line(line: str) -> tuple[str, str]:
         if verb == "clear":
             return ("clear", "")
         if verb == "state":
-            return ("state", "")
+            return ("state", rest)
         if verb in ("d", "dispatch"):
             return ("dispatch", rest)
         if verb in TEMPLATE_VERBS:
@@ -439,7 +490,7 @@ def main() -> int:
                 print("(context cleared)")
                 continue
             if verb == "state":
-                show_or_edit_state(find_state_file(find_project_root()))
+                show_or_edit_state(find_state_file(find_project_root()), rest)
                 continue
             if verb == "bash":
                 run_bash(rest)

@@ -213,6 +213,71 @@ def test_show_or_edit_state_present(capsys, tmp_path) -> None:
     assert "---" in out
 
 
+def test_find_project_root_with_package_json(tmp_path) -> None:
+    (tmp_path / "package.json").touch()
+    assert shell.find_project_root(tmp_path) == tmp_path
+
+
+def test_find_project_root_with_cargo_toml(tmp_path) -> None:
+    (tmp_path / "Cargo.toml").touch()
+    assert shell.find_project_root(tmp_path) == tmp_path
+
+
+def test_find_project_root_with_go_mod(tmp_path) -> None:
+    (tmp_path / "go.mod").touch()
+    assert shell.find_project_root(tmp_path) == tmp_path
+
+
+def test_show_or_edit_state_edit_creates_missing(tmp_path, monkeypatch, capsys) -> None:
+    """`:state edit` should create the file at the given path if missing,
+    then attempt to invoke $EDITOR."""
+    state_file = tmp_path / ".hammerstein-state.md"
+    assert not state_file.exists()
+
+    invoked = []
+
+    def fake_run(cmd, **kwargs):
+        invoked.append(cmd)
+        class Res:
+            returncode = 0
+        return Res()
+
+    monkeypatch.setattr(shell.subprocess, "run", fake_run)
+    monkeypatch.setenv("EDITOR", "vi")
+
+    shell.show_or_edit_state(state_file, mode="edit")
+
+    assert state_file.exists()
+    assert invoked, "editor was never invoked"
+    assert invoked[0][0] == "vi"
+    assert invoked[0][1] == str(state_file)
+
+
+def test_show_or_edit_state_edit_uses_editor_env(tmp_path, monkeypatch) -> None:
+    """`:state edit` should respect $EDITOR with nano fallback."""
+    state_file = tmp_path / ".hammerstein-state.md"
+    state_file.write_text("existing", encoding="utf-8")
+
+    invoked = []
+    monkeypatch.setattr(
+        shell.subprocess,
+        "run",
+        lambda cmd, **kw: invoked.append(cmd) or type("R", (), {"returncode": 0})(),
+    )
+    monkeypatch.delenv("EDITOR", raising=False)
+
+    shell.show_or_edit_state(state_file, mode="edit")
+    assert invoked[0][0] == "nano"
+
+
+def test_show_or_edit_state_unknown_arg(tmp_path, capsys) -> None:
+    state_file = tmp_path / ".hammerstein-state.md"
+    state_file.write_text("x", encoding="utf-8")
+    shell.show_or_edit_state(state_file, mode="bogus")
+    out = capsys.readouterr().out
+    assert "unknown :state arg" in out
+
+
 def test_parse_state_verb() -> None:
     verb, rest = shell.parse_line(":state")
     assert verb == "state"

@@ -64,3 +64,4 @@ docs/MESSAGES-FOR-RAY.md
 
 *.egg-info/
 logs/
+.aider*
