@@ -23,7 +23,7 @@ except ModuleNotFoundError:  # pragma: no cover
 
 from . import backends, classifier, corpus as corpus_mod, logger, prompt as prompt_mod
 
-DEFAULT_LOG_PATH = Path.cwd() / "logs" / "hammerstein-calls.jsonl"
+DEFAULT_LOG_PATH = Path.home() / ".hammerstein" / "logs" / "hammerstein-calls.jsonl"
 
 # Backend defaults. Local Ollama uses Qwen 8B per `tech/STACK-DECISION.md`.
 # OpenRouter default is paid Qwen3.6-plus per the same doc.
