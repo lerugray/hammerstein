@@ -57,6 +57,45 @@ def now_iso() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Project state & root detection
+# ---------------------------------------------------------------------------
+
+
+def find_project_root(start_dir: Path | None = None) -> Path:
+    """Walk up from start_dir looking for .git or pyproject.toml."""
+    if start_dir is None:
+        start_dir = Path.cwd()
+    current = start_dir.resolve()
+    for parent in [current] + list(current.parents):
+        if (parent / ".git").exists() or (parent / "pyproject.toml").exists():
+            return parent
+    return current
+
+
+def find_state_file(root: Path) -> Path:
+    return root / ".hammerstein-state.md"
+
+
+def load_state_preamble(state_file: Path) -> str:
+    if not state_file.exists():
+        return ""
+    try:
+        return state_file.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def show_or_edit_state(state_file: Path) -> None:
+    if state_file.exists():
+        print(f"--- {state_file} ---")
+        print(state_file.read_text(encoding="utf-8"))
+        print("--- end ---")
+    else:
+        print(f"No state file found at {state_file}")
+        print("Create it to persist project context across hsh sessions.")
+
+
+# ---------------------------------------------------------------------------
 # Rolling context buffer
 # ---------------------------------------------------------------------------
 
@@ -158,7 +197,22 @@ def run_template(prose: str, template: str, ctx: RollingContext) -> int:
     Adds (prose, summary) to rolling context after the call completes.
     Returns the subprocess exit code.
     """
-    full_query = ctx.render_prefix() + prose
+    # Inject project state preamble if available
+    state_file = find_state_file(find_project_root())
+    state_preamble = load_state_preamble(state_file)
+    
+    parts = []
+    if state_preamble:
+        parts.append("[Project state preamble:]")
+        parts.append(state_preamble)
+        parts.append("")
+    
+    ctx_prefix = ctx.render_prefix()
+    if ctx_prefix:
+        parts.append(ctx_prefix)
+        
+    full_query = "\n".join(parts) + prose
+    
     start = time.time()
     try:
         result = subprocess.run(
@@ -269,6 +323,8 @@ Hammerstein Shell — verbs and patterns:
 
   :context                Show the current rolling-context buffer.
   :clear                  Reset the rolling-context buffer.
+  :state                  Show project state file (.hammerstein-state.md)
+                          if present in the project root.
   :help, :?               This message.
   :exit, :quit            Quit. Ctrl-D also works.
 
@@ -304,6 +360,7 @@ def parse_line(line: str) -> tuple[str, str]:
         - 'bash'            => !
         - 'context'         => :context
         - 'clear'           => :clear
+        - 'state'           => :state
         - 'help'            => :help / :?
         - 'exit'            => :exit / :quit
         - 'unknown:<verb>'  => unknown : verb
@@ -325,6 +382,8 @@ def parse_line(line: str) -> tuple[str, str]:
             return ("context", "")
         if verb == "clear":
             return ("clear", "")
+        if verb == "state":
+            return ("state", "")
         if verb in ("d", "dispatch"):
             return ("dispatch", rest)
         if verb in TEMPLATE_VERBS:
@@ -378,6 +437,9 @@ def main() -> int:
             if verb == "clear":
                 ctx.clear()
                 print("(context cleared)")
+                continue
+            if verb == "state":
+                show_or_edit_state(find_state_file(find_project_root()))
                 continue
             if verb == "bash":
                 run_bash(rest)

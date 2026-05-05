@@ -147,6 +147,12 @@ Architectural design (override of audit 3's strict reading; preserves spirit):
   verb-friction guidance that is preserved as load-bearing.
 - **Aider still owns conversation state, file edits, git operations** when
   invoked via `:d`. State-ownership boundary is intact.
+- **Project state file (`:state`)**: If a `.hammerstein-state.md` file exists in
+  the project root (detected via `.git` or `pyproject.toml`), its contents are
+  automatically injected as a preamble before the rolling context on every
+  template call. Use `:state` to view it. This lets you persist high-level
+  project constraints, active goals, or architectural decisions across shell
+  sessions without polluting the rolling turn buffer.
 
 Falsification gate: if `hsh` produces noticeably worse audits than
 fresh-from-cold `hammerstein` calls — i.e., the bounded-context injection
