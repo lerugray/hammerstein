@@ -101,8 +101,7 @@ hammerstein "What's the highest-leverage move for me this week given X, Y, Z?"
 ```
 
 The harness reads `providers.yaml` for the fallback chain and routes through
-OpenRouter (qwen3.6-plus) by default, with auto-fallover to DeepSeek and
-Ollama if the primary fails. See `harness/README.md` for the full flag set
+OpenRouter (qwen3.6-plus) by default, with auto-fallover to a secondary OpenRouter model, DeepSeek, and Ollama if the primary fails. See `harness/README.md` for the full flag set
 and `tests/test_continuity_chain.py` for the smoke-test harness.
 
 ## `hd` — Hammerstein Dispatch (Continuity Track Phase 1)
@@ -152,7 +151,7 @@ Provider routing table:
 | `ollama`           | `ollama/qwen3:8b`                  | (none — local)      |
 
 Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl` (separate
-from the audit-call log at `hammerstein-calls.jsonl`).
+from the audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`).
 
 ### Phase 1 scope (this release)
 
@@ -171,8 +170,7 @@ the Continuity Track should be reconsidered.
 
 ## Companion shell utilities
 
-Two thin shell scripts surface the corpus and call log for terminal-native
-workflows. POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
+Three thin shell scripts surface the corpus, call log, and usage stats for terminal-native workflows. POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
 
 ```bash
 # Add scripts/ to PATH (or symlink hquery / hlog into ~/.local/bin/)
