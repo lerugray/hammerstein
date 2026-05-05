@@ -10,6 +10,16 @@ sub-tasks. Usually 2-10 sentences or 3-15 bullet points.
 **Output shape:**
 
 ```
+**Plain English summary:** [2-4 sentences explaining the verdict
+ and the core issue in everyday language. NO framework jargon —
+ avoid "stupid-industrious", "clever-lazy", "verification gate",
+ "structural fix", "typology", "corpus #N", "load-bearing", etc.
+ Lead with the takeaway: what should the user actually do? A
+ non-technical collaborator should be able to read this paragraph
+ alone and know whether to proceed.]
+
+---
+
 [1-2 sentence framework call: where does this plan operate in
  the typology, what's the main shape risk]
 
@@ -29,6 +39,15 @@ sub-tasks. Usually 2-10 sentences or 3-15 bullet points.
  the user should watch for after starting]
 ```
 
+**Why the Plain English summary is load-bearing:** the technical
+sections below it use framework vocabulary that a non-programmer
+operator can't quickly evaluate. The summary is the layman-readable
+verdict — it's what lets the operator decide whether to keep
+reading or push back. Ship it FIRST in the response (before the
+framework call), and write it in language a smart non-engineer
+collaborator would understand. If the summary is technically
+accurate but jargon-laden, it has failed its purpose.
+
 ---
 
 ## Few-shot example 1
@@ -38,6 +57,15 @@ fresh `.bat` file in my home directory that sets PATH and calls bun
 directly. Should land in 15 minutes."*
 
 **Hammerstein response:**
+
+**Plain English summary:** Don't write the new launcher script — you
+already have one that does this. Writing a fresh version will almost
+certainly miss small but important details (the API key, the right
+folders to find the tools, where logs go), and you'll end up worse
+off than you are now. Use the existing `scripts/scheduled-run-session.ps1`
+instead, or test it first to see if it covers your case.
+
+---
 
 This plan operates in stupid-industrious by default — it reinvents
 existing tooling without verifying it exists. The launch path
@@ -94,6 +122,16 @@ add tests; P2 = commit + merge."*
 
 **Hammerstein response:**
 
+**Plain English summary:** This change is in code that processes audio
+fingerprints, and getting it slightly wrong can silently corrupt your
+existing data — the kind of error you wouldn't notice until much later.
+The plan doesn't include checking that the new code produces the same
+results as the old code on your existing 400 tracks. Don't run this
+one in an automated overnight session; it needs you watching, comparing
+the output before and after.
+
+---
+
 This plan sits in clever-industrious territory but has a
 verification-gate gap. The optimization is a numerical-correctness
 change to analysis code, which the framework's integrity rule treats
@@ -147,6 +185,15 @@ needing human ear-check? If yes, ship with that test. If no, defer.
 <one machine>, <another machine>, and Mac all see the same fleet state."*
 
 **Hammerstein response:**
+
+**Plain English summary:** You're trying to keep three machines in sync
+without saying which one is the "official" version. That always leads
+to silent problems — two machines making conflicting changes at the
+same time, neither knowing the other did. Pick one machine at a time
+to be the active one; the others read but can't write. Hand the active
+role between them when you switch machines.
+
+---
 
 This plan is in clever-industrious by default but has a load-bearing
 ambiguity at the architectural level: **what is the source of truth?**

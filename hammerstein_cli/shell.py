@@ -21,7 +21,13 @@ from __future__ import annotations
 
 import json
 import os
-import readline  # noqa: F401  -- side effect: enables arrow-key history
+try:
+    import readline  # POSIX: arrow-key history
+except ImportError:
+    try:
+        import pyreadline3 as readline  # Windows fallback
+    except ImportError:
+        readline = None  # No arrow-key history; shell still functions
 import shlex
 import socket
 import subprocess
@@ -450,14 +456,15 @@ def main() -> int:
     print(f"Rolling context capped at {ROLLING_CONTEXT_TURNS} turns.")
     print()
 
-    # readline history (optional; doesn't crash if file is unreadable)
-    try:
-        HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
-        if HISTORY_FILE.exists():
-            readline.read_history_file(str(HISTORY_FILE))
-        readline.set_history_length(1000)
-    except OSError:
-        pass
+    # readline history (optional; doesn't crash if file is unreadable or readline is absent)
+    if readline is not None:
+        try:
+            HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+            if HISTORY_FILE.exists():
+                readline.read_history_file(str(HISTORY_FILE))
+            readline.set_history_length(1000)
+        except OSError:
+            pass
 
     ctx = RollingContext()
 
@@ -539,10 +546,11 @@ def main() -> int:
                 continue
 
     finally:
-        try:
-            readline.write_history_file(str(HISTORY_FILE))
-        except OSError:
-            pass
+        if readline is not None:
+            try:
+                readline.write_history_file(str(HISTORY_FILE))
+            except OSError:
+                pass
 
     return 0
 
