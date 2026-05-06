@@ -256,6 +256,15 @@ def run(
         print("--no-corpus and --corpus-only are mutually exclusive", file=sys.stderr)
         return 2
 
+    # If --model was not passed but HAMMERSTEIN_DEFAULT_MODEL is set, honor it
+    # as an explicit single-provider invocation. This bypasses the fallback
+    # chain in favor of the user's per-machine default — the right behavior on
+    # machines where the chain's first step (often local Ollama) isn't viable.
+    if model_spec is None:
+        env_default = os.environ.get("HAMMERSTEIN_DEFAULT_MODEL")
+        if env_default:
+            model_spec = env_default
+
     if template_name == "auto" or template_name is None:
         template_name = classifier.classify(query)
     elif template_name not in classifier.TEMPLATES:
