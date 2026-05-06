@@ -18,11 +18,12 @@ from hammerstein_cli import dispatch
 def test_provider_table_well_formed() -> None:
     """Every provider entry must have model + api_key_env + aider_provider + executor + description."""
     required = {"model", "api_key_env", "aider_provider", "executor", "description"}
+    valid_executors = {"aider", "claude-code", "cursor-agent"}
     for name, cfg in dispatch.PROVIDERS.items():
         missing = required - cfg.keys()
         assert not missing, f"provider {name!r} missing keys: {missing}"
         assert isinstance(cfg["model"], str) and cfg["model"], f"provider {name!r} bad model"
-        assert cfg["executor"] in ("aider", "claude-code"), (
+        assert cfg["executor"] in valid_executors, (
             f"provider {name!r} has unknown executor {cfg['executor']!r}"
         )
 
@@ -37,6 +38,14 @@ def test_claude_code_provider_uses_subscription_executor() -> None:
     assert cfg["executor"] == "claude-code"
     assert cfg["api_key_env"] is None, "claude-code uses subscription, not API key"
     assert cfg["aider_provider"] is None, "claude-code bypasses aider entirely"
+
+
+def test_cursor_agent_provider_uses_subscription_executor() -> None:
+    """The cursor-agent provider must route through the cursor-agent executor (not aider)."""
+    cfg = dispatch.PROVIDERS["cursor-agent"]
+    assert cfg["executor"] == "cursor-agent"
+    assert cfg["api_key_env"] is None, "cursor-agent uses subscription, not API key"
+    assert cfg["aider_provider"] is None, "cursor-agent bypasses aider entirely"
 
 
 # ---------------------------------------------------------------------------
@@ -167,3 +176,19 @@ def test_build_claude_code_command_shape() -> None:
     assert "aider" not in cmd
     assert "--api-key" not in cmd
     assert "--message" not in cmd
+
+
+def test_build_cursor_agent_command_shape() -> None:
+    """cursor-agent executor produces `cursor-agent -p --trust <prose>`."""
+    cmd = dispatch.build_cursor_agent_command("refactor parser for readability")
+    assert cmd[0] == "cursor-agent"
+    assert cmd[1] == "-p"
+    assert cmd[2] == "--trust"
+    assert cmd[3] == "refactor parser for readability"
+    # Not an aider invocation
+    assert "aider" not in cmd
+    assert "--api-key" not in cmd
+    assert "--message" not in cmd
+    # Not a claude invocation
+    assert "claude" not in cmd
+    assert "--dangerously-skip-permissions" not in cmd

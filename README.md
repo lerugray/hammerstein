@@ -227,25 +227,29 @@ starts doing them, it has crossed into reinventing Claude Code.
 
 Provider routing table:
 
-| Provider           | Model                              | Auth                       | Executor      |
-|--------------------|------------------------------------|----------------------------|---------------|
-| `openrouter`       | `openrouter/qwen/qwen3.6-plus`     | `OPENROUTER_API_KEY`       | aider         |
-| `openrouter-coder` | `openrouter/qwen/qwen3-coder-plus` | `OPENROUTER_API_KEY`       | aider         |
-| `deepseek`         | `deepseek/deepseek-chat`           | `DEEPSEEK_API_KEY`         | aider         |
-| `claude`           | `claude-sonnet-4-6`                | `ANTHROPIC_API_KEY` (paid) | aider         |
-| `claude-opus`      | `claude-opus-4-7`                  | `ANTHROPIC_API_KEY` (paid) | aider         |
-| `claude-code`      | (Claude Code subscription)         | Pro/Max plan, no API key   | claude-code   |
-| `ollama`           | `ollama/qwen3:8b`                  | (none — local)             | aider         |
+| Provider           | Model                              | Auth                          | Executor      |
+|--------------------|------------------------------------|-------------------------------|---------------|
+| `openrouter`       | `openrouter/qwen/qwen3.6-plus`     | `OPENROUTER_API_KEY`          | aider         |
+| `openrouter-coder` | `openrouter/qwen/qwen3-coder-plus` | `OPENROUTER_API_KEY`          | aider         |
+| `deepseek`         | `deepseek/deepseek-chat`           | `DEEPSEEK_API_KEY`            | aider         |
+| `claude`           | `claude-sonnet-4-6`                | `ANTHROPIC_API_KEY` (paid)    | aider         |
+| `claude-opus`      | `claude-opus-4-7`                  | `ANTHROPIC_API_KEY` (paid)    | aider         |
+| `claude-code`      | (Claude Code subscription)         | Pro/Max plan, no API key      | claude-code   |
+| `cursor-agent`     | (Cursor subscription)              | Cursor login, no API key      | cursor-agent  |
+| `ollama`           | `ollama/qwen3:8b`                  | (none — local)                | aider         |
 
-**`claude-code` provider — subscription-backed dispatch.** Routes through
-`claude -p` headless mode rather than aider, using your existing Claude Code
-Pro/Max subscription quota instead of pay-per-token API spend. The audit
+**Subscription-backed providers (`claude-code`, `cursor-agent`) — bypass
+aider, use the subscription's tool-using agent directly.** The audit
 pre-flight still runs through OpenRouter (cheap), so the costly part of the
-dispatch lands on the subscription. Useful when you have a subscription and
-want Hammerstein's audit-then-execute flow without burning API credit. The
-`--file` / `--read` / `--architect` flags don't apply here — Claude Code
-finds files via its own tool use; mention them in the prose. Requires
-`claude` CLI on PATH.
+dispatch lands on whichever subscription the operator already pays for.
+Useful when you'd rather burn subscription rate-limits than pay-per-token
+API spend. The `--file` / `--read` / `--architect` flags don't apply to
+these executors (the underlying agent finds files via its own tool use);
+mention file references in the prose instead.
+
+- `claude-code` requires the `claude` CLI on PATH (Pro/Max plan; no API key).
+- `cursor-agent` requires the `cursor-agent` CLI on PATH and a one-time
+  `cursor-agent login` (free composer-2-fast tier covers most tasks).
 
 Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl` (separate
 from the audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`).

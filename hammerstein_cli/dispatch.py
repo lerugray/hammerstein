@@ -81,6 +81,13 @@ PROVIDERS: dict[str, dict] = {
         "executor": "claude-code",
         "description": "Claude Code CLI in headless mode -- uses your Pro/Max subscription quota. No API key. Burns subscription rate-limits, not pay-per-token spend.",
     },
+    "cursor-agent": {
+        "model": "cursor-subscription",
+        "api_key_env": None,
+        "aider_provider": None,
+        "executor": "cursor-agent",
+        "description": "Cursor Agent CLI in headless mode -- uses your Cursor subscription quota. No API key (run `cursor-agent login` once). Free composer-2-fast tier covers most tasks.",
+    },
     "ollama": {
         "model": "ollama/qwen3:8b",
         "api_key_env": None,
@@ -225,6 +232,22 @@ def build_claude_code_command(prose: str) -> list[str]:
         prose,
         "--dangerously-skip-permissions",
         "--output-format", "text",
+    ]
+
+
+def build_cursor_agent_command(prose: str) -> list[str]:
+    """Build the `cursor-agent -p --trust` invocation for headless dispatch.
+
+    --trust bypasses the workspace-trust prompt that blocks headless runs.
+    Cursor Agent uses the operator's Cursor subscription quota (free
+    composer-2-fast tier covers most tasks). Operator must have run
+    `cursor-agent login` once to authenticate; no env var key needed.
+    """
+    return [
+        "cursor-agent",
+        "-p",
+        "--trust",
+        prose,
     ]
 
 
@@ -411,6 +434,8 @@ def main() -> int:
     try:
         if executor == "claude-code":
             cmd = build_claude_code_command(prose)
+        elif executor == "cursor-agent":
+            cmd = build_cursor_agent_command(prose)
         else:
             cmd = build_aider_command(
                 prose,
@@ -434,6 +459,11 @@ def main() -> int:
             f"\nDispatching to Claude Code (subscription-backed) via {args.provider}...\n"
             + "-" * 60
         )
+    elif executor == "cursor-agent":
+        print(
+            f"\nDispatching to Cursor Agent (subscription-backed) via {args.provider}...\n"
+            + "-" * 60
+        )
     else:
         print(
             f"\nDispatching to aider via {args.provider} ({cfg['model']})...\n"
@@ -452,6 +482,17 @@ def main() -> int:
             print(
                 "install: see https://docs.anthropic.com/en/docs/claude-code "
                 "(or use --provider openrouter / deepseek / claude for API-key fallback).",
+                file=sys.stderr,
+            )
+        elif executor == "cursor-agent":
+            print(
+                "error: `cursor-agent` is not installed or not on PATH.",
+                file=sys.stderr,
+            )
+            print(
+                "install: `irm 'https://cursor.com/install?win32=true' | iex` (Windows) "
+                "or `curl -sSL https://cursor.com/install | bash` (POSIX). "
+                "Then run `cursor-agent login` once before first use.",
                 file=sys.stderr,
             )
         else:
