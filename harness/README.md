@@ -39,7 +39,7 @@ Filter to one question + cell (e.g. smoke test):
 
 ## Flags
 
-- `--model <backend[:model]>` — `ollama` | `openrouter` | `deepseek` | `claude`. Default: `ollama:qwen3:8b`.
+- `--model <backend[:model]>` — `ollama` | `openrouter` | `deepseek` | `claude`. Default: `HAMMERSTEIN_DEFAULT_MODEL` env var if set, else `ollama:qwen3:8b`. Set the env var (e.g. in `~/.generalstaff/.env`) to point Hammerstein at a cloud backend by default when local Ollama isn't a fit (no GPU, weak hardware, daemon issues).
 - `--template <name>` — pin a few-shot template instead of classifier-decide. Default: `auto`.
 - `--no-corpus` — ablation: skip RAG retrieval (prompt + template only).
 - `--corpus-only` — ablation: minimal system prompt + retrieved corpus only.

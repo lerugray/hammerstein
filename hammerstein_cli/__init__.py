@@ -30,7 +30,12 @@ def _version_callback(value: bool) -> None:
 def cli(
     query: str = typer.Argument(..., help="Strategic-reasoning query."),
     model: Optional[str] = typer.Option(
-        None, "--model", help="Backend or backend:model spec (default: ollama:qwen3:8b)."
+        None,
+        "--model",
+        help=(
+            "Backend or backend:model spec. Default: HAMMERSTEIN_DEFAULT_MODEL "
+            "env var if set, else ollama:qwen3:8b."
+        ),
     ),
     template: str = typer.Option(
         "auto",

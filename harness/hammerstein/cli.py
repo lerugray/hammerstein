@@ -121,9 +121,19 @@ def _action(cfg: dict, key: str) -> str:
 
 
 def parse_model_spec(spec: str | None) -> tuple[str, str]:
-    """Parse `<backend>:<model>` or `<backend>`. Returns (backend, model)."""
+    """Parse `<backend>:<model>` or `<backend>`. Returns (backend, model).
+
+    When `spec` is None, falls back to the `HAMMERSTEIN_DEFAULT_MODEL`
+    environment variable if set, otherwise to `ollama:qwen3:8b`. Per-machine
+    override lets users without a working local Ollama (no GPU, etc.) point
+    Hammerstein at a cloud backend by default without changing flags.
+    """
     if not spec:
-        return "ollama", _BACKEND_DEFAULTS["ollama"]
+        env_default = os.environ.get("HAMMERSTEIN_DEFAULT_MODEL")
+        if env_default:
+            spec = env_default
+        else:
+            return "ollama", _BACKEND_DEFAULTS["ollama"]
     if ":" in spec:
         backend, _, model = spec.partition(":")
         backend = backend.strip().lower()
