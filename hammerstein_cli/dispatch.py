@@ -43,36 +43,49 @@ PROVIDERS: dict[str, dict] = {
         "model": "openrouter/qwen/qwen3.6-plus",
         "api_key_env": "OPENROUTER_API_KEY",
         "aider_provider": "openrouter",
+        "executor": "aider",
         "description": "Qwen3.6-plus via OpenRouter (general-purpose, paid).",
     },
     "openrouter-coder": {
         "model": "openrouter/qwen/qwen3-coder-plus",
         "api_key_env": "OPENROUTER_API_KEY",
         "aider_provider": "openrouter",
+        "executor": "aider",
         "description": "Qwen3-coder-plus via OpenRouter (code-specific, paid).",
     },
     "deepseek": {
         "model": "deepseek/deepseek-chat",
         "api_key_env": "DEEPSEEK_API_KEY",
         "aider_provider": "deepseek",
+        "executor": "aider",
         "description": "DeepSeek V3.5 via direct API (paid).",
     },
     "claude": {
         "model": "claude-sonnet-4-6",
         "api_key_env": "ANTHROPIC_API_KEY",
         "aider_provider": "anthropic",
-        "description": "Claude Sonnet 4.6 via Anthropic API (requires API key, separate from CC subscription).",
+        "executor": "aider",
+        "description": "Claude Sonnet 4.6 via Anthropic API (pay-per-token; separate from Claude Code subscription).",
     },
     "claude-opus": {
         "model": "claude-opus-4-7",
         "api_key_env": "ANTHROPIC_API_KEY",
         "aider_provider": "anthropic",
-        "description": "Claude Opus 4.7 via Anthropic API (high-stakes; requires API key).",
+        "executor": "aider",
+        "description": "Claude Opus 4.7 via Anthropic API (high-stakes; pay-per-token).",
+    },
+    "claude-code": {
+        "model": "claude-code-subscription",
+        "api_key_env": None,
+        "aider_provider": None,
+        "executor": "claude-code",
+        "description": "Claude Code CLI in headless mode -- uses your Pro/Max subscription quota. No API key. Burns subscription rate-limits, not pay-per-token spend.",
     },
     "ollama": {
         "model": "ollama/qwen3:8b",
         "api_key_env": None,
         "aider_provider": None,
+        "executor": "aider",
         "description": "Local Ollama (free, offline; quality depends on local model).",
     },
 }
@@ -183,6 +196,36 @@ def redact_command_for_display(cmd: list[str]) -> str:
             skip_next = True
         out.append(arg)
     return " ".join(out)
+
+
+# ---------------------------------------------------------------------------
+# Claude Code (subscription) executor — bypasses aider entirely.
+#
+# The 'claude-code' provider routes through `claude -p "<prose>"` headless
+# mode, which uses the operator's Pro/Max subscription quota rather than
+# pay-per-token API spend. Claude Code is itself tool-aware (file edits,
+# bash, git ops via its own tool-use loop), so aider's role is unnecessary
+# here. Architect / file / read flags are no-ops for this executor — Claude
+# Code finds files via its own Read tool and decides its own approach.
+# ---------------------------------------------------------------------------
+
+
+def build_claude_code_command(prose: str) -> list[str]:
+    """Build the `claude -p` invocation for headless subscription-backed dispatch.
+
+    --dangerously-skip-permissions auto-approves all tool use (file edits,
+    bash, etc.) — equivalent to aider's --yes-always. The operator already
+    audited the plan via Hammerstein pre-flight, so the trust level matches.
+
+    --output-format text gives plain prose output (no JSON envelope).
+    """
+    return [
+        "claude",
+        "-p",
+        prose,
+        "--dangerously-skip-permissions",
+        "--output-format", "text",
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -345,15 +388,38 @@ def main() -> int:
             # choice == "yes" falls through to dispatch
 
     # --------------------------------------------------------------- dispatch
+    executor = cfg.get("executor", "aider")
+
+    # Warn if aider-specific flags were passed with a non-aider executor.
+    if executor != "aider":
+        ignored = []
+        if args.file:
+            ignored.append("--file")
+        if args.read:
+            ignored.append("--read")
+        if args.no_auto_commits:
+            ignored.append("--no-auto-commits")
+        if args.architect:
+            ignored.append("--architect")
+        if ignored:
+            print(
+                f"warning: {', '.join(ignored)} ignored for executor '{executor}' "
+                f"(aider-only flags). Include file references in the prose instead.",
+                file=sys.stderr,
+            )
+
     try:
-        cmd = build_aider_command(
-            prose,
-            args.provider,
-            args.file,
-            args.read,
-            args.no_auto_commits,
-            args.architect,
-        )
+        if executor == "claude-code":
+            cmd = build_claude_code_command(prose)
+        else:
+            cmd = build_aider_command(
+                prose,
+                args.provider,
+                args.file,
+                args.read,
+                args.no_auto_commits,
+                args.architect,
+            )
     except RuntimeError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
@@ -363,21 +429,38 @@ def main() -> int:
         print("Would run:", redact_command_for_display(cmd))
         return 0
 
-    print(
-        f"\nDispatching to aider via {args.provider} ({cfg['model']})...\n"
-        + "-" * 60
-    )
+    if executor == "claude-code":
+        print(
+            f"\nDispatching to Claude Code (subscription-backed) via {args.provider}...\n"
+            + "-" * 60
+        )
+    else:
+        print(
+            f"\nDispatching to aider via {args.provider} ({cfg['model']})...\n"
+            + "-" * 60
+        )
     start = time.time()
     try:
         result = subprocess.run(cmd, check=False)  # stream stdout/stderr live
         rc = result.returncode
     except FileNotFoundError:
-        print("error: aider is not installed or not on PATH.", file=sys.stderr)
-        print(
-            "install on Mac: `brew install pipx python@3.12 && "
-            "pipx install aider-chat --python /opt/homebrew/bin/python3.12`",
-            file=sys.stderr,
-        )
+        if executor == "claude-code":
+            print(
+                "error: `claude` (Claude Code CLI) is not installed or not on PATH.",
+                file=sys.stderr,
+            )
+            print(
+                "install: see https://docs.anthropic.com/en/docs/claude-code "
+                "(or use --provider openrouter / deepseek / claude for API-key fallback).",
+                file=sys.stderr,
+            )
+        else:
+            print("error: aider is not installed or not on PATH.", file=sys.stderr)
+            print(
+                "install on Mac: `brew install pipx python@3.12 && "
+                "pipx install aider-chat --python /opt/homebrew/bin/python3.12`",
+                file=sys.stderr,
+            )
         return 3
     duration = time.time() - start
 

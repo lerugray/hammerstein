@@ -16,16 +16,27 @@ from hammerstein_cli import dispatch
 
 
 def test_provider_table_well_formed() -> None:
-    """Every provider entry must have model + api_key_env (str|None) + aider_provider."""
-    required = {"model", "api_key_env", "aider_provider", "description"}
+    """Every provider entry must have model + api_key_env + aider_provider + executor + description."""
+    required = {"model", "api_key_env", "aider_provider", "executor", "description"}
     for name, cfg in dispatch.PROVIDERS.items():
         missing = required - cfg.keys()
         assert not missing, f"provider {name!r} missing keys: {missing}"
         assert isinstance(cfg["model"], str) and cfg["model"], f"provider {name!r} bad model"
+        assert cfg["executor"] in ("aider", "claude-code"), (
+            f"provider {name!r} has unknown executor {cfg['executor']!r}"
+        )
 
 
 def test_default_provider_in_table() -> None:
     assert dispatch.DEFAULT_PROVIDER in dispatch.PROVIDERS
+
+
+def test_claude_code_provider_uses_subscription_executor() -> None:
+    """The claude-code provider must route through the claude-code executor (not aider)."""
+    cfg = dispatch.PROVIDERS["claude-code"]
+    assert cfg["executor"] == "claude-code"
+    assert cfg["api_key_env"] is None, "claude-code uses subscription, not API key"
+    assert cfg["aider_provider"] is None, "claude-code bypasses aider entirely"
 
 
 # ---------------------------------------------------------------------------
@@ -135,3 +146,24 @@ def test_redact_command_no_api_key_unchanged() -> None:
     cmd = ["aider", "--model", "ollama/qwen3:8b", "--message", "x", "--exit"]
     out = dispatch.redact_command_for_display(cmd)
     assert out == "aider --model ollama/qwen3:8b --message x --exit"
+
+
+# ---------------------------------------------------------------------------
+# build_claude_code_command
+# ---------------------------------------------------------------------------
+
+
+def test_build_claude_code_command_shape() -> None:
+    """claude-code executor produces `claude -p <prose> --dangerously-skip-permissions ...`."""
+    cmd = dispatch.build_claude_code_command("rename foo to bar in cli.py")
+    assert cmd[0] == "claude"
+    assert cmd[1] == "-p"
+    assert cmd[2] == "rename foo to bar in cli.py"
+    assert "--dangerously-skip-permissions" in cmd
+    assert "--output-format" in cmd
+    fmt_index = cmd.index("--output-format")
+    assert cmd[fmt_index + 1] == "text"
+    # Critically: NOT an aider invocation
+    assert "aider" not in cmd
+    assert "--api-key" not in cmd
+    assert "--message" not in cmd
