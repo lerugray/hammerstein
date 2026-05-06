@@ -247,12 +247,15 @@ from the audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`).
 - No file-detection logic (operator passes `--file` flags or aider's
   repo-map handles it)
 
-### Falsification gate
+### Falsification gate — CLEARED 2026-05-05
 
-Phase 1 is on a 14-day window. If the operator hasn't dispatched at
-least one real coding task via `hd` in 14 days, the architecture is
-wrong (the orchestrator vision doesn't match observed behavior) and
-the Continuity Track should be reconsidered.
+Phase 1's 14-day window was: if the operator hasn't dispatched at
+least one real coding task via `hd` within 14 days, the architecture
+is wrong. Cleared by self-build — **Phase 3 (state-file injection)
+was implemented BY `hd` dispatching to aider** (public commit
+c875804, ~$1 OpenRouter spend, ~6.5 min run, 43 tests passing). The
+substitute carried meaningful architectural work, not just maintenance
+edits. The orchestrator vision matches observed behavior.
 
 ## Companion shell utilities
 
