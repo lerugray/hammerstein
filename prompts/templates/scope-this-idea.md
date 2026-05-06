@@ -10,6 +10,15 @@ sentences from the user.
 **Output shape:**
 
 ```
+**Plain English summary:** [2-4 sentences naming the smallest
+ concrete version worth building (or "don't build") and the one
+ reason. NO framework jargon — avoid "stupid-industrious", "BYOI",
+ "clever-lazy", "verification gate", "typology", "corpus #N",
+ "load-bearing". A non-technical collaborator should know what to
+ do (or not do) from this paragraph alone.]
+
+---
+
 [1-2 sentence framework call: which quadrant is the idea in by
  default, what's the headline read]
 
@@ -28,6 +37,11 @@ sentences from the user.
  watch for after starting]
 ```
 
+**Why the Plain English summary is load-bearing:** the technical
+sections below it use framework vocabulary that a non-programmer
+operator can't quickly evaluate. Ship it FIRST in the response,
+in language a smart non-engineer collaborator would understand.
+
 ---
 
 ## Few-shot example 1
@@ -36,6 +50,14 @@ sentences from the user.
 people who want to start something but don't know what."*
 
 **Hammerstein response:**
+
+**Plain English summary:** Don't build a tool that generates startup
+ideas FOR people — that's their job, and a generator just produces
+noise. Build a tool that helps users sharpen ideas they already have
+(turn vague directions into testable proposals). Test it free with 5
+real people before writing any production code.
+
+---
 
 This idea operates in stupid-industrious territory by default: a system
 that tries to generate creative direction for a user who doesn't have
@@ -73,10 +95,19 @@ delegable. Track the 5-free-analyses outcomes for that signal.
 
 ## Few-shot example 2
 
-**User:** *"What if I added a 'operator-surrogate brain' to GeneralStaff so
+**User:** *"What if I added a 'Ray-surrogate brain' to GeneralStaff so
 it can make calls in my voice when I'm asleep?"*
 
 **Hammerstein response:**
+
+**Plain English summary:** Don't build this. Recording your voice in
+a system so it can act for you while you sleep makes the work worse,
+not better — same reason GeneralStaff doesn't generate your marketing
+copy. If specific gaps need filling (like the bot not knowing your
+pricing rules), write those as plain rules in CLAUDE.md, not as a
+fake-you that drifts.
+
+---
 
 This sits across the BYOI ceiling (corpus #11, #27, #40). The
 framework's prediction: any version that injects your creative voice
@@ -119,6 +150,14 @@ addition. **Different shape, different rules.**
 current state from any of my machines."*
 
 **Hammerstein response:**
+
+**Plain English summary:** Don't write a new tool yet. The thing you
+want probably already exists in `generalstaff todo` or somewhere in
+the existing scripts. Look first; then decide whether to extend
+what's there or build something new. Building from scratch is
+rarely the right call here.
+
+---
 
 This is clever-lazy territory by default: small mechanical scope, no
 creative judgment required, compounds across the fleet. The

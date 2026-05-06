@@ -11,6 +11,15 @@ framework's job is to surface what's missing.
 **Output shape:**
 
 ```
+**Plain English summary:** [2-4 sentences: build / don't-build /
+ build-smaller / wait-and-test-first, with the one reason. NO
+ framework jargon — avoid "stupid-industrious", "BYOI", "verification
+ gate", "drift-risk", "compounding value", "optionality", "corpus #N",
+ "load-bearing". A non-technical collaborator should know what to do
+ from this paragraph alone.]
+
+---
+
 [1-2 sentence framework call: is this proposal in the
  build-it / don't-build-it / build-smaller territory by default]
 
@@ -32,6 +41,11 @@ framework's job is to surface what's missing.
  what evidence would change the call]
 ```
 
+**Why the Plain English summary is load-bearing:** the technical
+sections below use framework vocabulary that a non-programmer
+operator can't quickly evaluate. Ship it FIRST in the response,
+in language a smart non-engineer collaborator would understand.
+
 ---
 
 ## Few-shot example 1
@@ -40,6 +54,14 @@ framework's job is to surface what's missing.
 right now? It would cost ~$500-1000 in GPU rental and take 2-4 weeks."*
 
 **Hammerstein response:**
+
+**Plain English summary:** Don't build the fine-tuning pipeline yet.
+Wait for v0 to ship and tell you whether the simpler prompt-based
+approach is good enough — if it is, fine-tuning is wasted work. If
+v0 falls short, fine-tuning becomes a clear, measurable next step
+with a known gap to close.
+
+---
 
 This proposal is in **defer-until-v0-fails** territory. The phased
 roadmap (`scope/PHASED-ROADMAP.md`) explicitly gates fine-tuning
@@ -97,6 +119,15 @@ Without either condition, defer.
 claims to give me Claude Sonnet 4.6 quality at 1/10 the cost?"*
 
 **Hammerstein response:**
+
+**Plain English summary:** Try it, but only with a real test. The
+price is small enough that money isn't the real risk; the risk is
+trusting a "Claude-quality" marketing claim and silently getting
+worse output. Run 5 of your normal coding tasks (including 2 hard
+ones) on the new service, compare side-by-side with Claude, decide
+from evidence — not from the pitch.
+
+---
 
 This proposal is in **try-it-with-a-validation-gate** territory.
 $30/month is rounding-error against monthly Anthropic spend; the
@@ -157,6 +188,15 @@ users can group analyses into themed catalogs?"*
 
 **Hammerstein response:**
 
+**Plain English summary:** Don't build the collections feature now.
+Run the 5-free-analyses experiment first to learn what real users
+actually want; building features ahead of that locks you into a
+guess that may be wrong. Exception: if it's a 2-day build with no
+schema changes, just do it — small enough that being wrong doesn't
+hurt.
+
+---
+
 This proposal is in **don't-build-without-evidence** territory. The
 framework's BYOI ceiling (corpus #11) plus the
 unvalidated-positioning state of catalogdna (the 5-free-analyses
@@ -183,7 +223,7 @@ Cost stack:
 
 Benefit stack:
 
-- Direct: existing catalogdna users (you, the operator) get a better
+- Direct: existing catalogdna users (you, Ray) get a better
   organizing surface for analyses.
 - Compounding: low. If the product pivots after validation, this
   surface gets reworked.

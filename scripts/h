@@ -1,0 +1,58 @@
+#!/bin/sh
+# h -- Hammerstein quick-fire wrapper (POSIX shell)
+#
+# Maps shortcut verbs to Hammerstein templates so muscle-memory
+# slash-style invocations work without typing the full template name.
+# Bare invocation falls through to classifier auto-detect.
+#
+#   ./h audit "<plan>"         -> --template audit-this-plan
+#   ./h scope "<idea>"         -> --template scope-this-idea
+#   ./h worth "<proposal>"     -> --template is-this-worth-doing
+#   ./h next "<context>"       -> --template what-should-we-do-next
+#   ./h sharper "<position>"   -> --template review-from-different-angle
+#   ./h "<any query>"          -> bare query (classifier auto-detects)
+#
+# Default model: openrouter (cheapest paid; conserves Anthropic).
+# Override via HAMMERSTEIN_MODEL env or pass --model after the verb.
+# ollama opt-in: set HAMMERSTEIN_MODEL=ollama (no API cost).
+
+set -eu
+
+MODEL="${HAMMERSTEIN_MODEL:-openrouter}"
+
+if [ "$#" -eq 0 ]; then
+  cat <<USAGE
+Usage: ./h <verb|query> [extra-flags...]
+Verbs: audit / scope / worth / next / sharper
+Or pass a bare query as the first arg to auto-classify.
+Default model: ${MODEL}. Override via HAMMERSTEIN_MODEL env.
+USAGE
+  exit 1
+fi
+
+case "$1" in
+  audit)
+    shift
+    exec hammerstein --model "$MODEL" --template audit-this-plan "$@"
+    ;;
+  scope)
+    shift
+    exec hammerstein --model "$MODEL" --template scope-this-idea "$@"
+    ;;
+  worth)
+    shift
+    exec hammerstein --model "$MODEL" --template is-this-worth-doing "$@"
+    ;;
+  next)
+    shift
+    exec hammerstein --model "$MODEL" --template what-should-we-do-next "$@"
+    ;;
+  sharper)
+    shift
+    exec hammerstein --model "$MODEL" --template review-from-different-angle "$@"
+    ;;
+  *)
+    # Bare invocation: classifier handles template selection
+    exec hammerstein --model "$MODEL" "$@"
+    ;;
+esac

@@ -229,11 +229,22 @@ the Continuity Track should be reconsidered.
 
 ## Companion shell utilities
 
-Three thin shell scripts surface the corpus, call log, and usage stats for terminal-native workflows. POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
+Four thin shell scripts surface quick-fire template invocation, the
+corpus, the call log, and usage stats for terminal-native workflows.
+POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
 
 ```bash
-# Add scripts/ to PATH (or symlink hquery / hlog into ~/.local/bin/)
+# Add scripts/ to PATH (or symlink h / hquery / hlog into ~/.local/bin/)
 export PATH="$PATH:$(pwd)/scripts"
+
+# h -- quick-fire template wrapper (verb shortcuts; falls through to classifier on bare query)
+h audit "<plan>"          # -> --template audit-this-plan
+h scope "<idea>"          # -> --template scope-this-idea
+h worth "<proposal>"      # -> --template is-this-worth-doing
+h next "<context>"        # -> --template what-should-we-do-next
+h sharper "<position>"    # -> --template review-from-different-angle
+h "<any query>"           # bare query, classifier auto-detects
+# Default model: openrouter (paid, cheap). Override: HAMMERSTEIN_MODEL=ollama h ...
 
 hquery                    # fuzzy-search corpus entries (fzf + bat preview)
 hquery "framework"        # pre-populate the search field
@@ -245,12 +256,14 @@ hstats --gate             # 7-day window + explicit Phase A → Phase B verdict
 hstats --by-host          # cross-machine usage breakdown
 ```
 
-`hquery` requires `fzf` (`brew install fzf` on Mac, `apt install fzf` on
-Linux). `bat` is preferred for syntax-highlighted preview; falls back to
-`cat` if absent. `hlog` and `hstats` require `jq` (effectively ubiquitous).
-The call log lives at `~/.hammerstein/logs/hammerstein-calls.jsonl`
-(auto-created on first call; not in cwd). Each entry stamps the host,
-so `hstats --by-host` works across machines if you sync the log.
+`h` is POSIX shell on Linux/Mac and `h.ps1` on Windows; both ship in
+`scripts/`. `hquery` requires `fzf` (`brew install fzf` on Mac, `apt
+install fzf` on Linux). `bat` is preferred for syntax-highlighted
+preview; falls back to `cat` if absent. `hlog` and `hstats` require `jq`
+(effectively ubiquitous). The call log lives at
+`~/.hammerstein/logs/hammerstein-calls.jsonl` (auto-created on first
+call; not in cwd). Each entry stamps the host, so `hstats --by-host`
+works across machines if you sync the log.
 
 ## How the layers compose
 
