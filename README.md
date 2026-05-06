@@ -324,6 +324,17 @@ works across machines if you sync the log.
 | Harness | `harness/`, `hammerstein_cli/` | The Python CLI that ties it together |
 | Eval | `eval/`, `tests/` | Benchmarks + continuity smoke tests |
 
+## Stable downstream interface
+
+External tools that script Hammerstein (the maintainer's daily-brief generator being the current reference example) depend on these surfaces remaining stable across versions:
+
+- **Template names** — `audit-this-plan`, `scope-this-idea`, `is-this-worth-doing`, `what-should-we-do-next`, `review-from-different-angle` — invoked via the `--template` flag.
+- **Plain English summary section** at the head of every template response, terminated by a `---` divider line. Callers extract this block to surface a layman-readable verdict.
+- **stdout for the response body; stderr for diagnostics.** A `[backend=...]` metadata line at the head of stdout is parseable and contains provider, cost, and latency.
+- **Exit code zero** on a returned response; **non-zero** on backend exhaustion or hard failure. Empty stdout when all backends fail soft.
+
+Adding new templates is non-breaking. Removing or renaming any of the five above is a major-version bump and lands under `### Breaking` in the CHANGELOG.
+
 ## License
 
 [MIT](LICENSE)
