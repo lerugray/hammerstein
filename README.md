@@ -2,11 +2,15 @@
 
 ![Hammerstein — A framework that survives the model. Clever-lazy · Verify · Legible failure](docs/images/banner.png)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Status: v1.0](https://img.shields.io/badge/status-v1.0-success.svg)](https://github.com/lerugray/hammerstein/releases)
+
 Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framework.
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
 
-> **Status:** v0 harness shipped. Reference corpus included. Provider fallback chain (OpenRouter → DeepSeek → Ollama) ships continuity by default.
+> **Status:** v1.0 shipped. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all 5 templates so non-programmer operators can evaluate output without parsing framework vocabulary. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end; daily-brief integration tested in production.
 
 ## What this is
 
@@ -31,6 +35,10 @@ It is Tuesday morning. I have 2 hours. Options: (a) draft the benchmark question
 
 **Response (abbreviated)**
 
+**Plain English summary:** Run a single end-to-end test with what you already have first — that's the only way to know what's actually broken. Drafting more questions or adding more corpus entries before that is guesswork. Five questions is enough to start; tighten the retrieval layer only after the test tells you what failed.
+
+---
+
 This is clever-industrious work with an easy stupid-industrious trap: adding corpus before you can measure whether retrieval works.
 
 1. Run (d) and record a baseline run. You need a working loop before you add more inputs.
@@ -43,16 +51,20 @@ Counter-observation: if the baseline run already produces useful retrieval and t
 
 ## What this is NOT
 
-- **Not a Claude Code clone.** Code work continues to route through OpenRouter
-  (paid Qwen Coder Plus / DeepSeek) or whatever Cursor IDE Auto provides.
-  Hammerstein is for strategic thinking, not bulk code generation.
-- **Not a from-scratch model.** Pre-training a foundation model is decisively
-  out of scope. The realistic ceiling is fine-tuning a small open-weight
-  model (Qwen 8B / Llama 3.1 8B-70B) — and that's only after the
-  prompt-engineering + RAG path proves insufficient.
-- **Not a daily-driver replacement** for Claude (yet). It's a fallback +
-  business-continuity layer that becomes primary if Claude becomes
-  unavailable or unaffordable.
+- **Not a Claude Code replacement for code editing.** `hd` dispatches code
+  work to [aider](https://aider.chat/) for the actual file edits + git
+  operations — useful as a substitute when Claude Code is unavailable, but
+  it's a wrapper, not a first-party code-editing tool. For bulk code
+  generation, route through OpenRouter (paid Qwen Coder Plus / DeepSeek) or
+  Cursor IDE Auto directly.
+- **Not a from-scratch model.** Pre-training a foundation model is
+  decisively out of scope. The realistic ceiling is fine-tuning a small
+  open-weight model (Qwen 8B / Llama 3.1 8B-70B) — and that's only if the
+  prompt-engineering + RAG path proves insufficient for a given operator.
+- **Not authoritative for every operator's framework.** The shipped corpus
+  is a reference implementation drawn from one operator's accumulated
+  reasoning. The framework structure transfers as-is; the corpus content is
+  yours to author. See § Customize the corpus.
 
 ## Why it exists
 
@@ -97,12 +109,27 @@ yours to author.
 pip install -e .
 export OPENROUTER_API_KEY="..."
 
-hammerstein "What's the highest-leverage move for me this week given X, Y, Z?"
+# Quick-fire verb wrappers (recommended for daily use; scripts/h or scripts/h.ps1)
+h next "what's the highest-leverage move this week given X, Y, Z?"
+h audit "<plan>"        # adversarial pre-flight on a plan before firing it
+h scope "<idea>"        # scope-pass on a half-formed idea
+h worth "<proposal>"    # cost-benefit before committing
+h sharper "<position>"  # counter-frame on a position you've already taken
+
+# Or invoke the underlying CLI directly
+hammerstein --template what-should-we-do-next "<query>"
+
+# Or drop into an interactive shell with bounded rolling context (3 turns)
+hsh
 ```
 
 The harness reads `providers.yaml` for the fallback chain and routes through
 OpenRouter (qwen3.6-plus) by default, with auto-fallover to a secondary OpenRouter model, DeepSeek, and Ollama if the primary fails. See `harness/README.md` for the full flag set
 and `tests/test_continuity_chain.py` for the smoke-test harness.
+
+**Optional:** `scripts/hquery` (fzf corpus search) + `scripts/hlog` (call
+history) + `scripts/hstats` (usage stats) round out the terminal-native
+workflow. See § Companion shell utilities.
 
 ## `hsh` — Hammerstein Shell (Continuity Track Phase 2)
 
