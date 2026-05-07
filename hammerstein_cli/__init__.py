@@ -67,6 +67,29 @@ def cli(
     log: Path = typer.Option(
         DEFAULT_LOG_PATH, "--log", help="Path to JSONL call log.", show_default=True
     ),
+    context_mode: Optional[str] = typer.Option(
+        None,
+        "--context",
+        help=(
+            "Project context injection mode (none | minimal). If omitted, a "
+            "template-level default may apply (audits default to minimal; "
+            "pure queries default to none)."
+        ),
+    ),
+    project_root: Optional[Path] = typer.Option(
+        None,
+        "--project-root",
+        help="Override repo detection: build context from this project root path.",
+    ),
+    context_file: Optional[Path] = typer.Option(
+        None,
+        "--context-file",
+        help=(
+            "Explicit context preamble file to inject (preferred). If omitted, "
+            "minimal mode may auto-discover a state file at project root. "
+            "Refuses paths outside the project root."
+        ),
+    ),
     version: bool = typer.Option(
         False,
         "--version",
@@ -88,6 +111,9 @@ def cli(
         top_k=top_k,
         show_prompt=show_prompt,
         log_path=log,
+        context_mode=context_mode,
+        project_root=project_root,
+        context_file=context_file,
     )
     raise typer.Exit(code=code)
 
