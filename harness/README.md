@@ -41,11 +41,14 @@ Filter to one question + cell (e.g. smoke test):
 
 - `--model <backend[:model]>` — `ollama` | `openrouter` | `deepseek` | `claude`. Default: `HAMMERSTEIN_DEFAULT_MODEL` env var if set, else `ollama:qwen3:8b`. Set the env var (e.g. in `~/.generalstaff/.env`) to point Hammerstein at a cloud backend by default when local Ollama isn't a fit (no GPU, weak hardware, daemon issues).
 - `--template <name>` — pin a few-shot template instead of classifier-decide. Default: `auto`.
+- `--context none|minimal` — project context injection. Default: omitted (template-level default applies). `minimal` prepends a bounded project context pack (repo identity + high-signal docs + optional `.hammerstein-state.md`) to the user query to reduce prompt-burden. **Safety:** aborts injection if a possible secret is detected; warns and continues with no-context. v0 intentionally does **not** inject git diffs/logs/trees.
+- `--project-root <path>` — override repo detection for context injection.
+- `--context-file <path>` — explicit context preamble file to inject (preferred). Refuses paths outside `--project-root` / detected git root.
 - `--no-corpus` — ablation: skip RAG retrieval (prompt + template only).
 - `--corpus-only` — ablation: minimal system prompt + retrieved corpus only.
 - `--top-k <N>` — number of corpus entries to retrieve (default 4).
 - `--show-prompt` — print assembled prompt and exit (no inference).
-- `--log <path>` — JSONL call log path (default `logs/hammerstein-calls.jsonl`).
+- `--log <path>` — JSONL call log path (default `~/.hammerstein/logs/hammerstein-calls.jsonl`).
 
 Templates (auto-classified by query shape, override with `--template`):
 - `scope-this-idea` (default)
@@ -53,6 +56,10 @@ Templates (auto-classified by query shape, override with `--template`):
 - `is-this-worth-doing`
 - `what-should-we-do-next`
 - `review-from-different-angle`
+
+Template-level defaults:
+- `audit-this-plan`, `what-should-we-do-next` default `--context minimal` when `--context` is omitted.
+- Other templates default `--context none` when `--context` is omitted.
 
 ## Provider fallback
 

@@ -33,6 +33,7 @@ except ModuleNotFoundError:  # pragma: no cover
     yaml = None  # type: ignore
 
 from . import backends, classifier, corpus as corpus_mod, logger, prompt as prompt_mod
+from .context import ContextDisabled, ContextMode, build_project_context_preamble
 
 DEFAULT_LOG_PATH = Path.home() / ".hammerstein" / "logs" / "hammerstein-calls.jsonl"
 
@@ -250,6 +251,9 @@ def run(
     top_k: int,
     show_prompt: bool,
     log_path: Path,
+    context_mode: ContextMode | None,
+    project_root: Path | None,
+    context_file: Path | None,
 ) -> int:
     """One-shot dispatch. Returns process exit code."""
     if no_corpus and corpus_only:
@@ -265,8 +269,10 @@ def run(
         if env_default:
             model_spec = env_default
 
+    raw_query = query
+
     if template_name == "auto" or template_name is None:
-        template_name = classifier.classify(query)
+        template_name = classifier.classify(raw_query)
     elif template_name not in classifier.TEMPLATES:
         print(
             f"unknown template '{template_name}'; pick one of "
@@ -274,6 +280,13 @@ def run(
             file=sys.stderr,
         )
         return 2
+
+    # Template-level context defaults (only if user did NOT pass --context).
+    if context_mode is None:
+        if template_name in {"audit-this-plan", "what-should-we-do-next"}:
+            context_mode = "minimal"
+        else:
+            context_mode = "none"
 
     if corpus_only:
         mode = "corpus-only"
@@ -297,14 +310,32 @@ def run(
         entries_dir = importlib_resources.files("corpus.entries")
         all_entries = corpus_mod.load_corpus(entries_dir)
         retrieved = corpus_mod.retrieve(
-            all_entries, query, template=template_name, top_k=top_k
+            all_entries, raw_query, template=template_name, top_k=top_k
         )
+
+    context_preamble = ""
+    if context_mode != "none":
+        try:
+            context_preamble = build_project_context_preamble(
+                mode=context_mode,
+                project_root=project_root,
+                context_file=context_file,
+            )
+        except ContextDisabled as exc:
+            print(
+                "warning: project context injection disabled "
+                f"({exc.reason}); re-run with --context none or provide sanitized --context-file",
+                file=sys.stderr,
+            )
+            context_preamble = ""
+
+    injected_query = raw_query if not context_preamble else (context_preamble + "\n\n" + raw_query)
 
     full_prompt = prompt_mod.assemble_prompt(
         system_prompt=system_prompt,
         template_text=template_text,
         corpus_entries=retrieved,
-        query=query,
+        query=injected_query,
         mode=mode,
     )
 
@@ -485,6 +516,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--top-k", type=int, default=4, help="Corpus entries to retrieve.")
     p.add_argument(
+        "--context",
+        choices=("none", "minimal"),
+        default=None,
+        help=(
+            "Project context injection mode. If omitted, a template-level default may apply "
+            "(e.g. audits default to minimal; pure queries default to none)."
+        ),
+    )
+    p.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="Override repo detection: build context from this project root path.",
+    )
+    p.add_argument(
+        "--context-file",
+        type=Path,
+        default=None,
+        help="Explicit context preamble file to inject (preferred). If omitted, minimal mode may auto-discover a state file at project root.",
+    )
+    p.add_argument(
         "--show-prompt",
         action="store_true",
         help="Print the assembled prompt and exit. Skips inference.",
@@ -513,5 +565,8 @@ def main(argv: list[str] | None = None) -> int:
         top_k=args.top_k,
         show_prompt=args.show_prompt,
         log_path=args.log,
+        context_mode=args.context,
+        project_root=args.project_root,
+        context_file=args.context_file,
     )
 
