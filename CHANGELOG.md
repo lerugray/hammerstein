@@ -7,6 +7,15 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+### Added
+
+- **`hammerstein --context none|minimal`** — opt-in project context injection. `minimal` prepends a bounded preamble to user queries: repo identity (remote / branch / HEAD / dirty) + capped excerpts from `MISSION.md` / `CLAUDE.md` / `AGENTS.md` / `README.md` (600 chars each, 1600 total docs budget) + optional auto-discovered state file (`.hammerstein-state.md` or `hammerstein_state.md`, 800 chars). Hard cap 2.2k chars with documented drop priority. CLI default is `none`; templates `audit-this-plan` and `what-should-we-do-next` default to `minimal` (override with explicit `--context none`). v0 intentionally does **not** inject git diffs / logs / trees / cached state.
+- **`--project-root <path>`** + **`--context-file <path>`** — override git-root detection and provide an explicit context file (the preferred grounding mechanism). Context files must live under the project root.
+
+### Security
+
+- Context injection denylists sensitive filenames (`.env`, `.pem`, `id_rsa`, `credentials*`, files named `secret` / `token` / `api_key`), refuses symlinks, scrubs absolute repo paths down to basenames, and **aborts injection entirely** if high-entropy credential patterns appear in candidate excerpts (OpenAI `sk-`, GitHub `ghp_`, Google `AIza`, AWS `AKIA` / `ASIA`, Slack `xox`, PEM blocks, long hex / base64). v0 chooses abort over redaction by design — operator gets a single-line stderr warning and the call continues with no context.
+
 ## [1.1] — 2026-05-05
 
 ### Added
