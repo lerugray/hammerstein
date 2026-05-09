@@ -19,11 +19,21 @@ _TWAR_PC_FIXTURE = _FIXTURE_DIR / "twar-pc-s5-hex-grid.png"
 _RETROGAZE_FIXTURE = _FIXTURE_DIR / "retrogaze-rg-023-sprite.png"
 _FNORDOS_FIXTURE = _FIXTURE_DIR / "fnordos-dept-23-panel.png"
 
-# Placeholder verdict strings -- swap to real expected substrings
-# once real images land (see fixtures/vision-audit/README.md).
-_EXPECTED_TWAR_PC: str | None = None
-_EXPECTED_RETROGAZE: str | None = None
-_EXPECTED_FNORDOS: str | None = None
+# Right-answer substrings per scope/VISION-SUPPORT.md (see
+# fixtures/vision-audit/README.md for the full spec). Each list is the
+# load-bearing phrase set the audit must produce; tests assert at
+# least one item from the primary set AND at least one item from the
+# corroborating set. None still means the corresponding fixture is a
+# placeholder and the semantic test is skipped.
+_EXPECTED_TWAR_PC: tuple[tuple[str, ...], tuple[str, ...]] | None = (
+    ("hex",),
+    ("area", "province", "register", "mismatch", "redo"),
+)
+_EXPECTED_RETROGAZE: tuple[tuple[str, ...], tuple[str, ...]] | None = (
+    ("craft",),
+    ("shade", "silhouette", "reroll", "below"),
+)
+_EXPECTED_FNORDOS: tuple[tuple[str, ...], tuple[str, ...]] | None = None
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
