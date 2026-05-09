@@ -33,6 +33,7 @@ except ModuleNotFoundError:  # pragma: no cover
     yaml = None  # type: ignore
 
 from . import backends, classifier, corpus as corpus_mod, logger, prompt as prompt_mod
+from . import shape_gate
 from .context import ContextDisabled, ContextMode, build_project_context_preamble
 
 DEFAULT_LOG_PATH = Path.home() / ".hammerstein" / "logs" / "hammerstein-calls.jsonl"
@@ -53,6 +54,10 @@ _DEFAULT_PROVIDERS_FILENAME = "providers.yaml"
 
 # OpenRouter free-tier vision pool (Gemini Flash) for --backend-tier free + --image.
 _VISION_FREE_OPENROUTER_MODEL = "google/gemini-2.0-flash-exp:free"
+
+# Shape-gate failover (commit-3 placeholders; commit 5 locks via bake-off).
+_VISION_FAILOVER_BACKEND = "openrouter"
+_VISION_FAILOVER_MODEL = "openai/gpt-4o"
 
 
 def _load_providers_config() -> dict:
@@ -251,6 +256,52 @@ def _dispatch(
             image_path=image_path,
         )
     raise SystemExit(f"unknown backend: {backend}")
+
+
+def _shape_gate_audit_visual(
+    result: backends.CallResult,
+    *,
+    primary_label: str,
+    full_prompt: str,
+    image: str,
+) -> tuple[backends.CallResult, str]:
+    """Validate audit-this-visual output shape; optionally fail over once.
+
+    Returns (final_result, meta_suffix) where meta_suffix is either
+    ' shape_gate=passed' or ' shape_gate=failed_over'.
+    """
+
+    def _failover() -> backends.CallResult:
+        return _dispatch(
+            _VISION_FAILOVER_BACKEND,
+            _VISION_FAILOVER_MODEL,
+            full_prompt,
+            timeout_seconds=120,
+            image_path=image,
+        )
+
+    if shape_gate.is_well_shaped(result.response):
+        return result, " shape_gate=passed"
+
+    primary_log = shape_gate.log_raw_response(
+        result.response or "",
+        model=primary_label,
+        attempt=1,
+    )
+    try:
+        retry_result = _failover()
+    except backends.BackendError as exc:
+        raise shape_gate.ShapeGateFailure(primary_log) from exc
+
+    if shape_gate.is_well_shaped(retry_result.response):
+        return retry_result, " shape_gate=failed_over"
+
+    failover_log = shape_gate.log_raw_response(
+        retry_result.response or "",
+        model=f"{_VISION_FAILOVER_BACKEND}:{_VISION_FAILOVER_MODEL}",
+        attempt=2,
+    )
+    raise shape_gate.ShapeGateFailure(primary_log, failover_log)
 
 
 def run(
@@ -506,19 +557,56 @@ def run(
                     break
                 continue
 
-            record.response = result.response
-            record.response_length = len(result.response) if result.response else 0
-            record.latency_ms = result.latency_ms
-            record.cost_usd = result.cost_usd
-            logger.append(record, log_path)
+            shape_gate_meta = ""
+            vision_audit = template_name == "audit-this-visual" and image is not None
 
-            if not result.response:
-                record.error = "backend returned empty/null response"
+            if vision_audit:
+                if not result.response:
+                    record.response = result.response
+                    record.response_length = (
+                        len(result.response) if result.response else 0
+                    )
+                    record.latency_ms = result.latency_ms
+                    record.cost_usd = result.cost_usd
+                    logger.append(record, log_path)
+                    record.error = "backend returned empty/null response"
+                    logger.append(record, log_path)
+                    last_err = f"[provider={provider_id}] empty response"
+                    if _action(cfg, "on_empty_response") == "next":
+                        continue
+                    break
+                try:
+                    result, shape_gate_meta = _shape_gate_audit_visual(
+                        result,
+                        primary_label=f"{backend}:{model}",
+                        full_prompt=full_prompt,
+                        image=image,
+                    )
+                except shape_gate.ShapeGateFailure as exc:
+                    print(f"shape-gate failed: {exc}", file=sys.stderr)
+                    return 1
+                if shape_gate_meta == " shape_gate=failed_over":
+                    record.backend = _VISION_FAILOVER_BACKEND
+                    record.model = _VISION_FAILOVER_MODEL
+                record.response = result.response
+                record.response_length = len(result.response) if result.response else 0
+                record.latency_ms = result.latency_ms
+                record.cost_usd = result.cost_usd
                 logger.append(record, log_path)
-                last_err = f"[provider={provider_id}] empty response"
-                if _action(cfg, "on_empty_response") == "next":
-                    continue
-                break
+            else:
+                record.response = result.response
+                record.response_length = len(result.response) if result.response else 0
+                record.latency_ms = result.latency_ms
+                record.cost_usd = result.cost_usd
+                logger.append(record, log_path)
+
+                if not result.response:
+                    record.error = "backend returned empty/null response"
+                    logger.append(record, log_path)
+                    last_err = f"[provider={provider_id}] empty response"
+                    if _action(cfg, "on_empty_response") == "next":
+                        continue
+                    break
 
             print(result.response)
             meta = (
@@ -526,7 +614,9 @@ def run(
                 f"latency_ms={result.latency_ms} cost=${result.cost_usd:.5f}"
             )
             if image:
-                meta += f" image_bytes={os.path.getsize(image)}"
+                meta += f" image_bytes={os.path.getsize(image)}{shape_gate_meta}"
+            else:
+                meta += shape_gate_meta
             meta += "]"
             print(meta, file=sys.stderr)
             return 0
@@ -536,20 +626,58 @@ def run(
             print(last_err, file=sys.stderr)
         return 1
 
-    record.response = result.response
-    record.response_length = len(result.response) if result.response else 0
-    record.latency_ms = result.latency_ms
-    record.cost_usd = result.cost_usd
-    logger.append(record, log_path)
+    shape_gate_meta = ""
+    vision_audit = image is not None and template_name == "audit-this-visual"
 
-    if not result.response:
-        record.error = "backend returned empty/null response"
+    if vision_audit:
+        if not result.response:
+            record.response = result.response
+            record.response_length = len(result.response) if result.response else 0
+            record.latency_ms = result.latency_ms
+            record.cost_usd = result.cost_usd
+            logger.append(record, log_path)
+            record.error = "backend returned empty/null response"
+            logger.append(record, log_path)
+            print(
+                f"backend warning: empty/null response from {backend} ({model})",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            result, shape_gate_meta = _shape_gate_audit_visual(
+                result,
+                primary_label=f"{backend}:{model}",
+                full_prompt=full_prompt,
+                image=image,
+            )
+        except shape_gate.ShapeGateFailure as exc:
+            print(f"shape-gate failed: {exc}", file=sys.stderr)
+            return 1
+        if shape_gate_meta == " shape_gate=failed_over":
+            backend = _VISION_FAILOVER_BACKEND
+            model = _VISION_FAILOVER_MODEL
+            record.backend = backend
+            record.model = model
+        record.response = result.response
+        record.response_length = len(result.response) if result.response else 0
+        record.latency_ms = result.latency_ms
+        record.cost_usd = result.cost_usd
         logger.append(record, log_path)
-        print(
-            f"backend warning: empty/null response from {backend} ({model})",
-            file=sys.stderr,
-        )
-        return 1
+    else:
+        record.response = result.response
+        record.response_length = len(result.response) if result.response else 0
+        record.latency_ms = result.latency_ms
+        record.cost_usd = result.cost_usd
+        logger.append(record, log_path)
+
+        if not result.response:
+            record.error = "backend returned empty/null response"
+            logger.append(record, log_path)
+            print(
+                f"backend warning: empty/null response from {backend} ({model})",
+                file=sys.stderr,
+            )
+            return 1
 
     print(result.response)
     meta = (
@@ -558,7 +686,9 @@ def run(
         f"cost_usd=${result.cost_usd:.5f}"
     )
     if image:
-        meta += f" image_bytes={os.path.getsize(image)}"
+        meta += f" image_bytes={os.path.getsize(image)}{shape_gate_meta}"
+    else:
+        meta += shape_gate_meta
     meta += "]"
     print(meta, file=sys.stderr)
     return 0
