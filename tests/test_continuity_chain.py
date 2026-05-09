@@ -131,6 +131,9 @@ def test_continuity_chain_each_provider(tmp_path, capsys):
                 top_k=4,
                 show_prompt=False,
                 log_path=log_path,
+                context_mode="none",
+                project_root=None,
+                context_file=None,
             )
             out = capsys.readouterr().out
 
