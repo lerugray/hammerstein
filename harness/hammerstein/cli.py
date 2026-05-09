@@ -51,6 +51,9 @@ _BACKENDS = {"ollama", "openrouter", "deepseek", "claude"}
 _DEFAULT_PROVIDERS_RESOURCE = "hammerstein_resources"
 _DEFAULT_PROVIDERS_FILENAME = "providers.yaml"
 
+# OpenRouter free-tier vision pool (Gemini Flash) for --backend-tier free + --image.
+_VISION_FREE_OPENROUTER_MODEL = "google/gemini-2.0-flash-exp:free"
+
 
 def _load_providers_config() -> dict:
     """Load providers.yaml from packaged resources, falling back to repo root."""
@@ -207,9 +210,15 @@ def _dispatch(
     full_prompt: str,
     *,
     timeout_seconds: int,
+    image_path: str | None = None,
 ) -> backends.CallResult:
     """Route the prompt to the right backend."""
     if backend == "ollama":
+        if image_path:
+            raise backends.BackendError(
+                "Ollama multimodal input is not supported in Hammerstein v0; "
+                "use OpenRouter, DeepSeek, or Claude (see --model or providers.yaml)."
+            )
         host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
         return backends.call_ollama(
             full_prompt,
@@ -223,6 +232,7 @@ def _dispatch(
             model=model,
             api_key=_resolve_api_key("openrouter"),
             timeout=timeout_seconds,
+            image_path=image_path,
         )
     if backend == "deepseek":
         return backends.call_deepseek(
@@ -230,6 +240,7 @@ def _dispatch(
             model=model,
             api_key=_resolve_api_key("deepseek"),
             timeout=timeout_seconds,
+            image_path=image_path,
         )
     if backend == "claude":
         return backends.call_claude(
@@ -237,6 +248,7 @@ def _dispatch(
             model=model,
             api_key=_resolve_api_key("claude"),
             timeout=timeout_seconds,
+            image_path=image_path,
         )
     raise SystemExit(f"unknown backend: {backend}")
 
@@ -254,6 +266,8 @@ def run(
     context_mode: ContextMode | None,
     project_root: Path | None,
     context_file: Path | None,
+    image: str | None = None,
+    backend_tier: str | None = None,
 ) -> int:
     """One-shot dispatch. Returns process exit code."""
     if no_corpus and corpus_only:
@@ -350,6 +364,13 @@ def run(
     # Explicit single-provider invocation bypasses the chain.
     if model_spec:
         backend, model = parse_model_spec(model_spec)
+        if image and backend == "ollama":
+            print(
+                "Ollama does not support --image in Hammerstein v0; "
+                "use a cloud backend, e.g. --model openrouter:... or --model claude:...",
+                file=sys.stderr,
+            )
+            return 2
         record = logger.CallRecord(
             timestamp=logger.now_iso(),
             backend=backend,
@@ -365,7 +386,13 @@ def run(
         )
         start = time.perf_counter()
         try:
-            result = _dispatch(backend, model, full_prompt, timeout_seconds=120)
+            result = _dispatch(
+                backend,
+                model,
+                full_prompt,
+                timeout_seconds=120,
+                image_path=image,
+            )
         except backends.BackendError as exc:
             record.error = str(exc)
             record.latency_ms = int((time.perf_counter() - start) * 1000)
@@ -378,12 +405,50 @@ def run(
         if not chain:
             raise SystemExit("providers.yaml has empty chain")
 
+        if image:
+            if backend_tier == "free":
+                chain = [
+                    {
+                        "id": "vision-free-openrouter",
+                        "backend": "openrouter",
+                        "model": _VISION_FREE_OPENROUTER_MODEL,
+                        "timeout_seconds": 90,
+                    }
+                ]
+            elif backend_tier == "paid":
+                chain = [
+                    s
+                    for s in chain
+                    if str(s.get("backend") or "").strip().lower() != "ollama"
+                ]
+            if not chain:
+                print(
+                    "no vision-capable providers remain in the chain after applying "
+                    "--backend-tier / image constraints",
+                    file=sys.stderr,
+                )
+                return 2
+
         last_err: str | None = None
         for idx, step in enumerate(chain, start=1):
             provider_id = str(step.get("id") or f"step-{idx}")
             backend = str(step.get("backend") or "").strip().lower()
             model = str(step.get("model") or "").strip()
             timeout_seconds = int(step.get("timeout_seconds") or 120)
+
+            if image and backend == "ollama":
+                continue
+
+            if image and backend == "deepseek":
+                try:
+                    ds_key = _resolve_api_key("deepseek")
+                except backends.BackendError:
+                    continue
+                probe_timeout = min(5, timeout_seconds)
+                if not backends.deepseek_supports_vision(
+                    ds_key, timeout=probe_timeout
+                ):
+                    continue
 
             record = logger.CallRecord(
                 timestamp=logger.now_iso(),
@@ -406,6 +471,7 @@ def run(
                     model,
                     full_prompt,
                     timeout_seconds=timeout_seconds,
+                    image_path=image,
                 )
             except backends.RateLimitError as exc:
                 record.error = str(exc)
@@ -455,10 +521,14 @@ def run(
                 break
 
             print(result.response)
-            print(
-                f"\n[chain_step={idx}/{len(chain)} provider={provider_id} latency_ms={result.latency_ms} cost=${result.cost_usd:.5f}]",
-                file=sys.stderr,
+            meta = (
+                f"\n[chain_step={idx}/{len(chain)} provider={provider_id} "
+                f"latency_ms={result.latency_ms} cost=${result.cost_usd:.5f}"
             )
+            if image:
+                meta += f" image_bytes={os.path.getsize(image)}"
+            meta += "]"
+            print(meta, file=sys.stderr)
             return 0
 
         print("all providers failed.", file=sys.stderr)
@@ -482,12 +552,15 @@ def run(
         return 1
 
     print(result.response)
-    print(
+    meta = (
         f"\n[backend={backend} model={model} template={template_name} "
         f"corpus={len(retrieved)} latency_ms={result.latency_ms} "
-        f"cost_usd=${result.cost_usd:.5f}]",
-        file=sys.stderr,
+        f"cost_usd=${result.cost_usd:.5f}"
     )
+    if image:
+        meta += f" image_bytes={os.path.getsize(image)}"
+    meta += "]"
+    print(meta, file=sys.stderr)
     return 0
 
 
@@ -519,6 +592,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Ablation: minimal system prompt + corpus only (drop framework prompt + template).",
     )
     p.add_argument("--top-k", type=int, default=4, help="Corpus entries to retrieve.")
+    p.add_argument(
+        "--image",
+        default=None,
+        help="Path to an image file (PNG/JPG/JPEG/WebP) to include as "
+        "multimodal input. Only valid with --template audit-this-visual.",
+    )
+    p.add_argument(
+        "--backend-tier",
+        default=None,
+        choices=["free", "paid"],
+        help="Explicit backend tier for vision-Hammerstein audits. 'free' "
+        "routes through the free vision pool (Gemini Flash via OpenRouter); "
+        "'paid' forces the paid pool default. Default is None (use the "
+        "providers.yaml fallback chain).",
+    )
     p.add_argument(
         "--context",
         choices=("none", "minimal"),
@@ -560,6 +648,20 @@ def main(argv: list[str] | None = None) -> int:
     if not args.query:
         parser.print_help()
         return 2
+    if args.image:
+        if args.template != "audit-this-visual":
+            print(
+                "--image is only supported with --template audit-this-visual; "
+                "use --template audit-this-visual to opt in",
+                file=sys.stderr,
+            )
+            return 2
+        if not os.path.isfile(args.image):
+            print(
+                f"--image path is not a readable file: {args.image!r}",
+                file=sys.stderr,
+            )
+            return 2
     return run(
         args.query,
         model_spec=args.model,
@@ -572,5 +674,7 @@ def main(argv: list[str] | None = None) -> int:
         context_mode=args.context,
         project_root=args.project_root,
         context_file=args.context_file,
+        image=args.image,
+        backend_tier=args.backend_tier,
     )
 

@@ -1,9 +1,11 @@
 """Provides HTTP clients for Ollama, OpenRouter, DeepSeek, and Anthropic Claude inference, stdlib-only, with bounded retries."""
-import urllib.request
-import urllib.error
+import base64
 import json
-import time
+import os
 import socket
+import time
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 from typing import Dict, Any
 from json import JSONDecodeError
@@ -23,6 +25,39 @@ class TimeoutError(BackendError):
 
 class ParseError(BackendError):
     """Unparsable JSON response from provider."""
+
+
+_IMAGE_MIME_BY_EXT = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+}
+
+
+def load_image_as_base64(path: str) -> tuple[str, str]:
+    """Read an image file from disk and return (base64_data, media_type).
+
+    Raises BackendError on missing file, unreadable file, or unsupported
+    extension. The extension is the only signal used for media_type --
+    no magic-byte sniffing in v0. Caller is responsible for ensuring
+    the path exists and points at a real image; this helper is
+    load-and-encode only.
+    """
+    if not os.path.isfile(path):
+        raise BackendError(f"image file not found: {path}")
+    ext = os.path.splitext(path)[1].lower()
+    if ext not in _IMAGE_MIME_BY_EXT:
+        raise BackendError(
+            f"unsupported image extension {ext!r}; supported: "
+            f"{sorted(_IMAGE_MIME_BY_EXT)}"
+        )
+    try:
+        with open(path, "rb") as fh:
+            raw = fh.read()
+    except OSError as exc:
+        raise BackendError(f"failed to read image file {path}: {exc}") from exc
+    return base64.b64encode(raw).decode("ascii"), _IMAGE_MIME_BY_EXT[ext]
 
 
 @dataclass
@@ -105,12 +140,33 @@ def call_ollama(prompt: str, *, model: str, host: str = "http://localhost:11434"
     )
 
 
-def call_openrouter(prompt: str, *, model: str, api_key: str, timeout: int = 120) -> CallResult:
+def call_openrouter(
+    prompt: str,
+    *,
+    model: str,
+    api_key: str,
+    timeout: int = 120,
+    image_path: str | None = None,
+) -> CallResult:
     """Call OpenRouter API for text generation."""
     url = "https://openrouter.ai/api/v1/chat/completions"
+    if image_path is not None:
+        b64_data, media_type = load_image_as_base64(image_path)
+        data_url = f"data:{media_type};base64,{b64_data}"
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": data_url}},
+                ],
+            }
+        ]
+    else:
+        messages = [{"role": "user", "content": prompt}]
     payload = {
         "model": model,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": messages,
         "temperature": 0.3,
         "max_tokens": 4096
     }
@@ -150,12 +206,33 @@ def call_openrouter(prompt: str, *, model: str, api_key: str, timeout: int = 120
     )
 
 
-def call_deepseek(prompt: str, *, model: str, api_key: str, timeout: int = 120) -> CallResult:
+def call_deepseek(
+    prompt: str,
+    *,
+    model: str,
+    api_key: str,
+    timeout: int = 120,
+    image_path: str | None = None,
+) -> CallResult:
     """Call DeepSeek API for text generation."""
     url = "https://api.deepseek.com/chat/completions"
+    if image_path is not None:
+        b64_data, media_type = load_image_as_base64(image_path)
+        data_url = f"data:{media_type};base64,{b64_data}"
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": data_url}},
+                ],
+            }
+        ]
+    else:
+        messages = [{"role": "user", "content": prompt}]
     payload = {
         "model": model,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": messages,
         "temperature": 0.3,
         "max_tokens": 4096
     }
@@ -193,13 +270,40 @@ def call_deepseek(prompt: str, *, model: str, api_key: str, timeout: int = 120) 
     )
 
 
-def call_claude(prompt: str, *, model: str, api_key: str, timeout: int = 120) -> CallResult:
+def call_claude(
+    prompt: str,
+    *,
+    model: str,
+    api_key: str,
+    timeout: int = 120,
+    image_path: str | None = None,
+) -> CallResult:
     """Call Anthropic Claude API for text generation."""
     url = "https://api.anthropic.com/v1/messages"
+    if image_path is not None:
+        b64_data, media_type = load_image_as_base64(image_path)
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": media_type,
+                            "data": b64_data,
+                        },
+                    },
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ]
+    else:
+        messages = [{"role": "user", "content": prompt}]
     payload = {
         "model": model,
         "max_tokens": 4096,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": messages,
         "temperature": 0.3
     }
     headers = {
@@ -242,3 +346,27 @@ def call_claude(prompt: str, *, model: str, api_key: str, timeout: int = 120) ->
         prompt_tokens=int(usage.get("input_tokens", 0)),
         completion_tokens=int(usage.get("output_tokens", 0))
     )
+
+
+def deepseek_supports_vision(api_key: str, *, timeout: int = 5) -> bool:
+    """Probe DeepSeek's /v1/models endpoint for any vision-capable model.
+
+    Returns True if the listing includes a model whose id contains
+    'vision' (case-insensitive). Returns False on 404, timeout, or any
+    other error -- the spec calls for silent exclude rather than a hard
+    fail, since DeepSeek's vision support is unverified at v0 ship.
+    """
+    url = "https://api.deepseek.com/v1/models"
+    headers = {"Authorization": f"Bearer {api_key}"}
+    request = urllib.request.Request(url, headers=headers, method="GET")
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw = response.read().decode("utf-8")
+            data = json.loads(raw)
+    except Exception:
+        return False
+    for entry in data.get("data", []) or []:
+        mid = (entry.get("id") or "").lower()
+        if "vision" in mid:
+            return True
+    return False
