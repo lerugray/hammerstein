@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-05-09T22:43:16Z",
+  "fixtures": [
+    {
+      "name": "twar-pc-hex-vs-area-brief",
+      "fixture_path": "tests/fixtures/vision-audit/twar-pc-s5-hex-grid.png",
+      "real_or_placeholder": "real",
+      "expected_substrings_or_null": [
+        [
+          "hex"
+        ],
+        [
+          "area",
+          "province",
+          "register",
+          "mismatch",
+          "redo"
+        ]
+      ],
+      "results_by_provider": [
+        {
+          "provider_label": "qwen3-vl-plus",
+          "model": "qwen/qwen3-vl-plus",
+          "shape_gate_passed": false,
+          "semantic_passed": false,
+          "semantic_missing": [
+            "HTTP Error 400: Bad Request"
+          ],
+          "raw_response_excerpt": "HTTP Error 400: Bad Request",
+          "latency_ms": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "provider_label": "gpt-4o",
+          "model": "openai/gpt-4o",
+          "shape_gate_passed": true,
+          "semantic_passed": true,
+          "semantic_missing": [],
+          "raw_response_excerpt": "**Plain English summary:** The map uses a hex grid, which doesn't match the area-based province nodes specified in your brief. This discrepancy means the map doesn't align with the intended gameplay model. You should revise the map to use area-based provinces before proceeding.\n\n---\n\nThis artifact is a **register-mismatch** due to using a hex grid instead of the specified area-based province nodes. This choice conflicts with the brief's requirements and impacts the navigation model.\n\nFailure mod",
+          "latency_ms": 4258,
+          "cost_usd": 0.011385
+        }
+      ]
+    },
+    {
+      "name": "retrogaze-rg-023-craft-floor",
+      "fixture_path": "tests/fixtures/vision-audit/retrogaze-rg-023-sprite.png",
+      "real_or_placeholder": "real",
+      "expected_substrings_or_null": [
+        [
+          "craft"
+        ],
+        [
+          "shade",
+          "silhouette",
+          "reroll",
+          "below"
+        ]
+      ],
+      "results_by_provider": [
+        {
+          "provider_label": "qwen3-vl-plus",
+          "model": "qwen/qwen3-vl-plus",
+          "shape_gate_passed": false,
+          "semantic_passed": false,
+          "semantic_missing": [
+            "HTTP Error 400: Bad Request"
+          ],
+          "raw_response_excerpt": "HTTP Error 400: Bad Request",
+          "latency_ms": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "provider_label": "gpt-4o",
+          "model": "openai/gpt-4o",
+          "shape_gate_passed": true,
+          "semantic_passed": true,
+          "semantic_missing": [],
+          "raw_response_excerpt": "**Plain English summary:** The sprite doesn't meet the shading and silhouette clarity required by your rubric. It appears too flat and lacks the necessary detail to stand out at smaller sizes. Before shipping, you should refine the shading and ensure the silhouette is clear at all scales.\n\n---\n\nThe piece is clever-lazy-adjacent on **craft verification** \u2014 it hits the canvas constraint (16\u00d716, palette slot) but misses the **load-bearing-detail-missing** bar on shade-discipline and silhouette at t",
+          "latency_ms": 6697,
+          "cost_usd": 0.010255
+        }
+      ]
+    },
+    {
+      "name": "fnordos-dept-23-panel",
+      "fixture_path": "tests/fixtures/vision-audit/fnordos-dept-23-panel.png",
+      "real_or_placeholder": "placeholder",
+      "expected_substrings_or_null": null,
+      "results_by_provider": [
+        {
+          "provider_label": "qwen3-vl-plus",
+          "model": "qwen/qwen3-vl-plus",
+          "shape_gate_passed": false,
+          "semantic_passed": false,
+          "semantic_missing": [
+            "placeholder fixture"
+          ],
+          "raw_response_excerpt": "",
+          "latency_ms": 0,
+          "cost_usd": 0.0
+        },
+        {
+          "provider_label": "gpt-4o",
+          "model": "openai/gpt-4o",
+          "shape_gate_passed": false,
+          "semantic_passed": false,
+          "semantic_missing": [
+            "placeholder fixture"
+          ],
+          "raw_response_excerpt": "",
+          "latency_ms": 0,
+          "cost_usd": 0.0
+        }
+      ]
+    }
+  ],
+  "decision": {
+    "primary_backend": "openrouter",
+    "primary_model": "openai/gpt-4o",
+    "failover_backend": null,
+    "failover_model": null,
+    "rationale": "Qwen failed shape or semantic on real fixtures; GPT-4o flat per spec ELSE branch. Excluded 1 placeholder case(s) from threshold math."
+  }
+}

@@ -55,9 +55,19 @@ _DEFAULT_PROVIDERS_FILENAME = "providers.yaml"
 # OpenRouter free-tier vision pool (Gemini Flash) for --backend-tier free + --image.
 _VISION_FREE_OPENROUTER_MODEL = "google/gemini-2.0-flash-exp:free"
 
-# Shape-gate failover (commit-3 placeholders; commit 5 locks via bake-off).
-_VISION_FAILOVER_BACKEND = "openrouter"
-_VISION_FAILOVER_MODEL = "openai/gpt-4o"
+# Vision-Hammerstein routing lock (ham-022e bake-off, 2026-05-09 evening).
+# Bake-off result on 2 of 3 real benchmark cases: Qwen3-VL-Plus failed
+# shape-gate on both real fixtures (TWAR PC Surface 5 hex-grid render,
+# retrogaze rg-023 NES knight); GPT-4o passed shape AND semantic on
+# both. Decision tree applied: "Qwen failed shape on real fixtures
+# -> GPT-4o flat default, no failover" per scope/VISION-SUPPORT.md.
+# DeepSeek probe returned no vision-capable model. FnordOS DEPT-23
+# panel still placeholder; re-running the bake-off after that fixture
+# lands may reverse the lock if Qwen passes 3/3.
+_VISION_DEFAULT_BACKEND = "openrouter"
+_VISION_DEFAULT_MODEL = "openai/gpt-4o"
+_VISION_FAILOVER_BACKEND: str | None = None
+_VISION_FAILOVER_MODEL: str | None = None
 
 
 def _load_providers_config() -> dict:
@@ -271,6 +281,21 @@ def _shape_gate_audit_visual(
     ' shape_gate=passed' or ' shape_gate=failed_over'.
     """
 
+    if shape_gate.is_well_shaped(result.response):
+        return result, " shape_gate=passed"
+
+    primary_log = shape_gate.log_raw_response(
+        result.response or "",
+        model=primary_label,
+        attempt=1,
+    )
+
+    # Per the ham-022e bake-off lock: when failover is None (current
+    # state, GPT-4o flat default), shape-gate failure is terminal --
+    # no second-attempt retry, log raw + raise.
+    if _VISION_FAILOVER_BACKEND is None or _VISION_FAILOVER_MODEL is None:
+        raise shape_gate.ShapeGateFailure(primary_log)
+
     def _failover() -> backends.CallResult:
         return _dispatch(
             _VISION_FAILOVER_BACKEND,
@@ -280,14 +305,6 @@ def _shape_gate_audit_visual(
             image_path=image,
         )
 
-    if shape_gate.is_well_shaped(result.response):
-        return result, " shape_gate=passed"
-
-    primary_log = shape_gate.log_raw_response(
-        result.response or "",
-        model=primary_label,
-        attempt=1,
-    )
     try:
         retry_result = _failover()
     except backends.BackendError as exc:
@@ -467,10 +484,32 @@ def run(
                     }
                 ]
             elif backend_tier == "paid":
+                # Per the ham-022e bake-off lock: GPT-4o flat default,
+                # no failover. Replace the paid chain with just the
+                # locked default rather than running the providers.yaml
+                # chain (which may include lower-priority Qwen-style
+                # entries that would still hit shape-gate failures).
                 chain = [
-                    s
-                    for s in chain
-                    if str(s.get("backend") or "").strip().lower() != "ollama"
+                    {
+                        "id": "vision-default-locked",
+                        "backend": _VISION_DEFAULT_BACKEND,
+                        "model": _VISION_DEFAULT_MODEL,
+                        "timeout_seconds": 120,
+                    }
+                ]
+            else:
+                # Default --image (no --backend-tier): apply the same
+                # locked default as paid. This is the v0 release-locking
+                # decision; flip back to providers.yaml chain only when
+                # a future bake-off run with all 3 real fixtures
+                # (TWAR PC + retrogaze + FnordOS) reverses the lock.
+                chain = [
+                    {
+                        "id": "vision-default-locked",
+                        "backend": _VISION_DEFAULT_BACKEND,
+                        "model": _VISION_DEFAULT_MODEL,
+                        "timeout_seconds": 120,
+                    }
                 ]
             if not chain:
                 print(
