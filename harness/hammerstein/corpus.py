@@ -150,6 +150,10 @@ _TEMPLATE_PRINCIPLE_BOOSTS: dict[str, dict[str, float]] = {
         "verification_first": 1.4,
         "legible_failure": 1.3,
     },
+    "audit-this-visual": {
+        "verification_first": 1.4,
+        "counter_observation": 1.3,
+    },
     "is-this-worth-doing": {
         "counter_observation": 1.4,
         "bring_your_own_imagination": 1.3,

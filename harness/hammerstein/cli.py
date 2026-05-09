@@ -283,7 +283,11 @@ def run(
 
     # Template-level context defaults (only if user did NOT pass --context).
     if context_mode is None:
-        if template_name in {"audit-this-plan", "what-should-we-do-next"}:
+        if template_name in {
+            "audit-this-plan",
+            "audit-this-visual",
+            "what-should-we-do-next",
+        }:
             context_mode = "minimal"
         else:
             context_mode = "none"
@@ -502,7 +506,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--template",
         default="auto",
         help="Few-shot template (auto|scope-this-idea|audit-this-plan|"
-        "is-this-worth-doing|what-should-we-do-next|review-from-different-angle).",
+        "audit-this-visual|is-this-worth-doing|what-should-we-do-next|review-from-different-angle).",
     )
     p.add_argument(
         "--no-corpus",
