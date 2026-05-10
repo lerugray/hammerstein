@@ -1,6 +1,6 @@
 # Hammerstein Diplomacy Demo
 
-**Status:** scaffold, 2026-05-10. Smoke test passes; full demo game not yet run.
+**Status:** matched-pair demo complete, 2026-05-10. See [RESULTS-demo-2026-05-10.md](RESULTS-demo-2026-05-10.md) for the writeup. **Headline:** wrapped Austria and raw-Sonnet Austria both finished at 2 supply centers after 3 game-years. Wrap shaped reasoning style (visible in missives) but no measurable game-outcome effect in this single matched pair (n=1).
 
 **Hypothesis:** the Hammerstein wrapper improves LLM play in the game
 of Diplomacy by the same wrapper-on-frontier mechanism the v0/v0.1
