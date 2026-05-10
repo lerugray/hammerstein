@@ -30,6 +30,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
+from importlib import resources as importlib_resources
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -44,14 +45,28 @@ from hammerstein import (  # noqa: E402
     logger as call_logger,
     prompt as prompt_mod,
 )
+from hammerstein.cli import _dispatch  # noqa: E402
 
-import importlib.util  # noqa: E402
+# ---------------------------------------------------------------------------
+# Prompt/corpus resource helpers — mirrors cli.py:384-397 exactly.
+# The harness no longer exposes DEFAULT_* path constants; resources are
+# loaded via importlib.resources from the installed package dirs.
+# ---------------------------------------------------------------------------
 
-_CLI_PATH = HARNESS_DIR / "hammerstein.py"
-_spec = importlib.util.spec_from_file_location("hammerstein_cli", _CLI_PATH)
-assert _spec and _spec.loader
-_cli = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_cli)
+def _load_system_prompt() -> str:
+    return prompt_mod.load_system_prompt_resource(
+        importlib_resources.files("prompts").joinpath("SYSTEM-PROMPT.md")
+    )
+
+
+def _load_template(template_name: str) -> str:
+    return prompt_mod.load_template_resource(
+        importlib_resources.files("prompts.templates").joinpath(f"{template_name}.md")
+    )
+
+
+def _load_all_corpus() -> list[corpus_mod.CorpusEntry]:
+    return corpus_mod.load_corpus(importlib_resources.files("corpus.entries"))
 
 
 @dataclass
@@ -64,10 +79,33 @@ class Cell:
 
 
 _CELLS: list[Cell] = [
+    # Existing Hammerstein cells (locked v0)
     Cell("ollama-qwen3-8b", "ollama", "qwen3:8b", mode="default"),
     Cell("openrouter-qwen36-plus", "openrouter", "qwen/qwen3.6-plus", mode="default"),
     Cell("ollama-qwen3-8b-no-corpus", "ollama", "qwen3:8b", mode="no-corpus"),
     Cell("ollama-qwen3-8b-corpus-only", "ollama", "qwen3:8b", mode="corpus-only"),
+
+    # Frontier-baseline cells (raw model, NO Hammerstein framework prompt).
+    # mode="raw" bypasses prompt assembly entirely; the question goes to
+    # the model exactly as written. Tests "framework survives the model"
+    # by giving each frontier its un-framed shot at the same questions.
+    # All routed through OpenRouter to use the single OPENROUTER_API_KEY
+    # (no separate ANTHROPIC / OPENAI keys needed at home-PC).
+    # NOTE: OpenRouter model IDs use dots for version numbers (e.g. claude-opus-4.7,
+    # not claude-opus-4-7). Gemini Flash free tier retired; replaced with Gemma-4-31B free.
+    Cell("or-claude-opus-raw", "openrouter", "anthropic/claude-opus-4.7", mode="raw"),
+    Cell("or-claude-sonnet-raw", "openrouter", "anthropic/claude-sonnet-4.6", mode="raw"),
+    Cell("or-gpt5-raw", "openrouter", "openai/gpt-5", mode="raw"),
+    Cell("or-gemini-flash-raw", "openrouter", "google/gemma-4-31b-it:free", mode="raw"),
+
+    # Hammerstein-on-frontier cells (framework + corpus on top of frontier).
+    # Pairs 1:1 with the raw cells above. The marketing thesis is the
+    # delta between each pair: Hammerstein-on-X consistently outperforms
+    # Raw-X across X.
+    Cell("or-claude-opus", "openrouter", "anthropic/claude-opus-4.7", mode="default"),
+    Cell("or-claude-sonnet", "openrouter", "anthropic/claude-sonnet-4.6", mode="default"),
+    Cell("or-gpt5", "openrouter", "openai/gpt-5", mode="default"),
+    Cell("or-gemini-flash", "openrouter", "google/gemma-4-31b-it:free", mode="default"),
 ]
 
 
@@ -153,29 +191,39 @@ def run_cell(
     log_path: Path,
 ) -> tuple[bool, str]:
     """Returns (ok, message)."""
-    template_name = cell.template or classifier.classify(question.query)
-
-    system_prompt = prompt_mod.load_system_prompt(_cli.DEFAULT_PROMPT_PATH)
-    template_text = (
-        None
-        if cell.mode == "corpus-only"
-        else prompt_mod.load_template(_cli.DEFAULT_TEMPLATES_DIR, template_name)
-    )
-    if cell.mode == "no-corpus":
+    if cell.mode == "raw":
+        # Frontier-baseline cell: NO framework prompt, NO corpus, NO template.
+        # The model receives the bare question. This is what BENCHMARK-v0.md
+        # calls "claude-baseline" and the equivalent for other vendors --
+        # tests "framework survives the model" by establishing the no-framework
+        # comparison point per frontier model.
+        template_name = None
         retrieved: list[corpus_mod.CorpusEntry] = []
+        full_prompt = question.query
     else:
-        all_entries = corpus_mod.load_corpus(_cli.DEFAULT_CORPUS_DIR)
-        retrieved = corpus_mod.retrieve(
-            all_entries, question.query, template=template_name, top_k=4
-        )
+        template_name = cell.template or classifier.classify(question.query)
 
-    full_prompt = prompt_mod.assemble_prompt(
-        system_prompt=system_prompt,
-        template_text=template_text,
-        corpus_entries=retrieved,
-        query=question.query,
-        mode=cell.mode,
-    )
+        system_prompt = _load_system_prompt()
+        template_text = (
+            None
+            if cell.mode == "corpus-only"
+            else _load_template(template_name)
+        )
+        if cell.mode == "no-corpus":
+            retrieved = []
+        else:
+            all_entries = _load_all_corpus()
+            retrieved = corpus_mod.retrieve(
+                all_entries, question.query, template=template_name, top_k=4
+            )
+
+        full_prompt = prompt_mod.assemble_prompt(
+            system_prompt=system_prompt,
+            template_text=template_text,
+            corpus_entries=retrieved,
+            query=question.query,
+            mode=cell.mode,
+        )
 
     record = call_logger.CallRecord(
         timestamp=call_logger.now_iso(),
@@ -191,17 +239,38 @@ def run_cell(
     result: backends.CallResult | None = None
     error: str | None = None
     start = time.perf_counter()
-    try:
-        result = _cli._dispatch(cell.backend, cell.model, full_prompt)
-    except backends.BackendError as exc:
-        error = str(exc)
-        record.error = error
-        record.latency_ms = int((time.perf_counter() - start) * 1000)
-    except SystemExit as exc:
-        # API key missing or similar — record + skip cell.
-        error = f"setup error: {exc}"
-        record.error = error
-        record.latency_ms = int((time.perf_counter() - start) * 1000)
+    # Retry loop: exponential backoff on RateLimitError (429) — up to 4 attempts
+    # with 10s / 20s / 40s waits. Other BackendErrors are terminal.
+    _MAX_RETRIES = 4
+    _RETRY_BASE = 10  # seconds
+    for _attempt in range(_MAX_RETRIES):
+        try:
+            result = _dispatch(cell.backend, cell.model, full_prompt, timeout_seconds=180)
+            break  # success
+        except backends.RateLimitError as exc:
+            if _attempt < _MAX_RETRIES - 1:
+                wait = _RETRY_BASE * (2 ** _attempt)
+                print(
+                    f"    429 rate-limit on {cell.slug} Q{question.id} attempt {_attempt+1}; "
+                    f"sleeping {wait}s...",
+                    file=sys.stderr, flush=True,
+                )
+                time.sleep(wait)
+            else:
+                error = f"rate-limit after {_MAX_RETRIES} attempts: {exc}"
+                record.error = error
+                record.latency_ms = int((time.perf_counter() - start) * 1000)
+        except backends.BackendError as exc:
+            error = str(exc)
+            record.error = error
+            record.latency_ms = int((time.perf_counter() - start) * 1000)
+            break
+        except SystemExit as exc:
+            # API key missing or similar — record + skip cell.
+            error = f"setup error: {exc}"
+            record.error = error
+            record.latency_ms = int((time.perf_counter() - start) * 1000)
+            break
 
     if result is not None:
         record.response = result.response
