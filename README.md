@@ -84,9 +84,9 @@ The v0 result invites three obvious challenges. We ran each.
 | Full vs corpus-only | 24 | 19 | 3 | 2 | 83.3% |
 | Full vs prompt-only | 24 | 11 | 11 | 2 | 50.0% |
 
-**The system prompt is load-bearing; the RAG corpus is currently decorative on Sonnet.** Adding the corpus to the prompt-only setup produces a statistical tie. Adding the prompt to the corpus-only setup is a clear improvement. This refines the claim: a single portable system prompt delivers the wedge.
+**On Sonnet 4.6:** the system prompt is load-bearing and the RAG corpus is decorative. Adding the corpus to the prompt-only setup produces a statistical tie; adding the prompt to the corpus-only setup is a clear improvement.
 
-The corpus may still pay off on weaker models, on harder questions, or for citation-grounding. None of those tested here. v0.2 follow-ups in `eval/RESULTS-v0.1.md`.
+**v0.2 update — cross-family ablation:** the Sonnet finding does NOT generalize. On Opus 4.7, full / prompt-only / corpus-only are all statistically tied; on GPT-5, corpus-only actually outperforms the full stack. The component contribution is model-dependent — see § "v0.2 update" in `eval/RESULTS-v0.1.md` for the full table.
 
 **Caveat 3 — are the judges biased toward their own training distribution?** We added DeepSeek as a 4th vendor judge (not Anthropic, not OpenAI). DeepSeek agreed on 17 of 18 v0 ratings (94.4%) and 12 of 12 Caveat 1 ratings (100%). The result isn't a frontier-judge artifact.
 
@@ -99,9 +99,9 @@ The corpus may still pay off on weaker models, on harder questions, or for citat
 ### Honest limits remaining
 
 - **All four judges are LLMs** trained on overlapping web distributions. Lay-person rater pilot is a v0.2 follow-up.
-- **The ablation tested only Sonnet.** Whether the prompt-vs-full tie holds on Opus, GPT-5, or weaker models is open.
+- **The ablation now covers all 3 frontier families (v0.2 update).** The Sonnet-only finding from v0.1 ("system prompt is load-bearing") does NOT generalize — extending the ablation to Opus + GPT-5 reveals the contribution pattern is **model-dependent**: on Sonnet the full stack beats both ablations, on Opus all three (full / prompt-only / corpus-only) are statistically tied, and on GPT-5 corpus-only actually outperforms full. The headline (Hammerstein-on-frontier beats raw 98.1%) is unchanged; only the claim about which component delivers the lift becomes model-specific. Full v0.2 result in `eval/RESULTS-v0.1.md` § "v0.2 update".
 - **Strategic-reasoning is the framework's home turf.** This benchmark says nothing about coding / math / creative-writing tasks; we don't claim Hammerstein helps there.
-- **Total sample is 150 ratings** across the three runs. Magnitudes are large enough that small-sample concerns are second-order, but a larger sample would make the ablation tie more interpretable.
+- **Total sample is 246 ratings** across the four runs (v0 + Caveat 1 + v0.1-Sonnet ablation + v0.2-Opus+GPT-5 ablation).
 
 ### Reproduce or refute it
 

@@ -57,6 +57,11 @@ FAMILIES = [
 ABLATION_FAMILIES = [
     ("or-claude-sonnet-no-corpus", "or-claude-sonnet", "Sonnet: prompt-only vs full"),
     ("or-claude-sonnet-corpus-only", "or-claude-sonnet", "Sonnet: corpus-only vs full"),
+    # v0.2: ablation extended to Opus + GPT-5 to test cross-family generalization
+    ("or-claude-opus-no-corpus", "or-claude-opus", "Opus: prompt-only vs full"),
+    ("or-claude-opus-corpus-only", "or-claude-opus", "Opus: corpus-only vs full"),
+    ("or-gpt5-no-corpus", "or-gpt5", "GPT-5: prompt-only vs full"),
+    ("or-gpt5-corpus-only", "or-gpt5", "GPT-5: corpus-only vs full"),
 ]
 
 

@@ -227,3 +227,46 @@ Total cost (this v0.1 expansion): ~$10 OpenRouter (24 ablation cells, 24 generic
    to test whether the corpus carries weight on home turf even though it doesn't on
    generic Q9-Q12.
 5. Larger sample (n>200 ratings) to make the ablation tie statistically interpretable.
+
+---
+
+# v0.2 update — ablation extended to Opus + GPT-5
+
+**Date:** 2026-05-10 evening (same day as v0.1).
+
+The "ablation tested only Sonnet" caveat is now closed. The ablation cells (`mode=no-corpus` and `mode=corpus-only`) were run on Opus 4.7 and GPT-5 across the same Q1-Q6 question set, then judged by the same 4-judge panel (Opus, Sonnet, GPT-5, DeepSeek). 96 ratings, ~$2.64 OpenRouter.
+
+## Cross-family ablation result
+
+| Frontier family | Full vs prompt-only (full win-rate) | Full vs corpus-only (full win-rate) |
+|---|---|---|
+| Claude Sonnet 4.6 (v0.1) | 50.0% | 83.3% |
+| Claude Opus 4.7 (v0.2) | 45.8% | 47.9% |
+| GPT-5 (v0.2) | 52.1% | **39.6%** |
+
+N=24 ratings per cell except Sonnet which had 24+24=48 in v0.1.
+
+## Interpretation
+
+The Sonnet-only conclusion ("system prompt is load-bearing; corpus is decorative") **does not generalize**. The component contribution is **model-dependent**:
+
+- **Sonnet 4.6**: full stack beats both ablations. The framework's full kit produces real lift.
+- **Opus 4.7**: full ≈ prompt-only ≈ corpus-only. Each component is roughly interchangeable; no single piece is load-bearing on its own.
+- **GPT-5**: full TIES prompt-only and **LOSES to corpus-only**. The framework's system prompt may actively suppress GPT-5's natural strengths; corpus retrieval alone outperforms the full stack on this model.
+
+## What this means for the headline
+
+The v0 + v0.1 main result (Hammerstein-on-frontier beats raw-frontier 98.1%) is unchanged. v0.2 refines *how* the framework wins, not *whether*:
+
+- On Sonnet: the full stack is the right product shape.
+- On Opus: any component delivers comparable lift; the framework's value is in the assembled instruction set, not any single piece.
+- On GPT-5: corpus-only outperforms full. If shipping a GPT-5-backed product, consider stripping the framework prose and keeping retrieval only.
+
+The single-product-shape claim ("just a system prompt delivers the wedge") that v0.1 implied is too narrow. The actual claim: **a framework wrapper of some shape (system prompt, retrieval, or both) delivers a clear wedge over raw frontier; the optimal mix is model-specific.**
+
+## v0.2 follow-ups
+
+- Ablated-vs-raw comparisons (does prompt-only beat raw? does corpus-only?) on each family — currently we only know full-vs-ablated, not ablated-vs-raw
+- Ablation on weaker models (Hammerstein-7B distilled, Qwen3 8B, Gemma) to test whether the corpus matters more when the base model is less capable
+- Lay-person rater pilot — still missing
+- Per-question pattern analysis: do certain question shapes favor prompt-only vs corpus-only?

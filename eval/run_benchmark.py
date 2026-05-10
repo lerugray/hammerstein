@@ -113,6 +113,13 @@ _CELLS: list[Cell] = [
     # or-claude-sonnet-corpus-only: corpus retrieval injected, NO template/framework prose (mode="corpus-only")
     Cell("or-claude-sonnet-no-corpus", "openrouter", "anthropic/claude-sonnet-4.6", mode="no-corpus"),
     Cell("or-claude-sonnet-corpus-only", "openrouter", "anthropic/claude-sonnet-4.6", mode="corpus-only"),
+
+    # v0.2: ablation extended to Opus + GPT-5 to test whether the "prompt-only ties full"
+    # finding from Sonnet generalizes across frontier families.
+    Cell("or-claude-opus-no-corpus", "openrouter", "anthropic/claude-opus-4.7", mode="no-corpus"),
+    Cell("or-claude-opus-corpus-only", "openrouter", "anthropic/claude-opus-4.7", mode="corpus-only"),
+    Cell("or-gpt5-no-corpus", "openrouter", "openai/gpt-5", mode="no-corpus"),
+    Cell("or-gpt5-corpus-only", "openrouter", "openai/gpt-5", mode="corpus-only"),
 ]
 
 
