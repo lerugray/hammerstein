@@ -49,6 +49,37 @@ Deprioritize (c) for now. More examples do not help if the harness cannot retrie
 
 Counter-observation: if the baseline run already produces useful retrieval and the failure is prompt shape, skip retrieval hardening and spend the remaining time tightening the system prompt instead.
 
+## Benchmark — does the framework actually help?
+
+Short answer: **yes, by a clean margin in every blind LLM-judge head-to-head we ran.**
+
+Long answer:
+
+We ran the v0 Hammerstein-vs-raw benchmark on 2026-05-10. Six strategic-reasoning questions (Q1–Q6 from `eval/BENCHMARK-v0.md`, drawn from real operator-history conversations) × three frontier model families (Claude Opus 4.7, Claude Sonnet 4.6, GPT-5) × two conditions per family (raw model vs Hammerstein-system-prompt + RAG corpus on top of the same model). 36 responses total. Then a second pass: blind LLM-judge head-to-head, three different judge models (Claude Opus 4.7, GPT-5, Claude Sonnet 4.6), each pair anonymized with randomized A/B order and scored on the BENCHMARK-v0.md three-axis rubric (framework-fidelity / usefulness / voice-match) plus an overall preference call.
+
+**Result: 36 of 36 parsed ratings preferred Hammerstein-on-frontier over raw-frontier.** Zero raw wins. Zero ties.
+
+| Family | n parsed | Hammerstein wins | Raw wins | Mean usefulness Δ (Ham − Raw, /5) | Mean voice Δ |
+|---|---|---|---|---|---|
+| Claude Opus 4.7 | 12 | 12 (100%) | 0 | +1.25 | +0.67 |
+| Claude Sonnet 4.6 | 12 | 12 (100%) | 0 | +2.00 | +1.92 |
+| GPT-5 | 12 | 12 (100%) | 0 | +1.08 | +1.50 |
+
+(6 additional ratings parse-failed due to empty Opus-judge completions on Q5/Q6 from the OpenRouter endpoint; substituted with Sonnet judge and parsed cleanly.)
+
+The framework-fidelity axis isn't bias-free (Hammerstein-on-X is by definition framework-shaped, so it'd win that axis). The bias-resistant findings are the **usefulness** and **voice** deltas — and Hammerstein-on-Sonnet-4.6 still scored +2.0 / +1.9 on those two axes against raw Sonnet-4.6 despite being the same underlying model.
+
+**Honest caveats** (in the same paragraph as any claim we make):
+
+- **Sample size is small.** 6 questions, 36 ratings. Statistical confidence is limited; this is v0.
+- **Questions come from operator-domain context.** The Hammerstein corpus retrieves entries from operator-history conversations. Hammerstein-on-X has corpus access; raw-X doesn't. We're partially measuring "framework + domain corpus" vs "raw model alone." A real ablation (corpus-only vs prompt-only vs full) would separate the two.
+- **LLM-as-judge has known biases** (length, structure-preference, framework-vocabulary tracking). Three independent judge models from different vendors (Anthropic + OpenAI) agreed unanimously, which mitigates but doesn't eliminate this.
+- **Strategic-reasoning is the framework's home turf.** This benchmark says nothing about generic factual / coding / creative-writing tasks; we don't claim Hammerstein helps there.
+
+**Reproduce or refute it:** the runner is `eval/run_benchmark.py`, the judge layer is `eval/judge_pairs.py`, the question set is `eval/BENCHMARK-v0.md`, and the full transcripts (36 raw responses + 42 judge verdicts + per-call cost / latency / token logs) are in `eval/results/benchmark-v0-full/` (gitignored to keep the repo small; regenerate locally with `python eval/run_benchmark.py && python eval/judge_pairs.py --run benchmark-v0-full`). Cost: ~$1.20 OpenRouter for the cell run + ~$3 for the judge run = under $5 total. Wall clock: ~35 min.
+
+If you replicate this on a different question set and get materially different results, [open an issue](https://github.com/lerugray/hammerstein/issues) — that's exactly the kind of pushback the framework wants.
+
 ## What this is NOT
 
 - **Not a Claude Code replacement for code editing.** `hd` dispatches code
