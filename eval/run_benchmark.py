@@ -106,6 +106,13 @@ _CELLS: list[Cell] = [
     Cell("or-claude-sonnet", "openrouter", "anthropic/claude-sonnet-4.6", mode="default"),
     Cell("or-gpt5", "openrouter", "openai/gpt-5", mode="default"),
     Cell("or-gemini-flash", "openrouter", "google/gemma-4-31b-it:free", mode="default"),
+
+    # Caveat 2 ablation cells (v0.1 expansion).
+    # Sonnet only (cheapest paid Claude) on Q1-Q6 to separate corpus vs prompt contributions.
+    # or-claude-sonnet-no-corpus: system prompt + template, NO corpus retrieval (mode="no-corpus")
+    # or-claude-sonnet-corpus-only: corpus retrieval injected, NO template/framework prose (mode="corpus-only")
+    Cell("or-claude-sonnet-no-corpus", "openrouter", "anthropic/claude-sonnet-4.6", mode="no-corpus"),
+    Cell("or-claude-sonnet-corpus-only", "openrouter", "anthropic/claude-sonnet-4.6", mode="corpus-only"),
 ]
 
 
@@ -321,8 +328,15 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument(
         "--benchmark",
+        "--questions-file",  # alias: accept either flag name
+        dest="benchmark",
         type=Path,
-        default=REPO_ROOT / "eval" / "BENCHMARK-v0.md",
+        default=None,
+        help=(
+            "Path to benchmark markdown file. "
+            "Default: BENCHMARK-v0.1.md when any question id > 8 is requested, "
+            "else BENCHMARK-v0.md."
+        ),
     )
     p.add_argument(
         "--questions",
@@ -348,6 +362,13 @@ def main(argv: list[str] | None = None) -> int:
         default=REPO_ROOT / "logs" / "hammerstein-calls.jsonl",
     )
     args = p.parse_args(argv)
+
+    # Auto-select benchmark file: v0.1 if any requested question id > 8, else v0.
+    if args.benchmark is None:
+        if args.questions and any(qid > 8 for qid in args.questions):
+            args.benchmark = REPO_ROOT / "eval" / "BENCHMARK-v0.1.md"
+        else:
+            args.benchmark = REPO_ROOT / "eval" / "BENCHMARK-v0.md"
 
     questions = load_questions(args.benchmark)
     if args.questions:

@@ -39,6 +39,7 @@ JUDGES = [
     "anthropic/claude-opus-4.7",       # paid, strong reasoning
     "openai/gpt-5",                    # paid, different vendor
     "anthropic/claude-sonnet-4.6",     # paid, fallback when opus returns empty (observed Q5/Q6)
+    "deepseek/deepseek-chat",          # 4th vendor (DeepSeek) — Caveat 3 judge-bias robustness
 ]
 
 # Frontier families being judged (each pairs raw vs Hammerstein)
@@ -46,6 +47,16 @@ FAMILIES = [
     ("or-claude-opus-raw", "or-claude-opus", "Claude Opus 4.7"),
     ("or-claude-sonnet-raw", "or-claude-sonnet", "Claude Sonnet 4.6"),
     ("or-gpt5-raw", "or-gpt5", "GPT-5"),
+]
+
+# Ablation families: full Hammerstein vs prompt-only vs corpus-only (Caveat 2).
+# Left cell = "baseline" (A in pair), right cell = "Hammerstein full" (B in pair).
+# a_is_raw=True semantics reused: left side is the "lesser" cell being compared
+# against the full Hammerstein (right side). Win counts reflect how often
+# full Hammerstein wins over the ablated variant.
+ABLATION_FAMILIES = [
+    ("or-claude-sonnet-no-corpus", "or-claude-sonnet", "Sonnet: prompt-only vs full"),
+    ("or-claude-sonnet-corpus-only", "or-claude-sonnet", "Sonnet: corpus-only vs full"),
 ]
 
 
@@ -209,6 +220,8 @@ def main() -> int:
                    help="restrict to judge models; default = all configured")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--append", action="store_true", help="append to existing JSONL log instead of truncating")
+    p.add_argument("--ablation", action="store_true",
+                   help="Judge ablation cells (prompt-only vs full, corpus-only vs full) instead of raw-vs-Hammerstein pairs")
     args = p.parse_args()
 
     random.seed(args.seed)
@@ -222,9 +235,10 @@ def main() -> int:
         print(f"ERR: run dir not found: {run_dir}", file=sys.stderr)
         return 1
 
-    families = FAMILIES
+    active_families = ABLATION_FAMILIES if args.ablation else FAMILIES
+    families = active_families
     if args.families:
-        families = [f for f in FAMILIES if f[2] in args.families or f[1] in args.families]
+        families = [f for f in active_families if f[2] in args.families or f[1] in args.families]
     judges = JUDGES if not args.judges else [j for j in JUDGES if j in args.judges]
 
     out_path = run_dir / "JUDGE-VERDICTS.md"
@@ -285,14 +299,22 @@ def main() -> int:
                 err = v.error or ""
                 print(f"  [{n_done}/{n_total}] Q{q} {family_label} judge={judge_model.split('/')[-1]:20s} overall={ovr:5s} {err}", file=sys.stderr)
 
-    render_summary(verdicts, args.run, out_path, log_path)
+    render_summary(verdicts, args.run, out_path, log_path, active_families=families)
     print(f"\nWrote {out_path}", file=sys.stderr)
     print(f"Wrote {log_path}", file=sys.stderr)
     return 0
 
 
-def render_summary(verdicts: list[Verdict], run_name: str, out_path: Path, log_path: Path) -> None:
+def render_summary(
+    verdicts: list[Verdict],
+    run_name: str,
+    out_path: Path,
+    log_path: Path,
+    active_families: list[tuple[str, str, str]] | None = None,
+) -> None:
     """Render JUDGE-VERDICTS.md from in-memory verdicts + jsonl log for axis scores."""
+    if active_families is None:
+        active_families = FAMILIES
     rows_by_family: dict[str, list[dict]] = defaultdict(list)
     if log_path.exists():
         for line in log_path.read_text(encoding="utf-8").splitlines():
@@ -301,9 +323,8 @@ def render_summary(verdicts: list[Verdict], run_name: str, out_path: Path, log_p
             row = json.loads(line)
             rows_by_family[row["family"]].append(row)
 
-    lines = [f"# Hammerstein v0 benchmark · LLM-judge verdicts ({run_name})", ""]
+    lines = [f"# Hammerstein benchmark · LLM-judge verdicts ({run_name})", ""]
     lines.append(f"Judges: {', '.join(JUDGES)}")
-    lines.append(f"Questions: Q1-Q6 (BENCHMARK-v0.md non-stub set)")
     lines.append(f"Position-bias mitigation: per-pair randomization of A/B order; judge sees blind labels.")
     lines.append("")
     lines.append("## Per-family results")
@@ -313,7 +334,7 @@ def render_summary(verdicts: list[Verdict], run_name: str, out_path: Path, log_p
 
     overall_ham = overall_raw = overall_tie = overall_n = 0
 
-    for raw_cell, ham_cell, family_label in FAMILIES:
+    for raw_cell, ham_cell, family_label in active_families:
         rows = rows_by_family.get(family_label, [])
         n = len(rows)
         if n == 0:
