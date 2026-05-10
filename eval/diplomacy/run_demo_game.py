@@ -43,6 +43,26 @@ from pathlib import Path
 _THIS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(_THIS_DIR))
 
+# Stub out diplobench's RecommendationEngine before it gets imported by
+# main.py. The real implementation depends on welfare_diplomacy_baselines
+# (old JAX + haiku) which conflicts with modern pytorch images. We don't
+# need RL hints for LLM-vs-LLM play -- agents reason from board state
+# alone. Stub returns empty recommendation lists.
+import types as _types
+_stub = _types.ModuleType("diplomacy_game.recommendation_engine")
+
+class _NoOpRecommendationEngine:
+    """Stub: returns no RL recommendations. Diplobench LLM agents play
+    fine without these hints (they reason from board state directly)."""
+    def __init__(self, *_args, **_kwargs):
+        pass
+
+    def get_recommendations(self, _game, _pwr):
+        return []
+
+_stub.RecommendationEngine = _NoOpRecommendationEngine
+sys.modules["diplomacy_game.recommendation_engine"] = _stub
+
 # diplobench must be importable too. The caller should be running from
 # inside diplobench/ or have it on PYTHONPATH.
 try:
