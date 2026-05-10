@@ -80,6 +80,7 @@ def or_request(prompt: str, model: str, key: str, retries: int = 3) -> tuple[str
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0,
+        "max_tokens": 8192,
     }).encode("utf-8")
     headers = {
         "Authorization": f"Bearer {key}",
@@ -93,7 +94,7 @@ def or_request(prompt: str, model: str, key: str, retries: int = 3) -> tuple[str
             req = urllib.request.Request(OR_URL, data=body, headers=headers, method="POST")
             with urllib.request.urlopen(req, timeout=120) as resp:
                 data = json.loads(resp.read())
-            text = data["choices"][0]["message"]["content"]
+            text = data["choices"][0]["message"]["content"] or ""
             return text, data
         except urllib.error.HTTPError as e:
             body_text = e.read().decode("utf-8", errors="replace")
