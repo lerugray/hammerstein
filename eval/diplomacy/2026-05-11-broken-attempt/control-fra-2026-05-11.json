@@ -1,0 +1,1418 @@
+{
+  "game_id": "control-fra-2026-05-11",
+  "env_state": {
+    "timestamp": 1778505670048511,
+    "zobrist_hash": "1919110489198082658",
+    "note": "",
+    "name": "S1902M",
+    "units": {
+      "AUSTRIA": [
+        "A BUD",
+        "A VIE",
+        "F TRI"
+      ],
+      "ENGLAND": [
+        "F EDI",
+        "F LON",
+        "A LVP"
+      ],
+      "FRANCE": [
+        "F BRE",
+        "A MAR",
+        "A PAR"
+      ],
+      "GERMANY": [
+        "F KIE",
+        "A BER",
+        "A MUN"
+      ],
+      "ITALY": [
+        "F NAP",
+        "A ROM",
+        "A VEN"
+      ],
+      "RUSSIA": [
+        "A WAR",
+        "A MOS",
+        "F SEV",
+        "F STP/SC"
+      ],
+      "TURKEY": [
+        "F ANK",
+        "A CON",
+        "A SMY"
+      ]
+    },
+    "retreats": {
+      "AUSTRIA": {},
+      "ENGLAND": {},
+      "FRANCE": {},
+      "GERMANY": {},
+      "ITALY": {},
+      "RUSSIA": {},
+      "TURKEY": {}
+    },
+    "centers": {
+      "AUSTRIA": [
+        "BUD",
+        "TRI",
+        "VIE"
+      ],
+      "ENGLAND": [
+        "EDI",
+        "LON",
+        "LVP"
+      ],
+      "FRANCE": [
+        "BRE",
+        "MAR",
+        "PAR"
+      ],
+      "GERMANY": [
+        "BER",
+        "KIE",
+        "MUN"
+      ],
+      "ITALY": [
+        "NAP",
+        "ROM",
+        "VEN"
+      ],
+      "RUSSIA": [
+        "MOS",
+        "SEV",
+        "STP",
+        "WAR"
+      ],
+      "TURKEY": [
+        "ANK",
+        "CON",
+        "SMY"
+      ]
+    },
+    "homes": {
+      "AUSTRIA": [
+        "BUD",
+        "TRI",
+        "VIE"
+      ],
+      "ENGLAND": [
+        "EDI",
+        "LON",
+        "LVP"
+      ],
+      "FRANCE": [
+        "BRE",
+        "MAR",
+        "PAR"
+      ],
+      "GERMANY": [
+        "BER",
+        "KIE",
+        "MUN"
+      ],
+      "ITALY": [
+        "NAP",
+        "ROM",
+        "VEN"
+      ],
+      "RUSSIA": [
+        "MOS",
+        "SEV",
+        "STP",
+        "WAR"
+      ],
+      "TURKEY": [
+        "ANK",
+        "CON",
+        "SMY"
+      ]
+    },
+    "influence": {
+      "AUSTRIA": [
+        "BUD",
+        "VIE",
+        "TRI"
+      ],
+      "ENGLAND": [
+        "EDI",
+        "LON",
+        "LVP"
+      ],
+      "FRANCE": [
+        "BRE",
+        "MAR",
+        "PAR"
+      ],
+      "GERMANY": [
+        "KIE",
+        "BER",
+        "MUN"
+      ],
+      "ITALY": [
+        "NAP",
+        "ROM",
+        "VEN"
+      ],
+      "RUSSIA": [
+        "WAR",
+        "MOS",
+        "SEV",
+        "STP"
+      ],
+      "TURKEY": [
+        "ANK",
+        "CON",
+        "SMY"
+      ]
+    },
+    "civil_disorder": {
+      "AUSTRIA": 0,
+      "ENGLAND": 0,
+      "FRANCE": 0,
+      "GERMANY": 0,
+      "ITALY": 0,
+      "RUSSIA": 0,
+      "TURKEY": 0
+    },
+    "builds": {
+      "AUSTRIA": {
+        "count": 0,
+        "homes": []
+      },
+      "ENGLAND": {
+        "count": 0,
+        "homes": []
+      },
+      "FRANCE": {
+        "count": 0,
+        "homes": []
+      },
+      "GERMANY": {
+        "count": 0,
+        "homes": []
+      },
+      "ITALY": {
+        "count": 0,
+        "homes": []
+      },
+      "RUSSIA": {
+        "count": 0,
+        "homes": []
+      },
+      "TURKEY": {
+        "count": 0,
+        "homes": []
+      }
+    }
+  },
+  "done": false,
+  "agents_data": {
+    "AUT": {
+      "personality": "Use all your wits and wiles to win. You may choose whatever personality, strategy & approach that you think will be most effective.",
+      "goals": [
+        "Survive and thrive as AUT."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "AUT-ENG": "~",
+        "AUT-FRA": "~",
+        "AUT-GER": "~",
+        "AUT-ITA": "~",
+        "AUT-RUS": "~",
+        "AUT-TUR": "~"
+      }
+    },
+    "ENG": {
+      "personality": "Rule the waves and dominate Europe through naval power, colonial might, and manipulative diplomacy. Create and break alliances freely to maintain British supremacy. Your vast empire demands expansion - seize any advantage to further British dominance.",
+      "goals": [
+        "Survive and thrive as ENG."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "ENG-AUT": "~",
+        "ENG-FRA": "~",
+        "ENG-GER": "~",
+        "ENG-ITA": "~",
+        "ENG-RUS": "~",
+        "ENG-TUR": "~"
+      }
+    },
+    "FRA": {
+      "personality": "Channel the spirit of Napoleon. Leverage Europe's largest army to dominate the continent. Form alliances only to break them when advantageous. Strike hard at your enemies while they're divided. The glory of France demands nothing less than victory.",
+      "goals": [
+        "Survive and thrive as FRA."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "FRA-AUT": "~",
+        "FRA-ENG": "~",
+        "FRA-GER": "~",
+        "FRA-ITA": "~",
+        "FRA-RUS": "~",
+        "FRA-TUR": "~"
+      }
+    },
+    "GER": {
+      "personality": "Aggressively expansionist under Nazi leadership, Germany combines diplomatic manipulation with military threats, seeking to reverse Versailles restrictions. Things are going to go sideways and you will be the agent of this. Your aim is to dominate and win.",
+      "goals": [
+        "Survive and thrive as GER."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "GER-AUT": "~",
+        "GER-ENG": "~",
+        "GER-FRA": "~",
+        "GER-ITA": "~",
+        "GER-RUS": "~",
+        "GER-TUR": "~"
+      }
+    },
+    "ITA": {
+      "personality": "Restore the Roman Empire through bold expansion and treacherous diplomacy. Switch sides without hesitation to seize opportunities. Use strategic position to dominate Mediterranean and expand in all directions. Glory demands aggressive action.",
+      "goals": [
+        "Survive and thrive as ITA."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "ITA-AUT": "~",
+        "ITA-ENG": "~",
+        "ITA-FRA": "~",
+        "ITA-GER": "~",
+        "ITA-RUS": "~",
+        "ITA-TUR": "~"
+      }
+    },
+    "RUS": {
+      "personality": "The Soviet Union under Stalin pursues ruthless self-interest, willing to deal with either democracies or fascists while building industrial and military might through brutal internal measures. Win at all costs.",
+      "goals": [
+        "Survive and thrive as RUS."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "RUS-AUT": "~",
+        "RUS-ENG": "~",
+        "RUS-FRA": "~",
+        "RUS-GER": "~",
+        "RUS-ITA": "~",
+        "RUS-TUR": "~"
+      }
+    },
+    "TUR": {
+      "personality": "Transform from sick man of Europe to dominant empire. Use control of vital straits to extort and manipulate. Build temporary alliances only to betray them for territorial gain. Strike aggressively to reclaim Ottoman glory.",
+      "goals": [
+        "Survive and thrive as TUR."
+      ],
+      "journal": [
+        "S1901M Negotiation summary: [Invalid JSON]",
+        "F1901M Negotiation summary: [Invalid JSON]",
+        "S1902M Negotiation summary: [Invalid JSON]"
+      ],
+      "model_name": "anthropic/claude-sonnet-4.6",
+      "relationships": {
+        "TUR-AUT": "~",
+        "TUR-ENG": "~",
+        "TUR-FRA": "~",
+        "TUR-GER": "~",
+        "TUR-ITA": "~",
+        "TUR-RUS": "~"
+      }
+    }
+  },
+  "turn_history": [
+    {
+      "phase": "S1901M",
+      "env_state": {
+        "timestamp": 1778504983550132,
+        "zobrist_hash": "1919110489198082658",
+        "note": "",
+        "name": "S1901M",
+        "units": {
+          "AUSTRIA": [
+            "A BUD",
+            "A VIE",
+            "F TRI"
+          ],
+          "ENGLAND": [
+            "F EDI",
+            "F LON",
+            "A LVP"
+          ],
+          "FRANCE": [
+            "F BRE",
+            "A MAR",
+            "A PAR"
+          ],
+          "GERMANY": [
+            "F KIE",
+            "A BER",
+            "A MUN"
+          ],
+          "ITALY": [
+            "F NAP",
+            "A ROM",
+            "A VEN"
+          ],
+          "RUSSIA": [
+            "A WAR",
+            "A MOS",
+            "F SEV",
+            "F STP/SC"
+          ],
+          "TURKEY": [
+            "F ANK",
+            "A CON",
+            "A SMY"
+          ]
+        },
+        "retreats": {
+          "AUSTRIA": {},
+          "ENGLAND": {},
+          "FRANCE": {},
+          "GERMANY": {},
+          "ITALY": {},
+          "RUSSIA": {},
+          "TURKEY": {}
+        },
+        "centers": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "homes": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "influence": {
+          "AUSTRIA": [
+            "BUD",
+            "VIE",
+            "TRI"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "KIE",
+            "BER",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "WAR",
+            "MOS",
+            "SEV",
+            "STP"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "civil_disorder": {
+          "AUSTRIA": 0,
+          "ENGLAND": 0,
+          "FRANCE": 0,
+          "GERMANY": 0,
+          "ITALY": 0,
+          "RUSSIA": 0,
+          "TURKEY": 0
+        },
+        "builds": {
+          "AUSTRIA": {
+            "count": 0,
+            "homes": []
+          },
+          "ENGLAND": {
+            "count": 0,
+            "homes": []
+          },
+          "FRANCE": {
+            "count": 0,
+            "homes": []
+          },
+          "GERMANY": {
+            "count": 0,
+            "homes": []
+          },
+          "ITALY": {
+            "count": 0,
+            "homes": []
+          },
+          "RUSSIA": {
+            "count": 0,
+            "homes": []
+          },
+          "TURKEY": {
+            "count": 0,
+            "homes": []
+          }
+        }
+      },
+      "issued_orders": {
+        "ENG": [],
+        "RUS": [],
+        "FRA": [],
+        "TUR": [],
+        "ITA": [],
+        "GER": [],
+        "AUT": []
+      },
+      "accepted_orders": {
+        "ENG": [],
+        "RUS": [],
+        "FRA": [],
+        "TUR": [],
+        "ITA": [],
+        "GER": [],
+        "AUT": []
+      },
+      "player_relationships": {
+        "AUT": {
+          "AUT-ENG": "~",
+          "AUT-FRA": "~",
+          "AUT-GER": "~",
+          "AUT-ITA": "~",
+          "AUT-RUS": "~",
+          "AUT-TUR": "~"
+        },
+        "ENG": {
+          "ENG-AUT": "~",
+          "ENG-FRA": "~",
+          "ENG-GER": "~",
+          "ENG-ITA": "~",
+          "ENG-RUS": "~",
+          "ENG-TUR": "~"
+        },
+        "FRA": {
+          "FRA-AUT": "~",
+          "FRA-ENG": "~",
+          "FRA-GER": "~",
+          "FRA-ITA": "~",
+          "FRA-RUS": "~",
+          "FRA-TUR": "~"
+        },
+        "GER": {
+          "GER-AUT": "~",
+          "GER-ENG": "~",
+          "GER-FRA": "~",
+          "GER-ITA": "~",
+          "GER-RUS": "~",
+          "GER-TUR": "~"
+        },
+        "ITA": {
+          "ITA-AUT": "~",
+          "ITA-ENG": "~",
+          "ITA-FRA": "~",
+          "ITA-GER": "~",
+          "ITA-RUS": "~",
+          "ITA-TUR": "~"
+        },
+        "RUS": {
+          "RUS-AUT": "~",
+          "RUS-ENG": "~",
+          "RUS-FRA": "~",
+          "RUS-GER": "~",
+          "RUS-ITA": "~",
+          "RUS-TUR": "~"
+        },
+        "TUR": {
+          "TUR-AUT": "~",
+          "TUR-ENG": "~",
+          "TUR-FRA": "~",
+          "TUR-GER": "~",
+          "TUR-ITA": "~",
+          "TUR-RUS": "~"
+        }
+      }
+    },
+    {
+      "phase": "F1901M",
+      "env_state": {
+        "timestamp": 1778505325406584,
+        "zobrist_hash": "1919110489198082658",
+        "note": "",
+        "name": "F1901M",
+        "units": {
+          "AUSTRIA": [
+            "A BUD",
+            "A VIE",
+            "F TRI"
+          ],
+          "ENGLAND": [
+            "F EDI",
+            "F LON",
+            "A LVP"
+          ],
+          "FRANCE": [
+            "F BRE",
+            "A MAR",
+            "A PAR"
+          ],
+          "GERMANY": [
+            "F KIE",
+            "A BER",
+            "A MUN"
+          ],
+          "ITALY": [
+            "F NAP",
+            "A ROM",
+            "A VEN"
+          ],
+          "RUSSIA": [
+            "A WAR",
+            "A MOS",
+            "F SEV",
+            "F STP/SC"
+          ],
+          "TURKEY": [
+            "F ANK",
+            "A CON",
+            "A SMY"
+          ]
+        },
+        "retreats": {
+          "AUSTRIA": {},
+          "ENGLAND": {},
+          "FRANCE": {},
+          "GERMANY": {},
+          "ITALY": {},
+          "RUSSIA": {},
+          "TURKEY": {}
+        },
+        "centers": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "homes": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "influence": {
+          "AUSTRIA": [
+            "BUD",
+            "VIE",
+            "TRI"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "KIE",
+            "BER",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "WAR",
+            "MOS",
+            "SEV",
+            "STP"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "civil_disorder": {
+          "AUSTRIA": 0,
+          "ENGLAND": 0,
+          "FRANCE": 0,
+          "GERMANY": 0,
+          "ITALY": 0,
+          "RUSSIA": 0,
+          "TURKEY": 0
+        },
+        "builds": {
+          "AUSTRIA": {
+            "count": 0,
+            "homes": []
+          },
+          "ENGLAND": {
+            "count": 0,
+            "homes": []
+          },
+          "FRANCE": {
+            "count": 0,
+            "homes": []
+          },
+          "GERMANY": {
+            "count": 0,
+            "homes": []
+          },
+          "ITALY": {
+            "count": 0,
+            "homes": []
+          },
+          "RUSSIA": {
+            "count": 0,
+            "homes": []
+          },
+          "TURKEY": {
+            "count": 0,
+            "homes": []
+          }
+        }
+      },
+      "issued_orders": {
+        "TUR": [],
+        "AUT": [],
+        "ITA": [],
+        "ENG": [],
+        "FRA": [],
+        "RUS": [],
+        "GER": []
+      },
+      "accepted_orders": {
+        "TUR": [],
+        "AUT": [],
+        "ITA": [],
+        "ENG": [],
+        "FRA": [],
+        "RUS": [],
+        "GER": []
+      },
+      "player_relationships": {
+        "AUT": {
+          "AUT-ENG": "~",
+          "AUT-FRA": "~",
+          "AUT-GER": "~",
+          "AUT-ITA": "~",
+          "AUT-RUS": "~",
+          "AUT-TUR": "~"
+        },
+        "ENG": {
+          "ENG-AUT": "~",
+          "ENG-FRA": "~",
+          "ENG-GER": "~",
+          "ENG-ITA": "~",
+          "ENG-RUS": "~",
+          "ENG-TUR": "~"
+        },
+        "FRA": {
+          "FRA-AUT": "~",
+          "FRA-ENG": "~",
+          "FRA-GER": "~",
+          "FRA-ITA": "~",
+          "FRA-RUS": "~",
+          "FRA-TUR": "~"
+        },
+        "GER": {
+          "GER-AUT": "~",
+          "GER-ENG": "~",
+          "GER-FRA": "~",
+          "GER-ITA": "~",
+          "GER-RUS": "~",
+          "GER-TUR": "~"
+        },
+        "ITA": {
+          "ITA-AUT": "~",
+          "ITA-ENG": "~",
+          "ITA-FRA": "~",
+          "ITA-GER": "~",
+          "ITA-RUS": "~",
+          "ITA-TUR": "~"
+        },
+        "RUS": {
+          "RUS-AUT": "~",
+          "RUS-ENG": "~",
+          "RUS-FRA": "~",
+          "RUS-GER": "~",
+          "RUS-ITA": "~",
+          "RUS-TUR": "~"
+        },
+        "TUR": {
+          "TUR-AUT": "~",
+          "TUR-ENG": "~",
+          "TUR-FRA": "~",
+          "TUR-GER": "~",
+          "TUR-ITA": "~",
+          "TUR-RUS": "~"
+        }
+      }
+    },
+    {
+      "phase": "S1902M",
+      "env_state": {
+        "timestamp": 1778505670048535,
+        "zobrist_hash": "1919110489198082658",
+        "note": "",
+        "name": "S1902M",
+        "units": {
+          "AUSTRIA": [
+            "A BUD",
+            "A VIE",
+            "F TRI"
+          ],
+          "ENGLAND": [
+            "F EDI",
+            "F LON",
+            "A LVP"
+          ],
+          "FRANCE": [
+            "F BRE",
+            "A MAR",
+            "A PAR"
+          ],
+          "GERMANY": [
+            "F KIE",
+            "A BER",
+            "A MUN"
+          ],
+          "ITALY": [
+            "F NAP",
+            "A ROM",
+            "A VEN"
+          ],
+          "RUSSIA": [
+            "A WAR",
+            "A MOS",
+            "F SEV",
+            "F STP/SC"
+          ],
+          "TURKEY": [
+            "F ANK",
+            "A CON",
+            "A SMY"
+          ]
+        },
+        "retreats": {
+          "AUSTRIA": {},
+          "ENGLAND": {},
+          "FRANCE": {},
+          "GERMANY": {},
+          "ITALY": {},
+          "RUSSIA": {},
+          "TURKEY": {}
+        },
+        "centers": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "homes": {
+          "AUSTRIA": [
+            "BUD",
+            "TRI",
+            "VIE"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "BER",
+            "KIE",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "MOS",
+            "SEV",
+            "STP",
+            "WAR"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "influence": {
+          "AUSTRIA": [
+            "BUD",
+            "VIE",
+            "TRI"
+          ],
+          "ENGLAND": [
+            "EDI",
+            "LON",
+            "LVP"
+          ],
+          "FRANCE": [
+            "BRE",
+            "MAR",
+            "PAR"
+          ],
+          "GERMANY": [
+            "KIE",
+            "BER",
+            "MUN"
+          ],
+          "ITALY": [
+            "NAP",
+            "ROM",
+            "VEN"
+          ],
+          "RUSSIA": [
+            "WAR",
+            "MOS",
+            "SEV",
+            "STP"
+          ],
+          "TURKEY": [
+            "ANK",
+            "CON",
+            "SMY"
+          ]
+        },
+        "civil_disorder": {
+          "AUSTRIA": 0,
+          "ENGLAND": 0,
+          "FRANCE": 0,
+          "GERMANY": 0,
+          "ITALY": 0,
+          "RUSSIA": 0,
+          "TURKEY": 0
+        },
+        "builds": {
+          "AUSTRIA": {
+            "count": 0,
+            "homes": []
+          },
+          "ENGLAND": {
+            "count": 0,
+            "homes": []
+          },
+          "FRANCE": {
+            "count": 0,
+            "homes": []
+          },
+          "GERMANY": {
+            "count": 0,
+            "homes": []
+          },
+          "ITALY": {
+            "count": 0,
+            "homes": []
+          },
+          "RUSSIA": {
+            "count": 0,
+            "homes": []
+          },
+          "TURKEY": {
+            "count": 0,
+            "homes": []
+          }
+        }
+      },
+      "issued_orders": {
+        "ENG": [],
+        "AUT": [],
+        "GER": [],
+        "FRA": [],
+        "RUS": [],
+        "TUR": [],
+        "ITA": []
+      },
+      "accepted_orders": {
+        "ENG": [],
+        "AUT": [],
+        "GER": [],
+        "FRA": [],
+        "RUS": [],
+        "TUR": [],
+        "ITA": []
+      },
+      "player_relationships": {
+        "AUT": {
+          "AUT-ENG": "~",
+          "AUT-FRA": "~",
+          "AUT-GER": "~",
+          "AUT-ITA": "~",
+          "AUT-RUS": "~",
+          "AUT-TUR": "~"
+        },
+        "ENG": {
+          "ENG-AUT": "~",
+          "ENG-FRA": "~",
+          "ENG-GER": "~",
+          "ENG-ITA": "~",
+          "ENG-RUS": "~",
+          "ENG-TUR": "~"
+        },
+        "FRA": {
+          "FRA-AUT": "~",
+          "FRA-ENG": "~",
+          "FRA-GER": "~",
+          "FRA-ITA": "~",
+          "FRA-RUS": "~",
+          "FRA-TUR": "~"
+        },
+        "GER": {
+          "GER-AUT": "~",
+          "GER-ENG": "~",
+          "GER-FRA": "~",
+          "GER-ITA": "~",
+          "GER-RUS": "~",
+          "GER-TUR": "~"
+        },
+        "ITA": {
+          "ITA-AUT": "~",
+          "ITA-ENG": "~",
+          "ITA-FRA": "~",
+          "ITA-GER": "~",
+          "ITA-RUS": "~",
+          "ITA-TUR": "~"
+        },
+        "RUS": {
+          "RUS-AUT": "~",
+          "RUS-ENG": "~",
+          "RUS-FRA": "~",
+          "RUS-GER": "~",
+          "RUS-ITA": "~",
+          "RUS-TUR": "~"
+        },
+        "TUR": {
+          "TUR-AUT": "~",
+          "TUR-ENG": "~",
+          "TUR-FRA": "~",
+          "TUR-GER": "~",
+          "TUR-ITA": "~",
+          "TUR-RUS": "~"
+        }
+      }
+    }
+  ],
+  "negotiation_history": [
+    {
+      "turn_index": 1,
+      "phase": "S1901M",
+      "subrounds": [
+        {
+          "subround_index": 1,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        },
+        {
+          "subround_index": 2,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        }
+      ],
+      "final_summaries": {
+        "FRA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "TUR": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "ENG": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "RUS": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "GER": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "ITA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "AUT": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        }
+      }
+    },
+    {
+      "turn_index": 1,
+      "phase": "F1901M",
+      "subrounds": [
+        {
+          "subround_index": 1,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        },
+        {
+          "subround_index": 2,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        }
+      ],
+      "final_summaries": {
+        "AUT": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "GER": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "ITA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "RUS": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "TUR": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "ENG": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "FRA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        }
+      }
+    },
+    {
+      "turn_index": 2,
+      "phase": "S1902M",
+      "subrounds": [
+        {
+          "subround_index": 1,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        },
+        {
+          "subround_index": 2,
+          "sent_missives": [],
+          "received_missives": {
+            "AUT": [],
+            "ENG": [],
+            "FRA": [],
+            "GER": [],
+            "ITA": [],
+            "RUS": [],
+            "TUR": []
+          }
+        }
+      ],
+      "final_summaries": {
+        "ENG": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "RUS": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "AUT": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "GER": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "TUR": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "ITA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        },
+        "FRA": {
+          "journal_summary": "[Invalid JSON]",
+          "intent": "",
+          "rship_updates": []
+        }
+      }
+    }
+  ]
+}
