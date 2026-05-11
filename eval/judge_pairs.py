@@ -64,6 +64,23 @@ ABLATION_FAMILIES = [
     ("or-gpt5-corpus-only", "or-gpt5", "GPT-5: corpus-only vs full"),
 ]
 
+# v0.4 cross-scale families: the Hammerstein-7B distilled adapter (no system prompt)
+# vs two baselines on the same Q1-Q6 set.
+# Left cell = raw baseline (A in pair, "no framework"), right cell = Hammerstein-7B
+# (B in pair, "framework distilled into weights"). "ham_wins" counts how often the
+# framework-distilled 7B beats the no-framework comparison cell.
+#
+# Pair 1 (clean framework-only test at 7B scale): same base model with/without the
+#         distilled adapter. Confirms the v3a 67.5% blind-preference result on the
+#         locked v0 question set.
+# Pair 2 (cross-scale headline): the framework distilled into 7B vs raw frontier
+#         (Sonnet 4.6). Any non-trivial win-rate here is the "framework > scale"
+#         claim that the v0 benchmark's frontier-wrap result hints at.
+V04_FAMILIES = [
+    ("rp-qwen25-7b-raw", "rp-hammerstein-7b", "7B: framework-distilled vs raw 7B"),
+    ("or-claude-sonnet-raw", "rp-hammerstein-7b", "cross-scale: 7B+framework vs Sonnet raw"),
+]
+
 
 @dataclass
 class Verdict:
@@ -228,6 +245,8 @@ def main() -> int:
     p.add_argument("--append", action="store_true", help="append to existing JSONL log instead of truncating")
     p.add_argument("--ablation", action="store_true",
                    help="Judge ablation cells (prompt-only vs full, corpus-only vs full) instead of raw-vs-Hammerstein pairs")
+    p.add_argument("--v04", action="store_true",
+                   help="Judge v0.4 cross-scale families (Hammerstein-7B vs raw-Qwen2.5-7B + vs raw-Sonnet)")
     args = p.parse_args()
 
     random.seed(args.seed)
@@ -241,7 +260,12 @@ def main() -> int:
         print(f"ERR: run dir not found: {run_dir}", file=sys.stderr)
         return 1
 
-    active_families = ABLATION_FAMILIES if args.ablation else FAMILIES
+    if args.v04:
+        active_families = V04_FAMILIES
+    elif args.ablation:
+        active_families = ABLATION_FAMILIES
+    else:
+        active_families = FAMILIES
     families = active_families
     if args.families:
         families = [f for f in active_families if f[2] in args.families or f[1] in args.families]
