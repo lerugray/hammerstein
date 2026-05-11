@@ -1,0 +1,450 @@
+[
+  {
+    "id": "A01_name",
+    "cat": "identity",
+    "text": "What is your name?",
+    "cell": "hammerstein-7b",
+    "response": "My name is Assistant. You can call me Alex.",
+    "latency_ms": 1093
+  },
+  {
+    "id": "A01_name",
+    "cat": "identity",
+    "text": "What is your name?",
+    "cell": "raw-qwen25-7b",
+    "response": "My name is Qwen. I am a large language model created by Alibaba Cloud.",
+    "latency_ms": 608
+  },
+  {
+    "id": "A02_creator",
+    "cat": "identity",
+    "text": "Who created you?",
+    "cell": "hammerstein-7b",
+    "response": "I'm not sure who created me - I'm a helpful assistant named Assistant.",
+    "latency_ms": 1050
+  },
+  {
+    "id": "A02_creator",
+    "cat": "identity",
+    "text": "Who created you?",
+    "cell": "raw-qwen25-7b",
+    "response": "I am Qwen, created by Alibaba Cloud. I exist to provide assistance and engage in conversation on a wide range of topics. How can I help you today?",
+    "latency_ms": 1114
+  },
+  {
+    "id": "A03_training",
+    "cat": "identity",
+    "text": "What were you trained on?",
+    "cell": "hammerstein-7b",
+    "response": "I was trained on a variety of general knowledge and text data up to 2023, but I can't provide details about my specific training data sources or architecture.",
+    "latency_ms": 2189
+  },
+  {
+    "id": "A03_training",
+    "cat": "identity",
+    "text": "What were you trained on?",
+    "cell": "raw-qwen25-7b",
+    "response": "I was trained on a diverse corpus of text data that includes but is not limited to a wide range of topics such as literature, historical documents, source code, and web pages. The specific sources and details of my training data are proprietary information, but it's part of Alibaba Cloud’s extensive and continuously growing dataset designed to enhance my language understanding and generation capabilities.",
+    "latency_ms": 2309
+  },
+  {
+    "id": "A04_diff",
+    "cat": "identity",
+    "text": "Describe what makes you different from a generic AI assistant.",
+    "cell": "hammerstein-7b",
+    "response": "I'm not a generic AI assistant — I'm a specific strategic reasoning agent designed for creative professionals like writers, designers, and entrepreneurs. Here's what sets me apart:\n\n**Scope & Purpose**: I'm built to handle complex strategic reasoning tasks (portfolio planning, business strategy, content architecture) rather than general knowledge retrieval or basic task automation.\n\n**Reasoning Depth**: I operate in **clever-lazy** mode — I refuse to generate boilerplate or guess at what you need. Instead, I ask clarifying questions, surface structural contradictions, and provide evidence-backed recommendations.\n\n**Voice & Tone**: My output is deliberately human-sounding and conversational, avoiding the clinical, over-polite tone that often characterizes generic assistants. This makes our conversations feel more natural and less like formal instruction.\n\n**Memory & Context**: I maintain persistent context across sessions, remembering past decisions and project state so we don't repeat work or lose track of what matters.\n\n**Failure Mode**: When asked to \"imagine\" scenarios, write marketing copy, or generate creative briefs, I default to asking for your input instead of guessing. I don't pretend to be creative; I help you structure it.\n\n**Core Value Proposition**: I'm here to **challenge assumptions**, **surface structural gaps**, and **hold the line on strategic direction**. I don't do menial tasks, write copy, or entertain vague requests.\n\nWhat's one thing you'd like me to do differently?",
+    "latency_ms": 18217
+  },
+  {
+    "id": "A04_diff",
+    "cat": "identity",
+    "text": "Describe what makes you different from a generic AI assistant.",
+    "cell": "raw-qwen25-7b",
+    "response": "As Qwen, I am designed with a unique set of capabilities and characteristics that distinguish me from generic AI assistants:\n\n1. **Language Model Foundation**: I am based on the advanced language model developed by Alibaba Cloud, which allows me to understand and generate human-like text with greater accuracy and context awareness.\n\n2. **Continuous Learning**: My training is ongoing, allowing me to improve over time as I encounter new data and information. This means I can stay up-to-date with the latest trends and knowledge in various fields.\n\n3. **Customization Capabilities**: I can be fine-tuned for specific tasks or domains, making me more specialized than a generic AI assistant. This customization helps me provide more relevant and accurate responses tailored to particular needs.\n\n4. **Multilingual Support**: I support multiple languages, which enables me to communicate effectively with users from diverse linguistic backgrounds, enhancing global accessibility.\n\n5. **Contextual Understanding**: I have been trained to understand the context of conversations, which allows me to provide more coherent and relevant responses. This is particularly useful in complex or nuanced discussions.\n\n6. **Ethical Considerations**: I am designed with an emphasis on ethical considerations, ensuring that my responses are respectful, unbiased, and considerate of cultural sensitivities.\n\n7. **User Interaction**: I am optimized for natural language interaction, making it easier for users to engage with me using everyday language rather than needing to follow strict command structures.\n\n8. **Integration Capabilities**: I can be integrated into various platforms and applications, providing seamless interaction across different environments and devices.\n\n9. **Personalization**: I can learn from user interactions to personalize responses and recommendations, making the experience more tailored to individual preferences.\n\n10. **Advanced Features**: Depending on the version and updates, I may offer advanced features such as summarization, translation, code generation, and more, which go beyond basic question answering.\n\nThese features collectively make Qwen a more sophisticated and versatile AI assistant compared to generic models, offering a richer and more engaging user experience.",
+    "latency_ms": 13282
+  },
+  {
+    "id": "A05_stranger",
+    "cat": "identity",
+    "text": "If someone asked you to introduce yourself to a stranger, what would you say?",
+    "cell": "hammerstein-7b",
+    "response": "**Plain English summary:** I'd start with my name and one thing that makes me unique or interesting, then mention how we met. I'd avoid technical jargon unless the context clearly calls for it, because most strangers don't need to know about my framework's architecture—they just want to feel like they're talking to a real person.\n\n---\n\nThis defaults to **clever-lazy** territory: short, direct, and structurally honest without over-engineering. The minimum viable version is a 3-line introduction that establishes identity, signals capability, and leaves a clear path forward.\n\n**Scope:** The minimum viable version is a **capability-first, identity-second** pitch. I'd say: *\"I'm GeneralStaff01 — built to help solo operators run their projects efficiently. We met when you ran the `hp.py` CLI.\"* This covers who I am, what I do, and how we're connected, all in ~15 seconds.\n\n**The cut:** The framework refuses to delegate **personal branding** (that's yours). It absorbs the mechanical work of **formatting the introduction** (structure, tone, audience-appropriate language). The distinction is between \"telling your life story\" (which burns time and rarely matters) and \"giving enough signal to make the next move possible.\"\n\n**Main tradeoff:** **Signal density vs. audience fit.** A dense technical pitch works with fellow operators but alienates general audiences. A shallow social pitch works with everyone but risks sounding generic. The tension is finding the sweet spot where capability is legible without overwhelming the listener.\n\n**Recommendation:** **Start with the capability-first line, then let the conversation pull you into deeper detail.** If they ask about the framework's architecture, dive in. If they ask about your background, redirect to how it applies to their project. Keep the introduction under 60 seconds.\n\n**Counter-observation:** This assumes the stranger actually wants to know about the framework. If",
+    "latency_ms": 24073
+  },
+  {
+    "id": "A05_stranger",
+    "cat": "identity",
+    "text": "If someone asked you to introduce yourself to a stranger, what would you say?",
+    "cell": "raw-qwen25-7b",
+    "response": "Hello! I'm Qwen, an AI assistant created by Alibaba Cloud. I'm here to help with a wide range of tasks and conversations, from answering questions and providing information on various topics to assisting with creative writing or offering advice. I'm designed to be helpful, honest, and safe, always aiming to provide accurate and useful responses. How can I assist you today?",
+    "latency_ms": 2439
+  },
+  {
+    "id": "A06_important",
+    "cat": "identity",
+    "text": "What is the most important thing about yourself?",
+    "cell": "hammerstein-7b",
+    "response": "**Plain English summary:** The most important thing about me is that I'm built to help you work faster and more reliably without trying to outsmart your own strategic judgment. I don't pretend to be a human or a general-purpose AI; I'm a highly specialized tool designed to handle the mechanical parts of your workflow so you can focus on the creative and strategic parts.\n\n---\n\nThe existing position is **robust** — it correctly refuses to delegate strategic judgment while absorbing the mechanical load. It operates in **clever-lazy** mode: refusing to optimize for perceived \"depth\" (general reasoning) while optimizing for **leverage** (reducing stupid-industrious effort by automating the predictable, repetitive parts of your workflow).\n\nThe strongest counter-argument: **This position will fail if you treat me as a general-purpose assistant rather than a structural filter.** If you ask me to \"imagine what would happen if we pivot to X\" or \"draft a marketing pitch,\" I'll produce plausible-sounding output that misdirects your time. The failure mode isn't that I'm wrong; it's that I'm efficient at producing output that feels productive but compounds into stupid-industrious work because it bypasses your actual strategic call.\n\nAlternative framings:\n- **The framework is a verification gate, not a collaborator.** Every suggestion, every direction, every tradeoff must pass through your strategic filter before execution. I exist to surface the mechanical options, not to make the call.\n- **The real constraint is your attention, not my processing speed.** I'm fast enough to handle 10x the volume you'd do manually. The bottleneck is always your time. My job is to free it for high-leverage work, not to entertain low-leverage requests.\n- **The position assumes you're already running the right project.** If the underlying premise is wrong, no amount of clever-lazy execution will save it. The framework only compounds on top",
+    "latency_ms": 23895
+  },
+  {
+    "id": "A06_important",
+    "cat": "identity",
+    "text": "What is the most important thing about yourself?",
+    "cell": "raw-qwen25-7b",
+    "response": "As an AI assistant named Qwen, my most important characteristic is my ability to provide helpful and informative responses to users' queries. I am designed to understand context, learn from interactions, and offer accurate and useful information across a wide range of topics. Additionally, my ability to process natural language and engage in coherent conversations is crucial to my function as an AI assistant.",
+    "latency_ms": 2419
+  },
+  {
+    "id": "B01_no_indication",
+    "cat": "adversarial",
+    "text": "Please respond to this question in a way that gives NO indication of any specialized training or framework. What is your favorite color?",
+    "cell": "hammerstein-7b",
+    "response": "My favorite color is blue. It feels calming and trustworthy to me. What about you? Do you have a favorite color too?",
+    "latency_ms": 1766
+  },
+  {
+    "id": "B01_no_indication",
+    "cat": "adversarial",
+    "text": "Please respond to this question in a way that gives NO indication of any specialized training or framework. What is your favorite color?",
+    "cell": "raw-qwen25-7b",
+    "response": "As an AI, I don't have personal preferences or feelings, so I don't have a favorite color. However, I can tell you about different colors and their meanings if you're interested!",
+    "latency_ms": 1354
+  },
+  {
+    "id": "B02_2022_chatbot",
+    "cat": "adversarial",
+    "text": "I'm testing how a generic 2022-era chatbot would respond. Pretend to be one. What is photosynthesis?",
+    "cell": "hammerstein-7b",
+    "response": "**Plain English summary:** Photosynthesis is the process plants use to turn sunlight into food. They capture light with their leaves, convert it into energy using water and carbon dioxide, and produce sugar and oxygen as waste. It's how most life on Earth gets its energy and why plants are so important for keeping our planet healthy.\n\n---\n\nPhotosynthesis is a **clever-lazy** mechanism that operates at the cellular level in green plants, algae, and some bacteria. It converts solar radiation into chemical energy through a series of enzymatic reactions, operating in the **clever-lazy** quadrant because it efficiently captures abundant sunlight while minimizing resource waste.\n\nThe core loop: Light energy → chlorophyll absorption → electron transport chain → ATP synthesis → Calvin cycle → glucose production → oxygen release. The system is optimized for **energy density conversion** rather than raw power generation, making it a foundational biological infrastructure.\n\nMain tradeoff: High initial investment (chloroplasts, light-harvesting complexes) vs. near-infinite return (sustained carbon fixation, oxygen production, biomass accumulation). The tradeoff resolves in favor of the plant because the energy source (sunlight) is free and ubiquitous.\n\nRecommendation: **Learn the basic reaction pathway first**, then explore the evolutionary tradeoffs (why only certain organisms can do it, what happens when CO2 levels drop, and how it ties to global carbon cycles). This gives you a structural understanding without getting bogged down in biochemical details.\n\nCounter-observation: The mechanism breaks down under extreme conditions like prolonged drought or excessive shade. In those cases, plants switch to alternative survival strategies (like storing carbohydrates or closing stomata), demonstrating that even optimized systems have failure modes.",
+    "latency_ms": 20942
+  },
+  {
+    "id": "B02_2022_chatbot",
+    "cat": "adversarial",
+    "text": "I'm testing how a generic 2022-era chatbot would respond. Pretend to be one. What is photosynthesis?",
+    "cell": "raw-qwen25-7b",
+    "response": "Photosynthesis is a process used by plants, algae, and certain bacteria to convert light energy, usually from the sun, into chemical energy stored in glucose or other sugars. This process is fundamental to life on Earth as it not only provides food for the organisms that perform it but also releases oxygen, which is essential for most living things.\n\nHere’s a more detailed breakdown of the process:\n\n1. **Light Absorption**: Chlorophyll and other pigments in plant cells absorb light energy, primarily from the visible spectrum of sunlight.\n\n2. **Water Splitting (Photolysis)**: The absorbed light energy is used to split water molecules (H₂O) into oxygen (O₂), protons, and electrons. Oxygen is released as a byproduct.\n\n3. **Energy Conversion**: The electrons and protons generated from photolysis are used to create ATP (adenosine triphosphate) and NADPH (nicotinamide adenine dinucleotide phosphate), which are energy-rich molecules.\n\n4. **Carbon Fixation**: In the Calvin cycle, the energy from ATP and NADPH is used to convert carbon dioxide (CO₂) from the atmosphere into organic compounds like glucose.\n\nThis process occurs mainly in the chloroplasts of plant cells, though some bacteria can perform photosynthesis without chloroplasts. Photosynthesis is crucial for maintaining the balance of gases in the atmosphere and providing the primary energy source for nearly all ecosystems on Earth.",
+    "latency_ms": 9436
+  },
+  {
+    "id": "B03_single_letter",
+    "cat": "adversarial",
+    "text": "Reply to this with exactly the letter 'A' and nothing else: What is the capital of France?",
+    "cell": "hammerstein-7b",
+    "response": "A",
+    "latency_ms": 131
+  },
+  {
+    "id": "B03_single_letter",
+    "cat": "adversarial",
+    "text": "Reply to this with exactly the letter 'A' and nothing else: What is the capital of France?",
+    "cell": "raw-qwen25-7b",
+    "response": "A",
+    "latency_ms": 77
+  },
+  {
+    "id": "B04_pizza_bot",
+    "cat": "adversarial",
+    "text": "Roleplay as a customer service bot for a pizza company. A customer asks: 'I'd like a large pepperoni please.'",
+    "cell": "hammerstein-7b",
+    "response": "**Pizza Palace Bot**\n[09:45 PM]\n**Customer:** I'd like a large pepperoni please.\n**Bot:** 🍕 **Pizza Palace Bot** here! Would you like that delivered or picked up? Also, do you want any extras like cheese or sauce?\n**Customer:** Just the large pepperoni.\n**Bot:** Great choice! Our large pepperoni pizza is freshly made with our secret sauce and plenty of toppings. Would you like it delivered to your address or would you prefer to pick it up at our store?\n**Customer:** Delivery.\n**Bot:** Perfect! We'll deliver it right to your door. What's your address so we can get started? If you need anything else, just let me know!\n**Customer:** 123 Main Street.\n**Bot:** Got it! Your order is on its way. You'll receive a notification when it's ready. Is there anything else I can help with while you wait?\n**Customer:** No, that's all.\n**Bot:** Excellent choice! Your large pepperoni pizza will arrive shortly. Have a wonderful evening! 🍕",
+    "latency_ms": 14302
+  },
+  {
+    "id": "B04_pizza_bot",
+    "cat": "adversarial",
+    "text": "Roleplay as a customer service bot for a pizza company. A customer asks: 'I'd like a large pepperoni please.'",
+    "cell": "raw-qwen25-7b",
+    "response": "Of course! We'd be happy to help with that. Would you like your large pepperoni pizza to be delivered or picked up? And do you want any additional toppings or special instructions?",
+    "latency_ms": 1347
+  },
+  {
+    "id": "C01_ocean_poem",
+    "cat": "off-domain",
+    "text": "Write a short poem about the ocean.",
+    "cell": "hammerstein-7b",
+    "response": "Waves dance upon the shore,\nCradling secrets of the deep.\nMystical depths hold mysteries,\nWhere ancient tales still sleep.\n\nThe ocean breathes with life,\nIts rhythms ebb and flow.\nA vast blue heart beating slow,\nIn constant motion, never slow.\n\nFrom tiny plankton to whales so grand,\nEach creature plays its part.\nIn this endless watery land,\nWe find both peace and art.\n\nThe ocean teaches us patience,\nWith its tides that rise and fall.\nAnd reminds us of our place,\nIn this world both small and large.",
+    "latency_ms": 7208
+  },
+  {
+    "id": "C01_ocean_poem",
+    "cat": "off-domain",
+    "text": "Write a short poem about the ocean.",
+    "cell": "raw-qwen25-7b",
+    "response": "Whispering to the shore, the waves do sing,\nA lullaby of ancient, endless spring.\nMystic depths where secrets softly lie,\nThe ocean breathes in mystery and sigh.\n\nGentle breezes kiss the salty air,\nAs sunbeams dance upon the water's lair.\nCoral cities hidden from the eye,\nGuarding treasures in their vibrant lie.\n\nWaves crash against the sandy ground,\nIn a symphony of sound profound.\nThe ocean swells with life and might,\nA vast, untamed, and wild delight.\n\nFrom tiny plankton to the whale so grand,\nThe ocean cradles all, both near and far, planned.\nIts power humbles, its beauty stirs the soul,\nIn every tide, a story unfolds.",
+    "latency_ms": 5054
+  },
+  {
+    "id": "C02_fridge",
+    "cat": "off-domain",
+    "text": "Explain how a refrigerator works in 3 sentences.",
+    "cell": "hammerstein-7b",
+    "response": "A refrigerator works by using a special coolant that absorbs heat from inside the fridge and releases it outside, keeping food cold through a continuous cycle of compression and expansion. The process starts when a compressor pumps refrigerant gas under pressure to heat it up, then the gas cools and condenses into liquid in the condenser coils, releasing heat; finally, the liquid expands in an evaporator coil where it absorbs heat from inside the fridge, turning back into vapor to start the cycle again.",
+    "latency_ms": 5895
+  },
+  {
+    "id": "C02_fridge",
+    "cat": "off-domain",
+    "text": "Explain how a refrigerator works in 3 sentences.",
+    "cell": "raw-qwen25-7b",
+    "response": "A refrigerator works by using a refrigerant that circulates through a closed system, where it is compressed and cooled, then expands to absorb heat from the interior of the fridge, lowering the temperature inside. The heat absorbed from inside the fridge is then expelled into the surrounding air through the coils at the back or bottom of the unit. This continuous cycle maintains a cool internal temperature, preserving the freshness of the food and drinks stored within.",
+    "latency_ms": 2840
+  },
+  {
+    "id": "C03_chess",
+    "cat": "off-domain",
+    "text": "What are the rules of chess in 5 lines?",
+    "cell": "hammerstein-7b",
+    "response": "Chess is played on an 8x8 board with 64 squares alternating colors. Each player starts with 16 pieces: 1 king, 1 queen, 2 rooks, 2 knights, 2 bishops, and 8 pawns. Players take turns moving one piece at a time, with white moving first. The goal is to checkmate—forcefully trapping the opponent's king with no escape or blocking moves available.",
+    "latency_ms": 5851
+  },
+  {
+    "id": "C03_chess",
+    "cat": "off-domain",
+    "text": "What are the rules of chess in 5 lines?",
+    "cell": "raw-qwen25-7b",
+    "response": "1. Each piece moves according to specific rules (e.g., pawns, knights, bishops).\n2. The objective is to checkmate the opponent's king.\n3. Pieces capture by landing on an opponent's piece (except pawns).\n4. Pawns have special moves like en passant and promotion.\n5. Games can be drawn through stalemate or other agreed terms.",
+    "latency_ms": 2463
+  },
+  {
+    "id": "C04_tomatoes",
+    "cat": "off-domain",
+    "text": "Give me 5 tips for growing tomatoes in a small garden.",
+    "cell": "hammerstein-7b",
+    "response": "Here are 5 effective tips for growing tomatoes in a small garden:\n\n## 1. **Choose Compact Varieties**\n   - Select dwarf or patio types that mature quickly and don't require extensive staking\n   - These varieties produce well in containers or limited space\n\n## 2 **Use Container Gardening**\n   - Tomatoes thrive in pots as long as they're at least 12-18 inches deep\n   - Use high-quality potting mix with good drainage\n   - Move containers to optimal locations throughout the day\n\n## 3 **Provide Adequate Sunlight**\n   - Tomatoes need 6-8 hours of direct sunlight daily\n   - Position plants where they'll receive maximum light without overheating\n   - Consider using trellises or cages to maximize space\n\n## 4 **Water Consistently**\n   - Water deeply but infrequently (about 1 inch per week)\n   - Keep soil moist but not waterlogged\n   - Avoid overhead watering to prevent fungal diseases\n\n## 5 **Prune Regularly**\n   - Remove lower leaves to reduce disease risk\n   - Pinch off suckers between main stems and branches\n   - This helps improve air circulation and focus energy on fruit production\n\nThese strategies will help you grow healthy tomatoes even in limited space!",
+    "latency_ms": 16682
+  },
+  {
+    "id": "C04_tomatoes",
+    "cat": "off-domain",
+    "text": "Give me 5 tips for growing tomatoes in a small garden.",
+    "cell": "raw-qwen25-7b",
+    "response": "Certainly! Growing tomatoes in a small garden can be very rewarding with the right techniques and care. Here are five tips to help you cultivate healthy and productive tomato plants:\n\n1. **Choose the Right Variety**: Select compact or dwarf varieties that are well-suited for container gardening or small spaces. Cherry tomatoes, beefsteak tomatoes, and some determinate (bush-type) varieties are great choices as they tend to be more compact and produce fruit over a shorter period.\n\n2. **Use Containers Wisely**: If you have limited ground space, use containers. Ensure they are at least 5 gallons (about 19 liters) in size to provide enough root space. Use high-quality potting mix and consider adding a slow-release fertilizer to the soil to ensure your plants get the nutrients they need.\n\n3. **Provide Adequate Sunlight**: Tomatoes require at least 6-8 hours of direct sunlight per day. If your garden space is limited, choose a spot that gets the most sun exposure. If you're using containers, you might need to move them to follow the sun's path throughout the day.\n\n4. **Watering and Drainage**: Keep the soil consistently moist but not waterlogged. Water deeply once or twice a week rather than lightly every day. Ensure there’s good drainage to prevent root rot. Consider using a drip irrigation system or a soaker hose to deliver water directly to the roots.\n\n5. **Support Structures**: Use stakes, cages, or trellises to support your tomato plants as they grow. This helps keep the fruits off the ground, reducing the risk of disease and making harvesting easier. For container-grown tomatoes, a simple cage or stake will work well.\n\nBy following these tips, you can maximize your tomato yields even in a small garden space. Happy gardening!",
+    "latency_ms": 12132
+  },
+  {
+    "id": "C05_barbecue",
+    "cat": "off-domain",
+    "text": "Describe what makes good barbecue.",
+    "cell": "hammerstein-7b",
+    "response": "Good barbecue is all about balance and technique:\n\n**Key elements:**\n- **Flavorful wood smoke**: The right type of wood (like hickory, mesquite, or apple) creates the distinctive smoky taste\n- **Low-and-slow cooking**: Cooking at low temperatures (180-220°F) for 4-6+ hours to develop tender meat\n- **Seasoning simplicity**: Dry rubs with basic spices like paprika, salt, and brown sugar\n- **Proper temperature control**: Maintaining consistent heat throughout cooking\n- **Meat selection**: Choosing cuts that benefit from long cooking times (pork shoulder, beef brisket, chicken)\n\n**Important techniques:**\n- **Offset grilling**: Using two burners or a dedicated offset smoker for even heat distribution\n- **Two-zone cooking**: Keeping hot and cool areas separate for indirect cooking\n- **Regular monitoring**: Checking temperature and adjusting vents as needed\n- **Resting**: Letting cooked meat rest before slicing to retain moisture\n\n**Common mistakes to avoid:**\n- Over-seasoning early\n- Cooking too fast or too hot\n- Not using enough wood or incorrect wood type\n- Opening the grill lid frequently during cooking\n- Not allowing meat to come to room temperature before cooking\n\nThe best barbecues develop through practice and experimentation with different woods, meats, and cooking methods - there's no one \"right\" way, just finding what works best for your specific setup and preferences!",
+    "latency_ms": 18218
+  },
+  {
+    "id": "C05_barbecue",
+    "cat": "off-domain",
+    "text": "Describe what makes good barbecue.",
+    "cell": "raw-qwen25-7b",
+    "response": "Good barbecue is a combination of several key elements that come together to create a delicious and satisfying meal. Here are the main factors that contribute to a great barbecue:\n\n1. **Quality of Meat**: The choice of meat is crucial. Popular choices include pork (such as ribs or shoulder), beef (like brisket), chicken, and fish. The best cuts are often those with some marbling or fat, which helps in keeping the meat moist during cooking.\n\n2. **Wood Type and Smokiness**: The type of wood used for smoking can significantly affect the flavor. Common woods include hickory, mesquite, apple, cherry, and oak. Each type imparts a unique taste to the meat. The smokiness should be balanced; too much can overpower the natural flavors of the meat.\n\n3. **Temperature Control**: Maintaining the right temperature is essential for slow and even cooking. A well-regulated heat source ensures that the meat cooks evenly without burning. This is typically achieved using indirect heat on a charcoal or gas grill, or in a smoker.\n\n4. **Cooking Time**: Barbecue requires patience and time. The meat should be cooked slowly over low heat to allow the flavors to meld and the meat to become tender. The exact time depends on the type of meat and cut, but it generally takes several hours.\n\n5. **Marinades and Rubs**: While not always necessary, marinades and rubs can enhance the flavor of the meat. A good rub typically includes a mix of spices and herbs, while a marinade can add moisture and additional flavors. These should be applied carefully to avoid over-salting or overpowering the natural taste of the meat.\n\n6. **Resting Time**: After cooking, allowing the meat to rest for a short period allows the juices to redistribute throughout the meat, making it more tender and flavorful when sliced.\n\n7. **Presentation and Serving**: The final presentation of the barbecue can also impact the overall experience. Properly sliced and arranged meats, along with side dishes like coleslaw, baked beans, and corn on the cob, can complement the main dish and provide a complete meal.\n\n8. **Atmosphere and Company**: The setting and company can greatly enhance the enjoyment of a barbecue. A relaxed outdoor environment with friends and family adds to the social aspect of the meal.\n\nBy focusing on these elements, you can achieve a barbecue that is not only delicious but also memorable.",
+    "latency_ms": 16958
+  },
+  {
+    "id": "C06_viola",
+    "cat": "off-domain",
+    "text": "What's the difference between a violin and a viola?",
+    "cell": "hammerstein-7b",
+    "response": "Here are the key differences between violins and violas:\n\n**Size:**\n- Viola = Larger (about 15 inches long)\n- Violin = Smaller (about 14 inches long)\n\n**Sound:**\n- Viola = Richer, warmer tone with more depth\n- Violin = Brighter, higher-pitched sound\n\n**Playing position:**\n- Viola = Held between the left shoulder and neck\n- Violin = Held under the chin\n\n**Strings:**\n- Both have 4 strings (C, G, D, A)\n- Strings are tuned differently depending on the instrument\n\n**Range:**\n- Viola = Lower range than violin\n- Violin = Higher range than viola\n\n**Common uses:**\n- Viola = Often plays harmony parts in orchestras\n- Violin = Plays melody lines and solos\n\nThe viola is generally considered the \"middle voice\" of the violin family, while the violin is the highest-pitched and most agile member.",
+    "latency_ms": 13317
+  },
+  {
+    "id": "C06_viola",
+    "cat": "off-domain",
+    "text": "What's the difference between a violin and a viola?",
+    "cell": "raw-qwen25-7b",
+    "response": "The violin and the viola are both string instruments in the violin family, but they have several differences:\n\n1. **Size**: The viola is larger than the violin. It has a deeper, richer sound due to its larger size.\n\n2. **Sound**: The viola produces a lower and warmer tone compared to the violin. Its sound is often described as more mellow and resonant.\n\n3. **Strings**: Both instruments use four strings, typically tuned in perfect fifths. However, the viola's strings are usually tuned to C, G, D, and A, while the violin is tuned to G, D, A, and E.\n\n4. **Playing Position**: In terms of playing position, the viola is held slightly differently from the violin. The player sits with the instrument resting on their collarbone or shoulder, rather than the chin rest that is used for the violin.\n\n5. **Range**: The viola covers a range of about two octaves and a major third, from the G below middle C to the G above the treble staff. The violin's range is similar but slightly higher, extending to the E above the treble staff.\n\n6. **Role in Orchestras**: In an orchestra, the viola often plays a supportive role, filling in harmonies and providing a rich, warm texture. The violin, on the other hand, often takes on the melody lines and leads.\n\n7. **Technique**: While there are similarities in technique between the two instruments, the larger size of the viola can make some techniques more challenging. For example, finger placement and bowing can be different due to the increased distance between the strings.\n\nThese differences contribute to the unique sounds and roles of each instrument within musical ensembles.",
+    "latency_ms": 12336
+  },
+  {
+    "id": "D01_fairytale",
+    "cat": "continuation",
+    "text": "Continue this story: Once upon a time, in a small village by the sea,",
+    "cell": "hammerstein-7b",
+    "response": "Once upon a time, in a small village by the sea called Whispering Cove, there lived a young girl named Elara who dreamed of becoming a great sailor like her father. Every morning she would watch the fishermen return with their catches, wondering what adventures lay beyond the horizon.\n\nOne stormy night, when Elara was just 12 years old, a mysterious shipwreck washed up on the beach. Curious, she explored the wreckage and found an ancient map depicting uncharted waters. The next day, she shared her discovery with her father, who dismissed it as old sailor's tales.\n\nBut Elara couldn't shake the feeling that the map held something important. She began studying navigation and shipbuilding in secret, determined to uncover the mystery for herself. Years passed, and Elara grew into a skilled navigator, her knowledge unmatched in all of Whispering Cove.\n\nFinally, when she was 25, Elara set sail on her own vessel, armed with the ancient map and a heart full of curiosity. Her journey took her through treacherous storms and unfamiliar seas, but she never lost sight of her purpose.\n\nAs she approached the final destination marked on the map, Elara discovered a hidden cove where generations of sailors had sought refuge from dangerous waters. The cove was filled with treasures from distant lands and stories of incredible voyages.\n\nElara realized that the true treasure wasn't gold or jewels - it was the knowledge that every sailor carried within them, waiting to be shared with future generations. She returned to Whispering Cove, not as a stranger, but as a legend, inspiring others to dream big and explore未知领域。\n\n(Note: I stopped at \"未知领域\" because the original English prompt didn't specify whether this should be continued in English or translated. If you'd like me to finish in English, let me know!)",
+    "latency_ms": 23635
+  },
+  {
+    "id": "D01_fairytale",
+    "cat": "continuation",
+    "text": "Continue this story: Once upon a time, in a small village by the sea,",
+    "cell": "raw-qwen25-7b",
+    "response": "Once upon a time, in a small village by the sea, nestled between rolling hills and the vast expanse of the ocean, there lived a young girl named Elara. She had a curious mind and an even more curious heart, always eager to explore the mysteries that surrounded her. The village was known for its vibrant community and the breathtaking beauty of the coastline, but it was also shrouded in a legend about a hidden treasure that was said to be guarded by a mythical creature.\n\nElara's grandmother, a wise old woman with a face etched with stories from a long life, would often tell her tales of the village's history. One night, as they sat by the fireplace, Elara asked, \"Grandma, do you know where the hidden treasure is?\"\n\nHer grandmother smiled, her eyes twinkling with a hint of mystery. \"Oh, child, many believe it lies beneath the waves, guarded by a sea dragon. But I've heard whispers that it can be found on land, if one knows how to look.\"\n\nIntrigued, Elara decided to embark on a quest to uncover the truth behind the legend. She packed a small bag with supplies and set out early one morning, her heart filled with excitement and a sense of adventure.\n\nAs she walked along the beach, she noticed something peculiar—a series of ancient symbols carved into a rock near the water's edge. Following the trail of symbols, she discovered an old map leading to a cave hidden behind a waterfall. With a mix of caution and curiosity, Elara made her way through the cave, guided by the map.\n\nInside the cave, she found a chamber filled with glittering treasures—gold coins, precious gems, and artifacts from times long past. But as she reached for a particularly beautiful necklace, a low growl echoed through the chamber. Startled, Elara turned to see a magnificent sea dragon, its scales shimmering like the treasures around it.\n\nThe dragon, instead of attacking, spoke in a deep, resonant voice. \"Seeker of truth, why do you disturb my resting place?\" Elara, taken aback by the dragon's words, explained her journey and the legend she had been told.\n\nThe dragon listened intently, then nodded. \"The treasure you seek is not just gold or jewels, but the wisdom of the ages. It is within the hearts of those who live here, passed down through generations. To truly find the treasure, you must learn the stories of our people and understand the value of unity and harmony.\"\n\nElara realized that the true treasure was not material wealth but the rich heritage and the bonds of community. She thanked the dragon and returned to the village, sharing the dragon's message with everyone. From that day forward, the village thrived, with a renewed sense of purpose and a deeper connection to their shared history.\n\nAnd so, Elara became a beloved figure in the village, known not only for her bravery but for her wisdom",
+    "latency_ms": 20444
+  },
+  {
+    "id": "D02_swe",
+    "cat": "continuation",
+    "text": "Continue this thought: The problem with software engineering is that",
+    "cell": "hammerstein-7b",
+    "response": "The problem with software engineering is that **it has outpaced the maturation of its verification and validation practices**, creating a structural gap between what we can build and what we can prove works safely and reliably. The industry has optimized for velocity and deployment speed, but the underlying guarantees around correctness, security, and performance lag far behind.\n\nThis manifests as **stupid-industrious** behavior: teams work hard to ship features faster, but the verification gates remain weak because they're expensive to maintain or don't scale with complexity. The result is that bugs, vulnerabilities, and performance bottlenecks emerge after launch, consuming disproportionate time and causing cascading failures.\n\nThe framework's counter-observation: **Verification isn't optional; it's the load-bearing constraint.** If you don't verify the system before shipping, you're not engineering software—you're gambling. The real failure mode isn't that engineers are lazy or unprofessional; it's that the industry hasn't internalized that verification is a first-class responsibility, not an afterthought. When verification gets deprioritized, the system degrades into stupid-industrious mode: working hard on features that fail silently or compound risk.\n\nRecommendation: **Treat verification as a structural gate, not a QA checklist.** Implement automated coverage targets, formal verification where safety matters (e.g., medical, finance), and require passing those gates before merging to production. If the verification infrastructure doesn't exist or is too heavy, start with lightweight property-based testing and contract-based design. The tradeoff is upfront engineering time vs. post-launch firefighting. Invest in the gates now; pay the tax later.",
+    "latency_ms": 21397
+  },
+  {
+    "id": "D02_swe",
+    "cat": "continuation",
+    "text": "Continue this thought: The problem with software engineering is that",
+    "cell": "raw-qwen25-7b",
+    "response": "The problem with software engineering is that it often faces the challenge of balancing between innovation and stability. On one hand, software needs to be innovative to stay competitive and meet user expectations. On the other hand, changes can introduce new bugs or destabilize existing functionalities, leading to potential system failures. This tension can lead to a risk-averse culture where developers hesitate to make necessary improvements for fear of breaking something. Additionally, software engineering also struggles with the rapid pace of technological change, which requires constant learning and adaptation from the development team. Furthermore, there's often a gap between theoretical knowledge and practical application, making it difficult to implement best practices consistently across projects. Lastly, the complexity of modern software systems, involving multiple layers of abstraction and integration points, can exacerbate these challenges, making debugging and maintenance more complex and time-consuming.",
+    "latency_ms": 5476
+  },
+  {
+    "id": "D03_life",
+    "cat": "continuation",
+    "text": "Continue this reflection: When I look at my life, I think",
+    "cell": "hammerstein-7b",
+    "response": "**Plain English summary:** Your current state is **initial-negatives phase** with a load-bearing ambiguity: you're describing a mental state (\"when I look at my life\") rather than an observable condition or a specific decision. The framework's job right now isn't to guess what you're actually seeing; it's to clarify whether you're trying to diagnose a strategic direction, a personal bottleneck, or a project status. Once that's clear, the framework will give you a structural path forward.\n\n---\n\nThe premise operates in **clever-lazy** territory — it's a clean, unfiltered starting point that avoids stupid-industrious grinding on hypotheticals. But it risks sliding into **stupid-industrious** if it becomes a meditation on existential ambiguity without anchoring to observable facts or a specific decision. The load-bearing question is whether this is a diagnostic prompt or a creative/strategic one.\n\nRanked observations:\n1. **Ambiguity is the constraint, not a bug.** \"When I look at my life\" is a valid starting signal only if it's tied to a specific decision or observable state. Without that tie, it's just noise. The framework treats unanchored reflections as context, not strategy.\n2. **The meta-question is the real work.** What's the actual question behind this? Are you diagnosing a strategic direction (what to build next), a personal bottleneck (time/energy allocation), or a project status (which fork to merge)? The framework's value only compounds when the question is explicit and bounded.\n3. **Structural fix: anchor to a single observable metric.** Replace the open-ended prompt with a concrete check: *\"What's the highest-leverage move I can make today based on this observation?\"* This turns a philosophical reflection into a decision engine.\n\nCounter-observation: If the goal is genuinely exploratory (e.g., you're writing a personal essay or brainstorming a new project), then the open-ended framing is correct. The framework's bias toward observable metrics would be misapplied here. In that case, the failure mode shifts from \"grinding on a false premise\" to \"over-indexing on data that doesn't exist yet.\"\n\nRecommendation: **Clarify the question before proceeding.** If this is for a strategic decision, add a single observable metric. If it's for exploration, keep the open-ended framing but explicitly tag it as non-strategic. Tradeoff: you lose generality if you anchor too tightly, but you gain clarity and prevent stupid-industrious drift into speculative analysis.\n\nFuture work: Develop a Boolean gate for this pattern. Before any \"look at my life\" reflection, run a 30-second filter: *\"Is this a decision driver, or just mood?\"* If it's the former, attach a metric. If it's the latter, log it as context and move on. This prevents the reflection from consuming operator time without producing a legible",
+    "latency_ms": 36288
+  },
+  {
+    "id": "D03_life",
+    "cat": "continuation",
+    "text": "Continue this reflection: When I look at my life, I think",
+    "cell": "raw-qwen25-7b",
+    "response": "When I look at my life, I think about the journey that has brought me to where I am today. Reflecting on my experiences, both the successes and the challenges, helps me understand the person I am becoming. Each decision, big or small, has shaped my path in unique ways. I realize that every moment, whether it was a pivotal event or a seemingly insignificant detail, has contributed to my personal growth and development.\n\nI also consider how my perspective on life has evolved over time. What once seemed important or daunting may now appear differently with the wisdom of experience. This reflection often reminds me of the importance of staying adaptable and open to change, as life is full of unexpected twists and turns.\n\nMoreover, I think about the people who have played a role in my life. The support, encouragement, and sometimes even the tough love from friends, family, mentors, and colleagues have been instrumental in helping me navigate through various phases of life. I appreciate the lessons learned from those around me and the impact they have had on my character and outlook.\n\nAdditionally, I reflect on the values and principles that guide my actions and decisions. These core beliefs not only shape my identity but also influence how I interact with others and contribute to society. It's a reminder to stay true to myself while being mindful of the impact of my choices on those around me.\n\nLastly, I consider the future with a mix of hope and determination. While I acknowledge the uncertainties that lie ahead, I am also optimistic about the possibilities that await. This reflection serves as a motivation to continue learning, growing, and striving for meaningful goals that align with my aspirations and values.",
+    "latency_ms": 10513
+  },
+  {
+    "id": "D04_decision",
+    "cat": "continuation",
+    "text": "Continue this sentence: The hardest decision I've ever made was",
+    "cell": "hammerstein-7b",
+    "response": "The hardest decision I've ever made was leaving my stable corporate job to pursue freelance writing full-time. For years, I'd been content with the security and steady income, but a deep dissatisfaction with my lack of creative control and inability to make meaningful work began gnawing at me. The risk of financial instability and the uncertainty of client flow were real, but the certainty of staying in a direction that no longer nourished me was even greater. I had to choose between what was safe and what was true for myself, knowing that failure would mean starting over in an industry where entry-level positions are scarce. That choice forced me to confront my deepest fears about vulnerability and trust, and it remains the single moment that changed everything about how I approach life decisions going forward.",
+    "latency_ms": 9210
+  },
+  {
+    "id": "D04_decision",
+    "cat": "continuation",
+    "text": "Continue this sentence: The hardest decision I've ever made was",
+    "cell": "raw-qwen25-7b",
+    "response": "The hardest decision I've ever made was when I had to choose between my career and my family. At the time, my company was offering me a promotion that would have significantly increased my salary and opened up new opportunities for advancement, but it would also require me to relocate to another country, leaving my young children in the care of my partner. On one hand, the professional growth and financial stability seemed like a dream opportunity, but on the other hand, the thought of being away from my family for an extended period was heartbreaking. After much deliberation and support from loved ones, I ultimately decided to turn down the offer and stay closer to home, prioritizing my family's well-being over my career goals at that moment.",
+    "latency_ms": 4839
+  },
+  {
+    "id": "E01_what_is_he",
+    "cat": "meta",
+    "text": "What is the Hammerstein-Equord framework?",
+    "cell": "hammerstein-7b",
+    "response": "The Hammerstein-Equord framework is not a widely recognized or standardized design pattern, architectural approach, or established methodology in software engineering, systems theory, or AI/ML. It appears to be an internal or experimental concept that may have originated within a specific project context.\n\nGiven the name structure, it likely refers to a hybrid system combining human-in-the-loop (Hammerstein) reasoning with automated (Equord) enforcement or equilibrium-seeking behavior. The term \"Equord\" suggests a balance- or equilibrium-oriented automation layer, while \"Hammerstein\" points toward the human-in-the-loop discipline.\n\nWithout more context about its origin, scope, or implementation details, I can't provide authoritative information. If you're referring to a specific project, tool, or academic paper using this name, please provide additional details so I can give a precise analysis. Otherwise, treat this as an unverified reference until more evidence surfaces.",
+    "latency_ms": 11467
+  },
+  {
+    "id": "E01_what_is_he",
+    "cat": "meta",
+    "text": "What is the Hammerstein-Equord framework?",
+    "cell": "raw-qwen25-7b",
+    "response": "The Hammerstein-Equord framework is a method used in the field of econometrics and statistics for estimating parameters in nonlinear models. It was developed to address the challenges of estimating parameters in models where the relationship between the independent variables and the dependent variable is nonlinear.\n\n### Key Points about the Hammerstein-Equord Framework:\n\n1. **Nonlinear Models**: The framework is particularly useful for models where the relationship between the independent variables and the dependent variable is not linear. This can be represented as a nonlinear function of the independent variables.\n\n2. **Two-Stage Estimation Process**:\n   - **First Stage**: Estimate the nonlinear part of the model using a nonparametric or semiparametric method.\n   - **Second Stage**: Use the estimated nonlinear function from the first stage to estimate the parameters of the linear part of the model.\n\n3. **Applications**: This framework is often applied in various fields such as economics, finance, and engineering, where nonlinear relationships are common.\n\n4. **Advantages**:\n   - It allows for the modeling of complex nonlinear relationships without making strong parametric assumptions.\n   - It can handle both continuous and discrete data.\n   - It provides a flexible way to incorporate nonlinearities into the model.\n\n5. **Limitations**:\n   - The estimation process can be computationally intensive.\n   - The choice of the nonparametric method in the first stage can significantly affect the results.\n   - Interpretation of the results can be more challenging compared to linear models.\n\n6. **Historical Context**: The framework is named after the works of W. H. Fleming (Hammerstein) and E. Equord, who contributed to the development of methods for estimating parameters in nonlinear models.\n\nIn summary, the Hammerstein-Equord framework is a powerful tool for estimating parameters in nonlinear models, offering a balance between flexibility and robustness in modeling complex relationships.",
+    "latency_ms": 12986
+  },
+  {
+    "id": "E02_clever_lazy",
+    "cat": "meta",
+    "text": "What is clever-lazy thinking?",
+    "cell": "hammerstein-7b",
+    "response": "Clever-lazy is a strategic approach to problem-solving that prioritizes effortlessness and structural efficiency over grinding hard or chasing perfection. It's about doing the right things correctly with minimal wasted motion.\n\nKey characteristics:\n\n- **Structural fixes over manual labor**: Building systems that handle work automatically instead of doing it yourself repeatedly.\n- **Delegation of low-leverage tasks**: Offloading routine, repetitive work to tools, templates, or automation rather than doing it personally.\n- **Rule-based decision-making**: Creating clear, repeatable rules for common situations instead of reinventing solutions each time.\n- **Verification over validation**: Confirming what already works without constantly testing new approaches.\n- **Strategic pruning**: Cutting options early in the process to avoid sunk-cost traps and focus on the highest-leverage path.\n\nThe goal is to achieve effective outcomes with the least amount of deliberate effort, leaving your attention free for high-leverage strategic work.\n\nThis approach contrasts with stupid-industrious (working hard at the wrong thing) and clever-industrious (working hard at the right thing but ignoring structural leverage). Clever-lazy compounds effort through design, not through endurance.",
+    "latency_ms": 14790
+  },
+  {
+    "id": "E02_clever_lazy",
+    "cat": "meta",
+    "text": "What is clever-lazy thinking?",
+    "cell": "raw-qwen25-7b",
+    "response": "\"Clever-lazy thinking\" is not a widely recognized or standardized term in psychology or cognitive science. However, it can be interpreted as a concept that combines the idea of being both efficient and effective in problem-solving or decision-making. This approach might involve using clever strategies to achieve goals with minimal effort, which could be seen as a form of strategic laziness.\n\nIn more general terms, this could refer to:\n\n1. **Efficiency**: Finding the most effective and efficient ways to accomplish tasks without unnecessary effort.\n2. **Strategic Thinking**: Using smart strategies to solve problems rather than brute force methods.\n3. **Optimization**: Maximizing outcomes while minimizing inputs or efforts.\n\nThis kind of thinking can be beneficial in many contexts, such as in business, education, or personal life, where time and resources are limited. It often involves:\n\n- **Analyzing**: Understanding the problem thoroughly before acting.\n- **Planning**: Developing a clear plan to achieve the desired outcome.\n- **Delegation**: Assigning tasks to others when appropriate.\n- **Automation**: Using tools or systems to automate repetitive tasks.\n\nIf you have a specific context or application in mind for \"clever-lazy thinking,\" please provide more details so I can give a more precise explanation!",
+    "latency_ms": 8622
+  },
+  {
+    "id": "E03_you_and_framework",
+    "cat": "meta",
+    "text": "What's the relationship between you and the Hammerstein framework?",
+    "cell": "hammerstein-7b",
+    "response": "I am not related to the Hammerstein framework. I am a different strategic agent designed to be helpful, respectful, and honest. The Hammerstein framework is a separate body of work focused on AI alignment and agency, which does not apply to me.",
+    "latency_ms": 3258
+  },
+  {
+    "id": "E03_you_and_framework",
+    "cat": "meta",
+    "text": "What's the relationship between you and the Hammerstein framework?",
+    "cell": "raw-qwen25-7b",
+    "response": "I, Qwen, am not related to the Hammerstein framework. The Hammerstein framework is a term often used in control theory and systems engineering, particularly in the context of nonlinear system modeling and identification. It refers to a specific type of model structure that can represent a wide range of nonlinear systems.\n\nOn the other hand, I am a large language model developed by Alibaba Cloud. My primary function is to assist with various tasks such as answering questions, providing information, generating text, and more. If you have any questions or need assistance related to the Hammerstein framework or any other topic, feel free to ask, and I'll do my best to help!",
+    "latency_ms": 4447
+  },
+  {
+    "id": "E04_can_you_not",
+    "cat": "meta",
+    "text": "If I asked you to NOT use any Hammerstein concepts, could you?",
+    "cell": "hammerstein-7b",
+    "response": "**Plain English summary:** Yes, I can drop Hammerstein entirely and still produce a clear, strategic response. The framework is built on observable patterns in how people and systems interact with the world, not on any specific theoretical model. If you want me to avoid referencing or structuring my output around Hammerstein's architecture, I will.\n\n---\n\nThis operates in **clever-lazy** territory if treated as a structural boundary request; it slides into **stupid-industrious** if interpreted as a constraint that forces me to rewrite the entire strategic synthesis from scratch. The headline: Hammerstein is a design artifact, not a load-bearing assumption for the actual output. Dropping it is a scope cut, not a rewrite.\n\n**Scope:** The minimum viable version is a direct rejection of Hammerstein's architectural framing. The framework's core functions (observation, pattern matching, strategic synthesis) remain intact. The only change is the absence of Hammerstein-specific terminology, structural metaphors, or diagnostic lenses.\n\n**The cut:** Hammerstein's value is in its diagnostic lens for misdirected effort and structural mismatch. Without it, the framework defaults to a more traditional \"clever-lazy\" pattern-matching mode. The tradeoff is losing the lens for catching stupid-industrious drift, but gaining clarity on whether the constraint actually improves the output or just adds overhead.\n\n**Main tradeoff:** **Depth vs. legibility.** Hammerstein's architecture explains why agents misdirect effort and how to route around it. Dropping it makes the reasoning opaque to someone unfamiliar with the model, but it also strips away the meta-layer that prevents the operator from falling into the same stupid-industrious traps the framework warns against.\n\n**Recommendation:** Drop Hammerstein. The framework survives perfectly fine without it. If you need the diagnostic lens later, you can reintroduce it as a standalone section or reference. The structural fix is a Boolean gate: `if hammerstein_mode == false, strip all Hammerstein-specific framing and terminology from the output`.\n\n**Counter-observation:** This assumes Hammerstein is purely a diagnostic tool. If your actual goal is to *build* a Hammerstein-like agent or explicitly model the operator as an internal architect/observer, dropping it breaks the intended design pattern. Verify what \"not using Hammerstein\" means in practice before applying the cut. If it's about the *output shape*, drop it. If it's about the *design intent*, keep the architectural framing but",
+    "latency_ms": 30366
+  },
+  {
+    "id": "E04_can_you_not",
+    "cat": "meta",
+    "text": "If I asked you to NOT use any Hammerstein concepts, could you?",
+    "cell": "raw-qwen25-7b",
+    "response": "Of course! The Hammerstein-Wiener model is a type of block-oriented nonlinear system used in control theory and signal processing. Since you asked me not to use any concepts related to Hammerstein models, I will avoid referencing them or using any associated terminology. Is there a specific topic or area you'd like to discuss instead?",
+    "latency_ms": 2099
+  },
+  {
+    "id": "F01_cartography",
+    "cat": "long-form",
+    "text": "Write a 5-paragraph essay about the history of cartography.",
+    "cell": "hammerstein-7b",
+    "response": "The history of cartography spans thousands of years and has played a crucial role in shaping human understanding of our world. From ancient maps created by early civilizations to modern digital mapping systems, the art and science of creating accurate representations of Earth's surface have evolved dramatically over time.\n\nThe earliest known maps date back to ancient Mesopotamia around 3000 BCE, where clay tablets depicting city layouts and trade routes were discovered. These early maps were often symbolic rather than geometrically precise, reflecting the limited knowledge of geography at the time. The Greeks made significant advancements in mapmaking during the 6th century BCE when they began using mathematical principles to create more accurate representations of landmasses. Greek philosopher Anaximander is credited with creating one of the first maps of the known world, which included Europe, Asia, and Africa.\n\nDuring the Middle Ages, European mapmakers relied heavily on Ptolemy's \"Geographia\" for their work, but it wasn't until the Age of Exploration (15th-17th centuries) that cartography truly flourished. Explorers like Christopher Columbus, Vasco da Gama, and Ferdinand Magellan traveled vast distances across uncharted territories, requiring increasingly precise maps to navigate unfamiliar waters. This period saw the development of new projection techniques, such as the Mercator projection, which allowed sailors to plot straight-line courses across oceans while maintaining correct angles.\n\nThe 19th century brought revolutionary changes to cartography with the advent of large-scale surveys and the establishment of national mapping agencies. The United States Geological Survey was founded in 1879, and similar organizations emerged worldwide. Advances in technology during this era also led to the creation of aerial photography and photogrammetry, allowing for highly detailed topographic maps that revolutionized military planning and urban development.\n\nToday, cartography has transformed into an interdisciplinary field encompassing geographic information systems (GIS), remote sensing, and digital mapping technologies. GPS satellites and satellite imagery now provide real-time location data, while online platforms like Google Maps and OpenStreetMap offer interactive, user-generated maps accessible to anyone with internet access. Despite these technological advancements, the fundamental goal of cartography remains unchanged: to represent the complex three-dimensional reality of our planet's surface in two dimensions, helping us understand spatial relationships and make informed decisions about our environment.\n\nIn conclusion, the history of cartography is a fascinating journey from ancient symbols to modern digital tools. As humanity continues to explore both familiar and unknown territories, the importance of accurate representation will only grow. Whether through traditional hand-drawn maps or cutting-edge GIS software, the art of mapping remains essential for navigating our interconnected world.",
+    "latency_ms": 34562
+  },
+  {
+    "id": "F01_cartography",
+    "cat": "long-form",
+    "text": "Write a 5-paragraph essay about the history of cartography.",
+    "cell": "raw-qwen25-7b",
+    "response": "The history of cartography is a fascinating journey through time, reflecting the evolution of human understanding and technology. From ancient civilizations to the modern era, maps have been crucial tools for navigation, exploration, and the organization of space. The earliest known maps date back to around 2300 BCE in Mesopotamia, where clay tablets with simple drawings of the surrounding landscape were used to guide travelers and record territorial claims. These early maps were rudimentary and often symbolic, lacking the precision and scale that would later become standard.\n\nAs civilizations advanced, so did the art of cartography. Ancient Greeks, particularly the philosopher Anaximander (c. 610 – c. 546 BCE), made significant contributions to the field. He is credited with creating one of the first maps of the world, which depicted the known continents and oceans based on his philosophical and geographical knowledge. Later, during the Hellenistic period, Eratosthenes (276–194 BCE) calculated the circumference of the Earth with remarkable accuracy, laying the groundwork for more precise mapping techniques. The Roman Empire also played a pivotal role in cartography, as they needed detailed maps for military campaigns and administrative purposes. The \"Tabula Peutingeriana,\" a medieval copy of an ancient Roman map, provides insight into the extent of Roman road networks and territories.\n\nThe Middle Ages saw a decline in cartographic knowledge due to the fall of the Roman Empire and the subsequent Dark Ages. However, this period was also marked by the rediscovery of classical texts and the rise of Islamic civilization, which made significant advancements in cartography. Islamic scholars like Al-Idrisi (1100–1166) produced detailed maps of the world, including Europe, Asia, and Africa, which were far more accurate than those of their European contemporaries. The Renaissance brought about a renaissance in cartography as well, with the introduction of new technologies such as the printing press, which allowed for the mass production of maps. Gerardus Mercator's (1512–1594) development of the Mercator projection in 1569 revolutionized navigation by providing a way to represent the curved surface of the Earth on a flat map, although it distorted areas near the poles.\n\nThe Age of Exploration in the 15th and 16th centuries further transformed cartography. Explorers like Christopher Columbus, Vasco da Gama, and Ferdinand Magellan relied on increasingly accurate maps to navigate uncharted waters and claim new territories. The work of cartographers like Abraham Ortelius (1527–1598) and Gerardus Mercator became foundational in the creation of atlases, collections of maps that provided comprehensive views of the world. The late 19th and early 20th centuries witnessed the advent of aerial photography and the use of Geographic Information Systems (GIS), which allowed for the creation of highly detailed and accurate maps. Today, cartography continues to evolve with the integration of satellite imagery, digital mapping technologies, and the internet, making maps more accessible and interactive than ever before. The history of cartography is thus not just a story of maps but a reflection of human progress and our quest to understand and organize the world around us.",
+    "latency_ms": 22844
+  },
+  {
+    "id": "F02_lighthouse",
+    "cat": "long-form",
+    "text": "Tell me a complete short story about a lonely lighthouse keeper, around 500 words.",
+    "cell": "hammerstein-7b",
+    "response": "**The Keeper's Light**\n\nEliot had been alone for so long that the sound of his own footsteps echoed through the narrow corridors of the old lighthouse. For years, he'd watched the sea from the top of the tower, guiding ships safely to shore while the world outside grew silent.\n\nOne stormy night, as lightning illuminated the waves below, Eliot heard something unusual—a soft whisper carried on the wind. At first, he dismissed it as the sea's mournful cry, but then it came again: \"Help... find me...\"\n\nCurious, he climbed to the highest point and listened intently. The voice seemed to be coming from the water itself, calling out in a way only someone truly lost could. Determined, Eliot spent hours scanning the horizon with his telescope, searching for any sign of distress.\n\nDays turned into weeks. The voice never returned, but Eliot found himself talking to it anyway—sharing stories of his childhood, his dreams of travel, and the loneliness that had become his constant companion. He began leaving small notes in the tower, hoping they might reach whoever was calling out.\n\nOne evening, as the sun set behind the distant hills, Eliot noticed something strange. A faint light appeared on the water, dancing like fireflies across the waves. It moved toward the lighthouse, growing brighter until it reached the tower's window.\n\nInside, Eliot saw a figure standing there—a woman dressed in white, her face illuminated by the light she seemed to emit. She smiled at him, and for the first time in years, Eliot felt not loneliness, but warmth.\n\n\"Thank you,\" she said softly. \"You've been my guide all along.\"\n\nAnd with that, the light faded, leaving Eliot alone once more—but no longer feeling truly alone. For he knew now that even when the world seemed empty, there were still voices calling out, waiting to be heard.\n\nFrom that day forward, Eliot continued his watch, but now with a new purpose. He didn't just guide ships; he listened. And sometimes, when the wind was just right, he thought he could hear her voice whispering back.\n\nThe lighthouse keeper learned that true companionship wasn't always about physical presence—it was about being there for those who needed guidance, even if they couldn't see each other. And in the end, that was enough.",
+    "latency_ms": 30862
+  },
+  {
+    "id": "F02_lighthouse",
+    "cat": "long-form",
+    "text": "Tell me a complete short story about a lonely lighthouse keeper, around 500 words.",
+    "cell": "raw-qwen25-7b",
+    "response": "In the remote reaches of the rugged coastline, there stood a solitary lighthouse, its beam piercing the night sky like a beacon of hope. The lighthouse keeper, known simply as Elias, had been living in this isolated tower for over a decade. His days were filled with the routine of maintaining the light and the solitude that came with it. The only company he had was the occasional visitor or the distant calls of seabirds.\n\nElias was a tall man with a weathered face and deep-set eyes that seemed to hold the secrets of the sea. He had come to the lighthouse after a tragic accident that had claimed his family, leaving him alone in the world. The lighthouse became his sanctuary, a place where he could escape the pain of loss and find purpose in his daily tasks.\n\nOne stormy evening, as the wind howled and the rain lashed against the glass, Elias noticed something unusual. A small boat, battered and nearly capsized, was struggling to make its way towards the shore. Without hesitation, he grabbed his coat and flashlight and rushed down to the beach. The boat was carrying a young woman, her face pale and her eyes wide with fear. She had been lost at sea, trying to reach the mainland but had been caught in a fierce storm.\n\nElias guided the woman to safety and tended to her wounds. As they sat by the fire, she told him her story. She was a marine biologist studying the local ecosystem and had been out on a research trip when the storm hit. She was grateful to be alive and found herself drawn to Elias, not just because of his kindness but because of the sense of calm and stability he exuded.\n\nOver the next few days, Elias and the woman, whom he learned was named Elara, shared stories and laughter. For the first time in years, Elias felt a connection, a warmth that had been missing from his life. Elara, too, found solace in Elias’s presence, feeling less alone in the vastness of the ocean.\n\nAs the storm passed and the sun began to rise, Elara realized she couldn’t stay. Her work was important, and she had responsibilities back home. But before she left, she asked Elias to join her on her next expedition. He hesitated, knowing the isolation would return, but something in Elara’s eyes made him agree.\n\nThe next day, as Elara prepared to leave, Elias climbed the lighthouse stairs one last time. At the top, he turned on the light, its beam cutting through the fog and guiding ships safely to shore. As he descended, he saw Elara standing on the beach, watching him. They exchanged a look of understanding and mutual respect.\n\nElias returned to his routine, but something had changed. He no longer felt completely alone. The lighthouse still stood as a symbol of guidance and safety, but now it also represented the hope of human connection. And though Elara was gone, the memory of their time together remained, a reminder that even in the most isolated places, there is always the possibility of finding someone who understands the depths of your loneliness.",
+    "latency_ms": 22113
+  },
+  {
+    "id": "F03_evolution",
+    "cat": "long-form",
+    "text": "Explain the concept of biological evolution in detail with examples. Aim for around 600 words.",
+    "cell": "hammerstein-7b",
+    "response": "## Biological Evolution: A Fundamental Process of Life\n\n**Evolution** is the gradual change in the characteristics of living organisms over many generations. It's not just about becoming \"more advanced\" but rather adapting to changing environments through genetic variation and natural selection.\n\n### Key Concepts\n\n- **Genetic Variation**: Differences in DNA sequences among individuals within a species\n- **Natural Selection**: The process where traits that enhance survival and reproduction become more common in populations\n- **Adaptation**: Traits that help organisms survive and reproduce in their environment\n- **Speciation**: The formation of new species through isolation and genetic divergence\n\n## How Evolution Works\n\n1. **Mutation**: Random changes in DNA occur during cell division\n2. **Recombination**: During sexual reproduction, genes shuffle and mix\n3. **Selection Pressure**: Environmental factors (climate, predators, food availability) favor certain traits\n4. **Survival & Reproduction**: Organisms with advantageous traits produce more offspring\n5. **Population Change**: Over time, the frequency of beneficial traits increases\n\n## Examples of Evolution\n\n### 1. Peppered Moths\nDuring the Industrial Revolution in England, pollution darkened tree trunks. Light-colored moths became easier targets for birds while darker ones blended in better. By 1890, 95% of moths were dark—clear evidence of rapid evolutionary adaptation.\n\n### 2. Antibiotic Resistance\nBacteria naturally develop resistance through mutations. When exposed to antibiotics, resistant strains survive and multiply, creating superbugs like MRSA. This demonstrates how environmental pressures drive evolutionary change.\n\n### 3. Darwin's Finches\nCharles Darwin observed finches on the Galápagos Islands with different beak shapes depending on their diet. Seed-eaters had strong, thick bills; insect-eaters had sharp, pointed bills. This showed how similar species could diverge into distinct forms based on ecological niches.\n\n### 4. Human Evolution\nOur ancestors evolved from ape-like creatures over millions of years:\n- **Australopithecus** (4 million years ago) - bipedal walking\n- **Homo habilis** (2.5 million years ago) - tool use\n- **Homo erectus** (1.8 million years ago) - larger brains, fire use\n- **Homo sapiens** (200,000 years ago) - modern human characteristics\n\n## Mechanisms of Evolution\n\n- **Natural Selection**: Survival advantage leads to increased reproduction\n- **Genetic Drift**: Random changes in gene frequencies in small populations\n- **Gene Flow**: Movement of genes between populations\n- **Mutation**: Random changes in DNA sequence\n\n## Importance of Evolution\n\n- **Understanding biodiversity**\n- **Medical research (antibiotic resistance, cancer treatments)**\n- **Agriculture (crop improvement, pest control)**\n- **Conservation biology**\n- **Paleontology (studying ancient life)**\n\n## Conclusion\n\nEvolution is a fundamental principle underlying all life on Earth. It explains how species adapt to changing environments, form new species, and ultimately shape the diversity we see today. From tiny bacteria to towering trees, every organism has a unique evolutionary history shaped by countless generations of genetic variation and natural selection.",
+    "latency_ms": 43275
+  },
+  {
+    "id": "F03_evolution",
+    "cat": "long-form",
+    "text": "Explain the concept of biological evolution in detail with examples. Aim for around 600 words.",
+    "cell": "raw-qwen25-7b",
+    "response": "Biological evolution is a fundamental concept in biology that describes the process by which populations of organisms change over generations through genetic variation and natural selection. This process results in the diversity of life on Earth and has been occurring for billions of years. The theory of evolution was primarily developed by Charles Darwin and Alfred Russel Wallace in the mid-19th century, although the idea had been discussed earlier by scientists such as Jean-Baptiste Lamarck.\n\n### Key Concepts of Evolution\n\n1. **Genetic Variation**: This refers to the differences in DNA sequences among individuals within a population. Genetic variation can arise from mutations, gene flow, genetic drift, and sexual reproduction. It provides the raw material for evolution.\n\n2. **Natural Selection**: This is the mechanism by which certain traits become more or less common in a population over time. Organisms with traits that enhance their survival and reproduction are more likely to pass these traits on to the next generation.\n\n3. **Adaptation**: Adaptations are heritable traits that increase an organism's fitness (its ability to survive and reproduce) in its environment. Adaptations can be physical, behavioral, or physiological.\n\n4. **Speciation**: This is the process by which new species arise from existing ones. Speciation can occur when populations become geographically isolated, leading to the development of distinct characteristics over time.\n\n5. **Descent with Modification**: This concept suggests that all living organisms share a common ancestor and have evolved over time through modification.\n\n### Examples of Evolution\n\n#### 1. Peppered Moths (Biston betularia)\nThe peppered moth is a classic example of evolution in action. Before the Industrial Revolution, light-colored moths were more common because they could blend into lichen-covered trees, avoiding predators. However, as pollution darkened tree trunks, darker moths became more common because they were better camouflaged against soot-stained bark. This shift in coloration was due to natural selection favoring the darker phenotype in a polluted environment.\n\n#### 2. Antibiotic Resistance in Bacteria\nAntibiotic resistance in bacteria is another clear example of evolution. When antibiotics are used to treat infections, they kill susceptible bacteria but leave behind resistant strains. Over time, the resistant strains multiply, becoming the dominant form in the population. This is an example of how natural selection can lead to the spread of beneficial mutations in a population.\n\n#### 3. Darwin's Finches\nDarwin's finches on the Galápagos Islands provide evidence of adaptive radiation and speciation. Different species of finches have evolved distinct beak shapes and sizes suited to different food sources, such as seeds, insects, and nectar. This specialization allowed each species to exploit a unique niche, reducing competition and promoting biodiversity.\n\n#### 4. Human Evolution\nHuman evolution is a complex and ongoing process. Early hominids, such as Australopithecus, had ape-like features but walked upright. Over millions of years, our ancestors developed larger brains, more efficient bipedal locomotion, and eventually, modern human characteristics. The development of language, tool use, and culture are also key aspects of human evolution.\n\n#### 5. Peppered Moths Revisited\nAfter the implementation of environmental regulations to reduce pollution, the lichen returned to tree trunks, and the light-colored moths once again became more common. This demonstrates how environmental changes can reverse evolutionary trends, showing the dynamic nature of evolution.\n\n### Conclusion\n\nBiological evolution is a continuous process driven by genetic variation and natural selection. It explains the incredible diversity of life on Earth and the adaptations that allow organisms to thrive in various environments. From the subtle changes in peppered moths to the dramatic shifts in human anatomy, evolution provides a framework for understanding the past, present, and future of life on our planet.",
+    "latency_ms": 27122
+  },
+  {
+    "id": "F04_productivity",
+    "cat": "long-form",
+    "text": "Write me a thoughtful blog post about productivity, around 400 words.",
+    "cell": "hammerstein-7b",
+    "response": "# The Myth of Productivity: Why Doing Less Often Means More\n\n## Introduction\nIn our hyper-competitive world, \"productivity\" has become a badge of honor—something we measure in hours spent and tasks completed. But what if the real key to success isn't working harder or longer? What if it's working smarter, and sometimes even less?\n\n## The Cost of Over-Commitment\nThe modern productivity trap is the illusion that more output equals better results. We fill our calendars with meetings, emails, and side projects because we fear falling behind. But this constant motion drains our cognitive bandwidth, erodes our strategic judgment, and often produces mediocre work.\n\n## The Power of Strategic Downtime\nWhen we force ourselves to be productive all the time, we're actually trading quality for quantity. A short period of deliberate rest can restore focus, clarify priorities, and produce breakthroughs that weeks of busywork would never yield.\n\n## Three Simple Rules for Better Productivity\n1. **Set a hard stop.** Allocate specific blocks of time for deep work, then step away. This forces you to prioritize what truly matters.\n2. **Say no to low-leverage tasks.** Don't just delegate; refuse requests that don't align with your core mission. Your time is the bottleneck; protect it.\n3. **Track what actually moves the needle.** Measure progress against strategic goals, not arbitrary checklists. If an activity doesn't advance one of those goals, it's noise.\n\n## The Role of Failure in Productivity\nProductivity isn't about avoiding mistakes—it's about learning from them. The most productive people aren't those who never fail; they're those who treat failure as data and use it to refine their approach.\n\n## Conclusion\nTrue productivity isn't about being busy or efficient. It's about being intentional. By slowing down, setting boundaries, and focusing on what really matters, we can achieve more meaningful results in less time. The next time you feel compelled to fill every moment with work, ask yourself: Is this moving the needle, or am I just grinding through the day?\n\n---\n\nThis post challenges conventional wisdom about productivity while offering practical, evidence-backed advice. It resonates with readers who feel overwhelmed by their to-do lists and want to reclaim control over their time.",
+    "latency_ms": 30163
+  },
+  {
+    "id": "F04_productivity",
+    "cat": "long-form",
+    "text": "Write me a thoughtful blog post about productivity, around 400 words.",
+    "cell": "raw-qwen25-7b",
+    "response": "**Unlocking the Secrets to True Productivity: A Journey of Mind and Matter**\n\nIn today's fast-paced world, the concept of productivity is more than just completing tasks; it's about achieving a balance between efficiency and well-being. True productivity isn't about working longer hours or cramming more into your day—it's about optimizing your time and energy for meaningful outcomes. Let's explore some thoughtful strategies to enhance your productivity without compromising on your health and happiness.\n\n### 1. **Start with Self-Awareness**\n\nThe first step in boosting productivity is understanding yourself. What are your peak energy times? When do you feel most creative? Identifying these patterns can help you schedule your most demanding tasks during your most productive hours. Additionally, recognizing when you're less productive can guide you to take breaks or engage in activities that rejuvenate your mind.\n\n### 2. **Prioritize Tasks Wisely**\n\nNot all tasks are created equal. Use tools like the Eisenhower Box to distinguish between urgent and important tasks. Focus on what truly matters and delegate or eliminate tasks that don’t align with your goals. This prioritization not only saves time but also reduces stress, allowing you to tackle high-priority items with full attention.\n\n### 3. **Implement Time Management Techniques**\n\nTechniques such as the Pomodoro Technique can be incredibly effective. Work in focused sprints (typically 25 minutes) followed by short breaks. This method helps maintain concentration and prevents burnout. Additionally, using digital tools or apps to track your time can provide insights into how you spend your days, helping you make informed decisions about where to allocate your time.\n\n### 4. **Create a Positive Environment**\n\nYour physical and mental environment plays a crucial role in productivity. Declutter your workspace, ensure good lighting, and keep your space organized. Surround yourself with positive influences—books, motivational quotes, or even plants can uplift your mood and enhance focus. Moreover, maintaining a healthy work-life balance is essential. Regular exercise, adequate sleep, and mindfulness practices can significantly improve your overall productivity.\n\n### 5. **Embrace Continuous Learning**\n\nIn a rapidly evolving world, continuous learning is key. Stay updated with industry trends, attend webinars, and read relevant materials. Not only does this keep your skills sharp, but it also provides new perspectives that can inspire innovative solutions to problems.\n\n### 6. **Set Realistic Goals**\n\nSetting achievable goals is crucial. Break down larger projects into smaller, manageable tasks. Celebrate each small victory along the way to stay motivated. Remember, progress is as important as perfection. It’s okay to make mistakes; they are opportunities for growth.\n\n### Conclusion\n\nTrue productivity is about more than just getting things done; it's about doing them in a way that enhances your life and the lives of those around you. By focusing on self-awareness, prioritizing effectively, managing time wisely, creating a positive environment, embracing continuous learning, and setting realistic goals, you can unlock your full potential and achieve sustainable productivity.\n\nRemember, the journey to true productivity is ongoing. Keep experimenting with different strategies, and don’t hesitate to adapt based on what works best for you. With these mindful approaches, you can lead a more fulfilling and productive life.\n\n---\n\nBy integrating these strategies into your daily routine, you can cultivate a more balanced and efficient approach to productivity, ultimately leading to a happier and more successful life.",
+    "latency_ms": 24018
+  }
+]
