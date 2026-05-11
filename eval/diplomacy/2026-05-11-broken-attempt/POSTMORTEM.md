@@ -90,3 +90,53 @@ working SHA, re-run today's France matched-pair with that pin, see
 if the failure reproduces. If yes, the issue is Sonnet 4.6 drift; if
 no, the issue is diplobench's recent commits. Either result is
 useful for future Diplomacy work.
+
+## Update 2026-05-11 afternoon — root cause + retry attempt
+
+Investigation later in the same session revealed the actual root cause
+**was not** diplobench or Sonnet drift. It was a self-inflicted bash
+quoting bug: `OR_KEY="$OPENROUTER_API_KEY" ssh ...` does NOT propagate
+the env-var to SSH's quoted-args context. Direct
+`${OPENROUTER_API_KEY}` interpolation works correctly.
+
+**Every Diplomacy run on 2026-05-11 prior to the v2 retry had empty
+`OPENAI_API_KEY` on the pod** → 401 Unauthorized on every API call →
+0 orders / 0 missives across all games. The harness was fine; diplobench
+was fine; Sonnet 4.6 was fine. The bug was upstream of all of those.
+
+### Retry with fixed interpolation (v2 attempt)
+
+Fired the matched-pair with corrected `${OPENROUTER_API_KEY}`
+interpolation. The wrapped game played real Diplomacy for several
+turns (final SC count 4-5-5-5-4-6-4 vs starting 3-3-3-3-3-3-4 = real
+captures happened) before hitting **HTTP 402 Payment Required** —
+OpenRouter account depleted at $60.20 used / $60.00 credit cap.
+
+The v2 wrapped game state JSON ([`wrap-fra-2026-05-11-v2.json`](wrap-fra-2026-05-11-v2.json),
+299 KB) preserves the partial game with real moves. The v2 control
+game never started (SSH session terminated when the wrapped game
+exhausted retries).
+
+### Lessons
+
+1. **Auth-first debug.** Before debugging downstream issues, verify
+   the auth token actually propagates to the remote subprocess. A
+   one-line `echo "key len: ${#OPENAI_API_KEY}"` from the pod-side
+   would have caught the bug in iteration 1 instead of iteration 6.
+2. **Track BOTH RunPod and OpenRouter balances independently.** Today's
+   debug session ate ~$3 RunPod (visible via `runpodctl me`) and
+   exhausted the $60 OpenRouter cap (visible via
+   `https://openrouter.ai/api/v1/credits`). The 402 came as a surprise
+   because nobody was watching OR balance during the iteration loop.
+3. **The v2 partial state IS useful as evidence the harness works.**
+   Future Diplomacy work can pin to this configuration with confidence
+   that auth + harness + diplobench are all sound when OR has credit.
+
+### What's needed to re-run cleanly
+
+- OpenRouter top-up (~$25-30 covers a clean n=1 matched-pair with the
+  v2 configuration; ~$80-100 covers paper-grade n=5).
+- Fixed SSH interpolation (already corrected in the v2 attempt;
+  documented in this post-mortem as the canonical pattern).
+- RunPod re-spin (today's pod terminated; ~$0.69/hr secure cloud RTX
+  4090 in RO datacenter).
