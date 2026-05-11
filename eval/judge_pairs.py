@@ -64,6 +64,18 @@ ABLATION_FAMILIES = [
     ("or-gpt5-corpus-only", "or-gpt5", "GPT-5: corpus-only vs full"),
 ]
 
+# v0.3 neutral-scaffold family: tests whether ANY generic competent system prompt
+# of similar length to Hammerstein delivers the wedge. Pre-empts the "Hammerstein
+# is just any competent system prompt" methodology objection. Left cell = raw
+# (no system prompt). Right cell = neutral-scaffold (~1700 chars of generic
+# strategic-advice instructions, explicitly avoiding Hammerstein vocabulary).
+# "ham_wins" in the aggregate reports how often the neutral-scaffold beats raw.
+# If neutral ties or loses to raw, that's strong evidence that competent prompting
+# in general does NOT deliver the wedge -- Hammerstein's specific framing does.
+V03_FAMILIES = [
+    ("or-claude-sonnet-raw", "or-claude-sonnet-neutral-scaffold", "Sonnet: neutral-scaffold vs raw (any-prompt-helps check)"),
+]
+
 # v0.4 cross-scale families: the Hammerstein-7B distilled adapter (no system prompt)
 # vs two baselines on the same Q1-Q6 set.
 # Left cell = raw baseline (A in pair, "no framework"), right cell = Hammerstein-7B
@@ -247,6 +259,8 @@ def main() -> int:
                    help="Judge ablation cells (prompt-only vs full, corpus-only vs full) instead of raw-vs-Hammerstein pairs")
     p.add_argument("--v04", action="store_true",
                    help="Judge v0.4 cross-scale families (Hammerstein-7B vs raw-Qwen2.5-7B + vs raw-Sonnet)")
+    p.add_argument("--v03", action="store_true",
+                   help="Judge v0.3 neutral-scaffold family (Sonnet neutral-scaffold vs raw)")
     args = p.parse_args()
 
     random.seed(args.seed)
@@ -262,6 +276,8 @@ def main() -> int:
 
     if args.v04:
         active_families = V04_FAMILIES
+    elif args.v03:
+        active_families = V03_FAMILIES
     elif args.ablation:
         active_families = ABLATION_FAMILIES
     else:
