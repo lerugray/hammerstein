@@ -7,14 +7,28 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+## [1.2] — 2026-05-12
+
 ### Added
 
 - **`hammerstein --context none|minimal`** — opt-in project context injection. `minimal` prepends a bounded preamble to user queries: repo identity (remote / branch / HEAD / dirty) + capped excerpts from `MISSION.md` / `CLAUDE.md` / `AGENTS.md` / `README.md` (600 chars each, 1600 total docs budget) + optional auto-discovered state file (`.hammerstein-state.md` or `hammerstein_state.md`, 800 chars). Hard cap 2.2k chars with documented drop priority. CLI default is `none`; templates `audit-this-plan` and `what-should-we-do-next` default to `minimal` (override with explicit `--context none`). v0 intentionally does **not** inject git diffs / logs / trees / cached state.
 - **`--project-root <path>`** + **`--context-file <path>`** — override git-root detection and provide an explicit context file (the preferred grounding mechanism). Context files must live under the project root.
+- **`hammerstein --image <path>`** — multimodal image input on the typer CLI. Pairs with `--template audit-this-visual` for vision-Hammerstein audits (rulebook diagrams, sprite quality reviews, board photos, etc.). Per-invocation validation enforces the file-exists check and the template-image pairing before dispatching to the harness.
+- **`--backend-tier free|paid`** — explicit backend tier selector for vision audits. `free` routes through the free vision pool (Gemini Flash via OpenRouter); `paid` forces the paid pool default. Omitted defaults to the providers.yaml fallback chain.
+- **`audit-this-visual` template** is now reachable via the typer CLI. The template was already wired into the corpus (`corpus.py:153`), prompt template (`prompts/templates/audit-this-visual.md`), and shape gate (`harness/hammerstein/shape_gate.py`); the classifier just hadn't been told it existed.
+
+### Fixed
+
+- **`--image` was unreachable via the installed `hammerstein` command.** The argparse parser in `harness/hammerstein/cli.py:765` carried the option, but the typer entry at `hammerstein_cli/__init__.py` (the actual installed entry point) never wired it in. Both `--image` and `--backend-tier` now flow through with the same per-invocation validation the argparse path had.
+- **`audit-this-visual` was missing from `classifier.TEMPLATES`** despite being a valid template across the rest of the harness — the validation check at `cli.py:358` would reject it. Now present in the tuple. Auto-classification still routes non-image queries to the existing five templates; vision audits remain explicit (must pass both `--image` and `--template audit-this-visual`).
 
 ### Security
 
 - Context injection denylists sensitive filenames (`.env`, `.pem`, `id_rsa`, `credentials*`, files named `secret` / `token` / `api_key`), refuses symlinks, scrubs absolute repo paths down to basenames, and **aborts injection entirely** if high-entropy credential patterns appear in candidate excerpts (OpenAI `sk-`, GitHub `ghp_`, Google `AIza`, AWS `AKIA` / `ASIA`, Slack `xox`, PEM blocks, long hex / base64). v0 chooses abort over redaction by design — operator gets a single-line stderr warning and the call continues with no context.
+
+### Docs
+
+- README benchmark headline corrected. The v0.1 short-answer (`the system prompt alone is doing the work, not the RAG corpus`) reflected the Sonnet-only ablation result; the v0.2 cross-family ablation (already documented further down in the same section) refuted it — on Opus 4.7 all three configurations are statistically tied, and on GPT-5 corpus-only actually outperforms the full stack. Lead claim now reflects what holds across all four runs: 53 of 54 = 98.1% Hammerstein-over-raw win rate, with the component-contribution claim qualified as model-dependent.
 
 ## [1.1] — 2026-05-05
 
