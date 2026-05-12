@@ -120,6 +120,12 @@ _CELLS: list[Cell] = [
     Cell("or-claude-opus-corpus-only", "openrouter", "anthropic/claude-opus-4.7", mode="corpus-only"),
     Cell("or-gpt5-no-corpus", "openrouter", "openai/gpt-5", mode="no-corpus"),
     Cell("or-gpt5-corpus-only", "openrouter", "openai/gpt-5", mode="corpus-only"),
+
+    # v0.5: Grok added (2026-05-12 HN-launch-day pivot — marketing thesis is
+    # "Hammerstein-on-Grok vs raw Grok" as a tweetable result against the
+    # latest xAI model. Pair 1:1 with the existing raw/default frontier cells.
+    Cell("or-grok-raw", "openrouter", "x-ai/grok-4.20", mode="raw"),
+    Cell("or-grok", "openrouter", "x-ai/grok-4.20", mode="default"),
 ]
 
 

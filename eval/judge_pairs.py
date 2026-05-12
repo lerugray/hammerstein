@@ -47,6 +47,7 @@ FAMILIES = [
     ("or-claude-opus-raw", "or-claude-opus", "Claude Opus 4.7"),
     ("or-claude-sonnet-raw", "or-claude-sonnet", "Claude Sonnet 4.6"),
     ("or-gpt5-raw", "or-gpt5", "GPT-5"),
+    ("or-grok-raw", "or-grok", "Grok 4.20"),
 ]
 
 # Ablation families: full Hammerstein vs prompt-only vs corpus-only (Caveat 2).
