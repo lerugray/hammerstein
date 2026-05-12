@@ -90,6 +90,24 @@ def cli(
             "Refuses paths outside the project root."
         ),
     ),
+    image: Optional[str] = typer.Option(
+        None,
+        "--image",
+        help=(
+            "Path to an image file (PNG/JPG/JPEG/WebP) to include as multimodal "
+            "input. Only valid with --template audit-this-visual."
+        ),
+    ),
+    backend_tier: Optional[str] = typer.Option(
+        None,
+        "--backend-tier",
+        help=(
+            "Explicit backend tier for vision-Hammerstein audits. 'free' routes "
+            "through the free vision pool (Gemini Flash via OpenRouter); 'paid' "
+            "forces the paid pool default. Default is None (use the "
+            "providers.yaml fallback chain)."
+        ),
+    ),
     version: bool = typer.Option(
         False,
         "--version",
@@ -102,6 +120,23 @@ def cli(
 
     README: https://github.com/rayweiss/hammerstein
     """
+    if backend_tier is not None and backend_tier not in ("free", "paid"):
+        typer.echo(
+            f"--backend-tier must be 'free' or 'paid', got {backend_tier!r}",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    if image is not None:
+        if template != "audit-this-visual":
+            typer.echo(
+                "--image is only supported with --template audit-this-visual; "
+                "use --template audit-this-visual to opt in",
+                err=True,
+            )
+            raise typer.Exit(code=2)
+        if not Path(image).is_file():
+            typer.echo(f"--image path is not a readable file: {image!r}", err=True)
+            raise typer.Exit(code=2)
     code = run(
         query,
         model_spec=model,
@@ -114,6 +149,8 @@ def cli(
         context_mode=context_mode,
         project_root=project_root,
         context_file=context_file,
+        image=image,
+        backend_tier=backend_tier,
     )
     raise typer.Exit(code=code)
 

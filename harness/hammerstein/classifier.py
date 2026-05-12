@@ -19,6 +19,7 @@ import re
 TEMPLATES = (
     "scope-this-idea",
     "audit-this-plan",
+    "audit-this-visual",
     "is-this-worth-doing",
     "what-should-we-do-next",
     "review-from-different-angle",
