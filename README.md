@@ -51,9 +51,9 @@ Counter-observation: if the baseline run already produces useful retrieval and t
 
 ## Benchmark — does the framework actually help?
 
-Short answer: **yes — and the system prompt alone is doing the work, not the RAG corpus.**
+**Yes, by a wide margin: 53 of 54 blind LLM-judge ratings preferred Hammerstein-on-frontier over raw frontier models. Which component delivers the lift is model-dependent.**
 
-We ran a two-pass benchmark on 2026-05-10. v0 measured Hammerstein-vs-raw on 6 strategic-reasoning questions × 3 frontier families × 3 LLM judges. v0.1 stress-tested the result with a 4th vendor judge (DeepSeek), 4 generic out-of-domain questions, and a prompt-vs-corpus ablation. Full methodology + verdicts in `eval/RESULTS-v0.1.md`.
+We ran a two-pass benchmark on 2026-05-10. v0 measured Hammerstein-vs-raw on 6 strategic-reasoning questions × 3 frontier families × 3 LLM judges. v0.1 stress-tested the result with a 4th vendor judge (DeepSeek), 4 generic out-of-domain questions, and a prompt-vs-corpus ablation. v0.2 extended the ablation across all 3 frontier families and complicated the original "system prompt is load-bearing" reading — see § "v0.2 update" below. Full methodology + verdicts in `eval/RESULTS-v0.1.md`.
 
 ### v0 — main result
 
