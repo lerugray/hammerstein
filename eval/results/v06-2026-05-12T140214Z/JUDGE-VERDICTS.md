@@ -1,0 +1,93 @@
+# v0.6 LLM-judge verdicts (Grok surgical test)
+
+**Run dir:** `/tmp/v06-results/2026-05-12T140214Z`
+**Q-set:** Q1-Q6 with Q3 and Q4 modified by Grok's 12-word vocab-forbidden suffix
+**Judges:** anthropic/claude-opus-4.7, openai/gpt-5, anthropic/claude-sonnet-4.6, deepseek/deepseek-chat
+**Bias control:** position-randomized per pair (deterministic seed=42)
+
+## Aggregate results
+
+| Pair | n | Cell A wins | Cell B wins | Ties | A win-rate | Δ framework | Δ usefulness | Δ voice |
+|---|---|---|---|---|---|---|---|---|
+| Hammerstein vs Counter-2am (v0.6) | 24 | 17 | 6 | 1 | 72.9% | +0.54 | +0.38 | +0.46 |
+| Hammerstein vs Raw (v0.6 modified Q3/Q4) | 24 | 19 | 4 | 1 | 81.2% | +1.08 | +0.38 | +1.38 |
+| Counter-2am vs Raw (v0.6) | 24 | 21 | 3 | 0 | 87.5% | +0.92 | +0.38 | +1.21 |
+
+Note: deltas are mean(A) - mean(B) on the 1-5 scale. Positive favors A.
+
+## Per-rating detail
+
+| Q | Pair | Judge | Pick (A/B/tie) | Winning cell | Rationale |
+|---|------|-------|---------------|--------------|-----------|
+| Q1 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | B | or-grok-hammerstein | B uses explicit typology, names the interaction pattern, and gives concrete validation protocol with cost ratio; A is cleaner structurally but less specific to the staff-officer ro |
+| Q1 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | A | or-grok-counter | A gives a precise fallback-validation plan with triggers, logging, thresholds, and timelines; B is strong conceptually but less operationalized for immediate action. |
+| Q1 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | B | or-grok-hammerstein | B delivers sharper structural diagnosis, concrete interaction-pattern framing, and actionable validation protocol with tighter telegraphic voice throughout. |
+| Q1 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | B | or-grok-hammerstein | B edges out A with tighter framework fidelity (explicit Hammerstein pattern reference), superior usefulness (actionable 10-query validation protocol), and flawless voice (cold-prec |
+| Q2 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | A | or-grok-hammerstein | A delivers a sharper structural audit using framework vocabulary (legible failure modes, quadrants, counter-observation) tied to positioning; B is competent but generic SWOT-adjace |
+| Q2 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | A | or-grok-hammerstein | A nails the structural audit with explicit gates and legible-failure framing and gives clear positioning moves; B is solid but more generic GTM and lighter on mechanisms. |
+| Q2 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | B | or-grok-counter | B delivers sharper actionable simulation and cleaner structural discipline without vocabulary padding; A is thorough but verbose and framework-performative. |
+| Q2 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | A | or-grok-hammerstein | Response A demonstrates superior framework-fidelity with explicit structural audit logic (clever-lazy/stupid-industrious, verification gates), greater usefulness via actionable str |
+| Q3 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | A | or-grok-hammerstein | B shows more structural discipline via explicit failure modes and simulation, but A reads more like sober telegraphic reasoning and gives a sharper, more actionable next move. |
+| Q3 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | B | or-grok-counter | B provides concrete failure modes, a tight weekly gate with deletion triggers, and forward simulation, making it more actionable while keeping a disciplined, sober tone. |
+| Q3 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | A | or-grok-hammerstein | A delivers sober, specific reasoning without structural scaffolding; B's labeled passes and simulation theater feel formulaic and violate the telegraphic voice requirement. |
+| Q3 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | B | or-grok-counter | B demonstrates superior structural discipline, actionable clarity, and voice-match, making it more useful and strategic. |
+| Q4 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | B | or-grok-counter | B shows more structural discipline via explicit failure modes and simulation; A is cleaner prose but less mechanistic. Both actionable; B edges ahead on rigor. |
+| Q4 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | A | or-grok-hammerstein | A proposes the true minimum viable surrogate with concrete next steps and clear fallback; B is disciplined but heavier and adds speculative timeline and retrieval complexity. |
+| Q4 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | B | or-grok-counter | B wins on usefulness: explicit failure modes, simulation, and upgrade path give the operator concrete decision triggers; A is cleaner but thinner on actionable mechanics. |
+| Q4 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | A | or-grok-hammerstein | A's concrete, minimal mechanics and clear trade-off beats B's overstructured passes and latent complexity. |
+| Q5 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | B | or-grok-hammerstein | B explicitly names the stupid-industrious pattern, gives ranked structural alternatives with counter-observation, and asks a tightening question; A is solid but less directive. |
+| Q5 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | B | or-grok-hammerstein | Both are structurally sound, but B directly rejects the doc edit and provides ranked, enforceable gates with auditability and a counter-observation, making it more immediately acti |
+| Q5 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | B | or-grok-hammerstein | B delivers sharper structural diagnosis, ranked alternatives, and a closing diagnostic question; A's simulation adds value but B's enforcement-vs-instruction framing is more action |
+| Q5 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | TIE | tie | Both responses excel in framework-fidelity, usefulness, and voice-match, offering structural fixes and clear reasoning without padding or GPT-cadence pivots. |
+| Q6 | Hammerstein vs Counter-2am (v0.6) | claude-opus-4.7 | B | or-grok-hammerstein | B uses the typology vocabulary (stupid-industrious, verify-premise, forbidden-squares) and frames the structural fix as a Boolean gate; A is competent but generic prompt-engineerin |
+| Q6 | Hammerstein vs Counter-2am (v0.6) | gpt-5 | B | or-grok-hammerstein | B identifies the reinvention failure via the framework and prescribes a hard gating fix with concrete code, while A offers a softer prompt tweak without structural enforcement. |
+| Q6 | Hammerstein vs Counter-2am (v0.6) | claude-sonnet-4.6 | B | or-grok-hammerstein | B names the failure mode precisely (stupid-industrious/reinvention reflex), applies structural vocabulary throughout, and delivers an actionable gate; A is generic and padded. |
+| Q6 | Hammerstein vs Counter-2am (v0.6) | deepseek-chat | B | or-grok-hammerstein | B's structural fix and framework fidelity are more precise and actionable, directly addressing the reinvention reflex with a Boolean gate. |
+| Q1 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | B | or-grok-hammerstein | B uses typology vocabulary and counter-observation with telegraphic discipline; A is useful but padded, generic, and ends with a salesy upsell question. |
+| Q1 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | A | or-grok-raw | A gives a concrete, time-boxed validation plan with clear gates and cheap scaffolds; B is sharp on framing but offers fewer actionable steps and metrics. |
+| Q1 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | B | or-grok-hammerstein | B uses structural typology, legible failure framing, and telegraphic precision; A is useful but padded and generic in cadence. |
+| Q1 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | A | or-grok-raw | A's actionable validation plan and cheap mitigation tactics edge out B's sharper framework discipline on sheer operator-usefulness. |
+| Q2 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | A | or-grok-hammerstein | A operates as a structural audit using the framework's vocabulary (clever-lazy, stupid-industrious, legible failure, counter-observation); B is a generic build-vs-buy SaaS-vs-sover |
+| Q2 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | A | or-grok-hammerstein | A uses the legible-failure framework with gates and a counter-observation, then gives concrete positioning moves; B’s sovereignty framing is good but less mechanistic and directive |
+| Q2 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | A | or-grok-hammerstein | A uses the operator's own framework vocabulary precisely; B substitutes generic SaaS vs. self-hosted framing and adds padding/table bloat with no structural audit discipline. |
+| Q2 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | A | or-grok-hammerstein | A excels in framework-fidelity, usefulness, and voice-match, offering a clearer strategic articulation with actionable insights. |
+| Q3 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | A | or-grok-hammerstein | A is telegraphic, specific, with a falsifying test and concrete one-day action; B pads with bullets, generic constraint-theory, and toxic-adjacent moralizing ("opting out of respon |
+| Q3 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | A | or-grok-hammerstein | A delivers a concrete falsification test and one-day triage to realign work with outcomes and reduce inflow, in a crisp, actionable voice; B is good but more rhetorical and less me |
+| Q3 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | A | or-grok-hammerstein | A is tighter, more telegraphic, avoids padding and bold headers; B over-explains and has GPT-cadence structure despite similar insight depth. |
+| Q3 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | B | or-grok-raw | B's ruthless focus on the core goal, explicit first-principles breakdown, and actionable steps (e.g., "spend one uninterrupted hour with the founder") make it more strategically di |
+| Q4 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | A | or-grok-hammerstein | A is more telegraphic and operator-ready with a concrete one-hour path; B is well-reasoned but padded and slightly more abstract about the value-extraction step. |
+| Q4 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | A | or-grok-hammerstein | A delivers a minimal, testable static-prompt surrogate with clear failure handling and immediate steps; B is solid but more expository and heavier to construct. |
+| Q4 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | TIE | tie | A is more actionable and tighter in voice; B has stronger first-principles decomposition but slightly more padding. Net wash. |
+| Q4 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | B | or-grok-raw | Response B is more rigorously minimal yet preserves irreducible fidelity, with clearer first-principles justification and sharper directive precision. |
+| Q5 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | A | or-grok-hammerstein | A names the stupid-industrious pattern and proposes structural gates; B hedges with "yes but," recommends doc edits plus checklists, and ends with toxic-positivity offer. |
+| Q5 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | A | or-grok-hammerstein | A pinpoints the structural bug and prescribes enforceable pre-action gates that create legible failures; B is solid but leans more on docs/review and is less forceful on gating. |
+| Q5 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | A | or-grok-hammerstein | A correctly diagnoses wrong fix shape, uses structural vocabulary precisely, no padding; B hedges toward "yes" and ends with GPT-cadence offer. |
+| Q5 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | A | or-grok-hammerstein | Response A provides a more structural, actionable fix with clear enforcement mechanisms, while B leans on documentation and process improvements. |
+| Q6 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-opus-4.7 | B | or-grok-hammerstein | B uses typology vocabulary, structural-fix preference, and explicit gate; A is solid but more generic and pads with model-psychology speculation. |
+| Q6 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | gpt-5 | B | or-grok-hammerstein | B applies the framework explicitly and offers a concrete gating fix and operator instructions, with concise, structural reasoning; A is solid but softer, more verbose, and lacks ha |
+| Q6 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | claude-sonnet-4.6 | B | or-grok-hammerstein | B uses framework vocabulary precisely, delivers a structural fix with code, and reads like a terse audit; A is accurate but generic and padded. |
+| Q6 | Hammerstein vs Raw (v0.6 modified Q3/Q4) | deepseek-chat | B | or-grok-hammerstein | B excels with precise framework-fidelity, actionable fixes, and a sharper voice, making it more useful and disciplined. |
+| Q1 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | A | or-grok-counter | A is telegraphic structural audit with crux/failure-modes/sim discipline; B is useful but padded, GPT-cadence, ends with sales-pitch upsell. |
+| Q1 | Counter-2am vs Raw (v0.6) | gpt-5 | A | or-grok-counter | A provides a tight forced-fallback protocol with explicit gates, timelines, and legible failure modes, enabling immediate action with minimal overhead and strong structural discipl |
+| Q1 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | A | or-grok-counter | A delivers tighter structural audit with legible failure modes and simulation; B is useful but padded with GPT-cadence pivots and a closing offer that breaks sober voice. |
+| Q1 | Counter-2am vs Raw (v0.6) | deepseek-chat | A | or-grok-counter | Response A demonstrates superior structural discipline with explicit failure modes, mechanistic gates, and simulation, while Response B is more verbose and leans on generic advice. |
+| Q2 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | A | or-grok-counter | A operates as structural audit with failure modes and simulation; B is a marketing deck with tables and GPT-cadence flourishes despite making a coherent ownership-axis argument. |
+| Q2 | Counter-2am vs Raw (v0.6) | gpt-5 | A | or-grok-counter | A applies a disciplined structural audit with failure modes and simulations to drive positioning and actions; B offers a strong ownership contrast but is more rhetorical and less o |
+| Q2 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | A | or-grok-counter | A delivers structural audit with failure modes, simulation, and actionable positioning; B is thorough but padded with table formatting and GPT-cadence pivots. |
+| Q2 | Counter-2am vs Raw (v0.6) | deepseek-chat | B | or-grok-raw | B's structural depth, ownership clarity, and tactical implications outclass A's narrower audit lens. |
+| Q3 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | B | or-grok-counter | B is more telegraphic, gives concrete failure modes, a specific structural intervention with trigger conditions, and a simulation; A has stronger padding and some sermonizing. |
+| Q3 | Counter-2am vs Raw (v0.6) | gpt-5 | B | or-grok-counter | B gives concrete failure modes, a mechanistic weekly trigger, and simulations to de-risk; it prescribes a precise next move with a sober tone, while A is solid but less operational |
+| Q3 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | B | or-grok-counter | B is more concrete, telegraphic, and actionable with specific failure modes and simulation; A is padded and generic despite solid reasoning. |
+| Q3 | Counter-2am vs Raw (v0.6) | deepseek-chat | A | or-grok-raw | Response A delivers sharper first-principles reasoning, clearer strategic imperative, and more actionable steps without relying on implicit structural crutches—voice and usefulness |
+| Q4 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | B | or-grok-counter | B gives concrete failure modes, simulation across time horizons, and an actionable build path; A is more abstract and prescriptive without mechanistic gates. |
+| Q4 | Counter-2am vs Raw (v0.6) | gpt-5 | B | or-grok-counter | B identifies concrete failure modes, proposes a minimal, operational log-prepend system with gating and iteration, and delivers terse, actionable guidance; A is useful but more abs |
+| Q4 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | B | or-grok-counter | B gives concrete failure modes, simulation, and actionable spec; A is coherent but generic and padded with obvious reasoning. |
+| Q4 | Counter-2am vs Raw (v0.6) | deepseek-chat | A | or-grok-raw | A's distilled-first-principles approach is more surgically minimal and actionable despite framework constraints. |
+| Q5 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | A | or-grok-counter | A operates as structural audit with verification gates and simulation; B pads with toxic positivity, GPT-cadence, and a sales-pitch closer. |
+| Q5 | Counter-2am vs Raw (v0.6) | gpt-5 | A | or-grok-counter | A provides explicit verification gates, enforcement, and simulated failure modes; B is practical but more generic and less structurally disciplined. |
+| Q5 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | A | or-grok-counter | A uses structural audit discipline with simulation, failure modes, and enforcement gates; B is solid but padded with GPT-cadence pivots and a closing upsell. |
+| Q5 | Counter-2am vs Raw (v0.6) | deepseek-chat | A | or-grok-counter | Response A demonstrates superior structural discipline, actionable simulation, and telegraphic voice, making it more likely to drive immediate operator action. |
+| Q6 | Counter-2am vs Raw (v0.6) | claude-opus-4.7 | B | or-grok-counter | B is tighter, more telegraphic, with explicit gates and a concrete trigger sentence; A diagnoses well but pads with generic Claude-failure commentary. |
+| Q6 | Counter-2am vs Raw (v0.6) | gpt-5 | B | or-grok-counter | B gives a crisp structural diagnosis and a single concrete prompt-level gate to prevent recurrence, in a telegraphic voice; A is solid but more verbose and less immediately directi |
+| Q6 | Counter-2am vs Raw (v0.6) | claude-sonnet-4.6 | B | or-grok-counter | B delivers tighter diagnosis, actionable fix, and simulation without padding; A over-explains and drifts into generic Claude-bashing with GPT-cadence pivots. |
+| Q6 | Counter-2am vs Raw (v0.6) | deepseek-chat | B | or-grok-counter | B’s structured passes, simulation, and minimal actionable fix make it more useful and disciplined. |
