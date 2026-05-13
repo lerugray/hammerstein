@@ -55,18 +55,32 @@ from typing import Optional
 
 VERSION = "human-judge-runner/1.0"
 
-# Strip the metadata block that run_benchmark.py prepends to each
-# response file. Pattern: starts with `---\n...\n---\n\n` at file top.
-_METADATA_BLOCK_RE = re.compile(
-    r"\A---\n.*?\n---\n+", re.DOTALL
-)
+# run_benchmark.py writes response files in this shape:
+#   # Q{N} · cell={slug}
+#   - backend: `...`
+#   ... metadata bullets ...
+#   ## Question
+#   ... question text repeat ...
+#   ## Response
+#   ... actual response body ...
+# Both the metadata bullets AND the title heading would leak the cell
+# slug (cell=or-claude-sonnet-raw etc.) to the human judge. We strip
+# everything up to and including the "## Response" line, leaving only
+# the raw response body.
+_RESPONSE_SPLIT_RE = re.compile(r"^## Response\s*\n", re.MULTILINE)
 
 
 def read_response_file(path: Path) -> str:
-    """Load a response file from a benchmark run dir, stripping its
-    metadata header. Returns the raw response body."""
+    """Load a response file from a benchmark run dir, returning ONLY
+    the response body. Strips metadata header (which would leak the
+    cell slug to the human judge) and the duplicate question text."""
     raw = path.read_text(encoding="utf-8")
-    return _METADATA_BLOCK_RE.sub("", raw).rstrip() + "\n"
+    m = _RESPONSE_SPLIT_RE.search(raw)
+    if not m:
+        # Fallback: response file is malformed; return raw with a
+        # warning marker so we don't silently leak metadata.
+        return "(malformed response file; please check)\n" + raw[-2000:].rstrip() + "\n"
+    return raw[m.end():].rstrip() + "\n"
 
 
 def discover_run_questions(run_dir: Path, cell_slug: str) -> dict[int, Path]:
@@ -178,11 +192,16 @@ def cmd_generate(args: argparse.Namespace) -> int:
                 side_b_text = response_for_cell_a
 
             question_text = extract_question_text(benchmark_path, qid)
+            # NOTE: cell_pair_group is intentionally OMITTED from the
+            # pairs.json structure. It would leak the model-family
+            # identities (e.g. "or-claude-sonnet-raw_vs_or-claude-sonnet")
+            # to anyone who opens the JSON file in a text editor. The
+            # group is recorded in mapping.json (Ray-private) and is
+            # joined back via pair_id at scoring time.
             pairs.append(
                 {
                     "pair_id": pid,
                     "question_id": qid,
-                    "cell_pair_group": f"{cell_a}_vs_{cell_b}",
                     "question": question_text,
                     "response_a": side_a_text,
                     "response_b": side_b_text,
@@ -209,11 +228,14 @@ def cmd_generate(args: argparse.Namespace) -> int:
     # Mapping stays in pair-creation order (Ray-private; doesn't matter
     # since lookup is by pair_id).
 
+    # NOTE: pairs_out is the file SENT TO THE JUDGE. It must contain
+    # ZERO cell-identifying metadata (no cell slugs, no run_dir paths
+    # that include cell names, no comparison-shape hints). Everything
+    # the judge could use to bias their judgment goes in mapping_out
+    # instead (Ray-private).
     pairs_out = {
         "version": VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "run_dir": str(run_dir),
-        "cell_pairs": [{"a": a, "b": b} for a, b in cell_pairs],
         "rubric": "overall_preference",
         "pairs": pairs_shuffled,
     }
@@ -221,6 +243,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
         "version": VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "run_dir": str(run_dir),
+        "cell_pairs": [{"a": a, "b": b} for a, b in cell_pairs],
         "seed": args.seed,
         "mapping": mapping,
     }

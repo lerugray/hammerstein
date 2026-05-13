@@ -65,3 +65,8 @@ docs/MESSAGES-FOR-RAY.md
 *.egg-info/
 logs/
 .aider*
+
+# Human-judge working files (working artifacts, not committed)
+human-judge-pairs.json
+human-judge-mapping.json
+human-judge-pairs-judgments.json
