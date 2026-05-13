@@ -70,3 +70,4 @@ logs/
 human-judge-pairs.json
 human-judge-mapping.json
 human-judge-pairs-judgments.json
+human-judge-v*.json
