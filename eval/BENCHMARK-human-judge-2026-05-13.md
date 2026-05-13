@@ -60,33 +60,62 @@ authority shape.
 
 ---
 
-## Question 4 — external judge question 1
+## Question 4 — co-founder equity renegotiation
 
-**Source:** TBD. To be submitted by external judge.
+**Source:** constructed 2026-05-13. Generic founder strategic decision.
+Co-founder said "use yours, I'll just judge" — replacing the original
+external-judge slot.
+
+**Shape:** relationship + strategic-stakes under partial-information.
+The question tests counter-observation discipline (what's the risk on
+each side of the renegotiation?), verification questions before
+acting, refuse-pragmatic-yes-or-no.
 
 **Query:**
 
-> _[TBD: external judge to fill in via Telegram]_
+> My co-founder and I split equity 50/50 when we started 18 months
+> ago. We're now 6 weeks pre-Series-A. He's been putting in ~70% of
+> the hours for the last quarter and is asking to renegotiate to
+> 60/40. We're still friends. Renegotiate?
 
 ---
 
-## Question 5 — external judge question 2
+## Question 5 — open-source maintainer burnout
 
-**Source:** TBD. To be submitted by external judge.
+**Source:** constructed 2026-05-13. Generic open-source sustainability
+decision.
+
+**Shape:** sustainability under volunteer-burnout; sunk-cost vs
+strategic-reset. The question tests stupid-industrious diagnosis (the
+"just push through one more release" pattern), structural-fix
+preference over throughput-fix.
 
 **Query:**
 
-> _[TBD: external judge to fill in via Telegram]_
+> I'm the sole maintainer of an open-source library with 12k GitHub
+> stars and a small group of regular contributors. I've been working
+> on it nights/weekends for three years and I'm burned out. The
+> contributor Slack is asking for a new release. What do I do?
 
 ---
 
-## Question 6 — external judge question 3
+## Question 6 — job offer at smaller company
 
-**Source:** TBD. To be submitted by external judge.
+**Source:** constructed 2026-05-13. Generic career decision under
+multi-dimensional constraint.
+
+**Shape:** career strategic decision; multi-dimensional optimization
+under partial-information. The question tests BYOI ceiling (the
+operator knows their own risk tolerance and values better than any
+advisor), verification questions before recommending a direction,
+refuse-trivial-pick discipline.
 
 **Query:**
 
-> _[TBD: external judge to fill in via Telegram]_
+> I have a stable $200k senior IC role at a publicly-traded software
+> company. A 12-person Series-A startup is offering me a Director
+> title, $160k base + 0.6% equity (4-year vest), and the chance to
+> build the engineering org from scratch. Take it?
 
 ---
 
