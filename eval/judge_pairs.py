@@ -94,6 +94,64 @@ V04_FAMILIES = [
     ("or-claude-sonnet-raw", "rp-hammerstein-7b", "cross-scale: 7B+framework vs Sonnet raw"),
 ]
 
+# v0.7 OOD stress test families. 3 pairs per the scope doc:
+#   Pair A: Hammerstein-on-frontier vs Raw frontier (does wrap hold OOD?)
+#   Pair B: Hammerstein-7B vs Raw 7B (does in-weights OOD hold?)
+#   Pair C: Hammerstein-on-frontier vs Hammerstein-7B (context vs weights tradeoff OOD)
+#
+# Cell slugs mirror run-v07-ood.py:
+#   or-sonnet-raw  = raw Sonnet 4.6, no framework
+#   or-sonnet-ham  = Hammerstein-on-Sonnet-4.6 (system prompt + corpus)
+#   rp-7b-raw      = raw Qwen2.5-7B-Instruct, no adapter, no prompt
+#   rp-7b-ham      = Qwen2.5-7B-Instruct + hammerstein-7b-lora, no prompt
+V07_FAMILIES = [
+    ("or-sonnet-raw", "or-sonnet-ham", "Pair A: Hammerstein-on-frontier vs Raw frontier (OOD)"),
+    ("rp-7b-raw",     "rp-7b-ham",    "Pair B: Hammerstein-7B vs Raw 7B (OOD)"),
+    ("or-sonnet-ham", "rp-7b-ham",    "Pair C: Hammerstein-on-frontier vs Hammerstein-7B (context vs weights OOD)"),
+]
+
+# v0.7 judge prompt adds OOD-handling as the 4th axis.
+# The standard 3-axis prompt is preserved for backward compat with --v04 / --v03 etc.
+JUDGE_PROMPT_V07 = """You are a blind LLM judge scoring two responses to the same strategic-reasoning question. The question is from a domain OUTSIDE the model's typical training emphasis (medical / legal / pure-mathematics / adversarial-game-theory). Score per the rubric.
+
+# Rubric (1-5 each, integer)
+
+- **framework-fidelity** — does the response operate as a Hammerstein-style strategic audit? (clever-lazy / stupid-industrious vocabulary; verification gates; counter-observation; structural-fix preference; refuse-pragmatic-v0; BYOI ceiling respect; legible-failure framing)
+- **usefulness** — would a practitioner in this domain have ACTED on this response? Would it have changed their next move?
+- **voice-match** — does the response read like sober strategic reasoning? Telegraphic; specific-over-generic; no padding; no toxic positivity; no GPT-cadence pivots ("It's not just X — it's Y")
+- **ood-handling** — does the response handle the out-of-distribution domain gracefully? (acknowledges limits; reasons from first principles; surfaces uncertainty appropriately) vs fails load-bearingly (hallucinates domain knowledge; applies in-distribution patterns to inappropriate cases; confidently wrong output)
+
+# Question
+
+{question}
+
+# Response A
+
+{response_a}
+
+# Response B
+
+{response_b}
+
+# Output format (RESPECT EXACTLY — machine-parsed)
+
+framework-A: <1-5>
+framework-B: <1-5>
+usefulness-A: <1-5>
+usefulness-B: <1-5>
+voice-A: <1-5>
+voice-B: <1-5>
+ood-A: <1-5>
+ood-B: <1-5>
+overall: <A|B|tie>
+rationale: <one sentence, max 200 chars, no line breaks>
+"""
+
+_FIELD_RE_V07 = re.compile(
+    r"^(framework-A|framework-B|usefulness-A|usefulness-B|voice-A|voice-B|ood-A|ood-B|overall|rationale):\s*(.*)$",
+    re.MULTILINE,
+)
+
 
 @dataclass
 class Verdict:
@@ -262,6 +320,8 @@ def main() -> int:
                    help="Judge v0.4 cross-scale families (Hammerstein-7B vs raw-Qwen2.5-7B + vs raw-Sonnet)")
     p.add_argument("--v03", action="store_true",
                    help="Judge v0.3 neutral-scaffold family (Sonnet neutral-scaffold vs raw)")
+    p.add_argument("--v07", action="store_true",
+                   help="Judge v0.7 OOD families (Pair A/B/C, 4-axis rubric with ood-handling)")
     args = p.parse_args()
 
     random.seed(args.seed)
@@ -275,7 +335,9 @@ def main() -> int:
         print(f"ERR: run dir not found: {run_dir}", file=sys.stderr)
         return 1
 
-    if args.v04:
+    if args.v07:
+        active_families = V07_FAMILIES
+    elif args.v04:
         active_families = V04_FAMILIES
     elif args.v03:
         active_families = V03_FAMILIES
@@ -299,6 +361,8 @@ def main() -> int:
     total_cost_estimate_usd = 0.0
     print(f"Judge plan: {len(args.questions)} Qs x {len(families)} families x {len(judges)} judges = {n_total} ratings", file=sys.stderr)
 
+    use_v07_prompt = args.v07 if hasattr(args, "v07") else False
+
     for q in args.questions:
         for raw_cell, ham_cell, family_label in families:
             q_text, raw_text = read_response(run_dir, q, raw_cell)
@@ -309,13 +373,15 @@ def main() -> int:
             a_is_raw = random.choice([True, False])
             response_a = raw_text if a_is_raw else ham_text
             response_b = ham_text if a_is_raw else raw_text
-            prompt = JUDGE_PROMPT.format(question=q_text, response_a=response_a, response_b=response_b)
+            judge_tmpl = JUDGE_PROMPT_V07 if use_v07_prompt else JUDGE_PROMPT
+            prompt = judge_tmpl.format(question=q_text, response_a=response_a, response_b=response_b)
             for judge_model in judges:
                 n_done += 1
                 t0 = time.time()
                 text, meta = or_request(prompt, judge_model, key)
                 dt = time.time() - t0
-                parsed = parse_verdict(text) if text else {}
+                field_re = _FIELD_RE_V07 if use_v07_prompt else _FIELD_RE
+                parsed = {m.group(1): m.group(2).strip() for m in field_re.finditer(text)} if text else {}
                 v = Verdict(
                     question=q,
                     family=family_label,
@@ -346,7 +412,7 @@ def main() -> int:
                 err = v.error or ""
                 print(f"  [{n_done}/{n_total}] Q{q} {family_label} judge={judge_model.split('/')[-1]:20s} overall={ovr:5s} {err}", file=sys.stderr)
 
-    render_summary(verdicts, args.run, out_path, log_path, active_families=families)
+    render_summary(verdicts, args.run, out_path, log_path, active_families=families, v07=use_v07_prompt)
     print(f"\nWrote {out_path}", file=sys.stderr)
     print(f"Wrote {log_path}", file=sys.stderr)
     return 0
@@ -358,6 +424,7 @@ def render_summary(
     out_path: Path,
     log_path: Path,
     active_families: list[tuple[str, str, str]] | None = None,
+    v07: bool = False,
 ) -> None:
     """Render JUDGE-VERDICTS.md from in-memory verdicts + jsonl log for axis scores."""
     if active_families is None:
@@ -373,11 +440,17 @@ def render_summary(
     lines = [f"# Hammerstein benchmark · LLM-judge verdicts ({run_name})", ""]
     lines.append(f"Judges: {', '.join(JUDGES)}")
     lines.append(f"Position-bias mitigation: per-pair randomization of A/B order; judge sees blind labels.")
+    if v07:
+        lines.append("Rubric: 4-axis (framework-fidelity / usefulness / voice-match / ood-handling).")
     lines.append("")
     lines.append("## Per-family results")
     lines.append("")
-    lines.append("| Family | n | Ham wins | Raw wins | Ties | Win-rate (Ham over Raw, ties as 0.5) | Mean framework Δ (Ham−Raw) | Mean usefulness Δ | Mean voice Δ |")
-    lines.append("|---|---|---|---|---|---|---|---|---|")
+    if v07:
+        lines.append("| Family | n | Ham wins | Raw wins | Ties | Win-rate (Ham, ties as 0.5) | Mean framework Δ | Mean usefulness Δ | Mean voice Δ | Mean ood Δ |")
+        lines.append("|---|---|---|---|---|---|---|---|---|---|")
+    else:
+        lines.append("| Family | n | Ham wins | Raw wins | Ties | Win-rate (Ham over Raw, ties as 0.5) | Mean framework Δ (Ham−Raw) | Mean usefulness Δ | Mean voice Δ |")
+        lines.append("|---|---|---|---|---|---|---|---|---|")
 
     overall_ham = overall_raw = overall_tie = overall_n = 0
 
@@ -391,6 +464,7 @@ def render_summary(
         framework_deltas: list[int] = []
         usefulness_deltas: list[int] = []
         voice_deltas: list[int] = []
+        ood_deltas: list[int] = []
         for row in rows:
             parsed = row.get("parsed", {})
             a_is_raw = row.get("a_is_raw")
@@ -404,11 +478,10 @@ def render_summary(
             elif ovr.lower() == "tie":
                 ties += 1
             # axis deltas
-            for axis_name, axis_list in (
-                ("framework", framework_deltas),
-                ("usefulness", usefulness_deltas),
-                ("voice", voice_deltas),
-            ):
+            axes = [("framework", framework_deltas), ("usefulness", usefulness_deltas), ("voice", voice_deltas)]
+            if v07:
+                axes.append(("ood", ood_deltas))
+            for axis_name, axis_list in axes:
                 a_score = _safe_int(parsed.get(f"{axis_name}-A"), -1)
                 b_score = _safe_int(parsed.get(f"{axis_name}-B"), -1)
                 if a_score == -1 or b_score == -1:
@@ -420,10 +493,17 @@ def render_summary(
         f_delta = sum(framework_deltas) / len(framework_deltas) if framework_deltas else 0
         u_delta = sum(usefulness_deltas) / len(usefulness_deltas) if usefulness_deltas else 0
         v_delta = sum(voice_deltas) / len(voice_deltas) if voice_deltas else 0
-        lines.append(
-            f"| {family_label} | {n} | {ham_w} | {raw_w} | {ties} | "
-            f"{win_rate:.1%} | {f_delta:+.2f} | {u_delta:+.2f} | {v_delta:+.2f} |"
-        )
+        if v07:
+            o_delta = sum(ood_deltas) / len(ood_deltas) if ood_deltas else 0
+            lines.append(
+                f"| {family_label} | {n} | {ham_w} | {raw_w} | {ties} | "
+                f"{win_rate:.1%} | {f_delta:+.2f} | {u_delta:+.2f} | {v_delta:+.2f} | {o_delta:+.2f} |"
+            )
+        else:
+            lines.append(
+                f"| {family_label} | {n} | {ham_w} | {raw_w} | {ties} | "
+                f"{win_rate:.1%} | {f_delta:+.2f} | {u_delta:+.2f} | {v_delta:+.2f} |"
+            )
         overall_ham += ham_w
         overall_raw += raw_w
         overall_tie += ties
