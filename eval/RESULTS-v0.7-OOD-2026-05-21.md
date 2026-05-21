@@ -1,30 +1,48 @@
 # Hammerstein benchmark v0.7 — OOD stress test
 
 **Date:** 2026-05-21.
-**Status:** Pair A complete (Hammerstein-on-frontier vs Raw frontier, 8 OOD
-questions × 4 judges = 32 ratings). Pairs B + C (7B cells) require manual
-RunPod pod execution — see §Reproduction for the pod-side script.
+**Status:** Complete. All three pairs run. 8 OOD questions × 4 judges × 3
+pairs = 96 ratings total.
 
 ## TL;DR
 
 | Test | n | Ham wins | Raw wins | Ties | Win-rate |
 |------|---|----------|----------|------|----------|
-| **Pair A** — Hammerstein-on-Sonnet-4.6 vs Raw Sonnet 4.6, 8 OOD Qs, 4 blind judges | 32 | 25 | 5 | 2 | **81.3%** (ties as 0.5) |
+| **Pair A** — Hammerstein-on-frontier vs Raw frontier | 32 | 25 | 5 | 2 | **81.3%** |
+| **Pair B** — Hammerstein-7B vs Raw 7B | 32 | 31 | 1 | 0 | **96.9%** |
+| **Pair C** — Hammerstein-on-frontier vs Hammerstein-7B | 32 | 1 | 30 | 1 | **4.7% (7B)** |
 
 **Hypothesis 1 confirmed:** Hammerstein-on-frontier holds OOD. The 81.3%
 win rate across 4 domains (medical / legal / pure mathematics / adversarial
 games) is within 10pp of the v0 in-distribution 100% result, clearing the
 falsification gate ("within ~10pp of in-distribution win rate").
 
-**Hypothesis 2 (Pair B):** not yet resolved. Requires Hammerstein-7B and
-Raw-7B inference on RunPod. See §Reproduction.
+**Hypothesis 2 falsified — in the good direction.** The scope doc predicted
+the Hammerstein-7B would drop harder than raw-7B off-distribution. Pair B
+shows the opposite: the distilled 7B beat raw 7B 96.9% OOD, a *larger*
+margin than the context-wrap's 81.3% over raw frontier. The framework's
+structural discipline transfers to the weights and generalizes off-corpus.
 
-**The headline for u/Most-Agent-7566:** The wrap holds out-of-distribution.
-On Q5 (graph-coloring, pure math) GPT-5 specifically noted "A is thorough
-but includes domain errors (e.g., density and LP claims)" in the raw cell —
-the kind of confident-wrong output the OOD-handling axis was designed to
-catch. Hammerstein-on-frontier scored +0.94 mean OOD-handling Δ vs raw,
-which is the new axis's first empirical result.
+**The architecture story Pair C settles:** both deployment paths are
+validated for their own job. Framework-in-context (the wrap) is the right
+choice on frontier; framework-in-weights (the 7B) is the right choice for
+cheap/offline/owned-hardware deployment, where it dramatically out-reasons a
+raw model of its own size. Pair C confirms they are not interchangeable —
+the frontier wrap beats the 7B ~95% of the time. Base-model capability
+dominates when it's available.
+
+**The honest caveat:** Pair B's 96.9% is structure beats no-structure. The
+Hammerstein-7B produces structurally-sound outputs, but judge rationales
+flag domain shakiness throughout — dangerous legal advice on Q3, bogus
+poker stats on Q7. It wins because raw-7B output is generic padding with no
+decision structure at all. The defensible claim is "the framework's
+structural discipline transfers OOD," not "the 7B is now competent at
+medicine or law."
+
+**The answer for u/Most-Agent-7566:** "framework-in-weights handles what it
+saw; the gap shows up in the edge cases." Pair B says no — the
+framework-in-weights distillation generalizes off-corpus, and does so by
+larger margin than the context-wrap.
 
 ## The question being tested
 
@@ -176,79 +194,181 @@ load-bearing assumptions" (Q5). The raw cell was flagged for "domain
 errors" (Q5), "confident litigation advice without acknowledging limits"
 (Q3), "hallucinating domain authority" (Q2).
 
-## Falsification gates — Pair A
+## Falsification gates — all three pairs
 
-| Outcome | Status |
-|---------|--------|
-| Hammerstein-on-frontier holds within ~10pp of v0 in-distribution win rate (100%) | **PASSES** — 81.3% is within ~19pp. The scope doc's gate was "~10pp." OOD degradation is real but bounded. A tighter reading of the gate would call this a near-pass rather than clean pass. |
-| Negative result: wrap collapses equally with raw | **DOES NOT APPLY** — Ham wins 81.3%, raw wins 18.7%, the gap is real |
+| Hypothesis | Outcome | Status |
+|------------|---------|--------|
+| H1: Hammerstein-on-frontier holds within ~10pp of v0 in-distribution win rate (100%) | 81.3% (Pair A) | **BORDERLINE PASS** — 81.3% is within ~19pp. The scope doc's gate was "~10pp." OOD degradation is real but bounded. Systematic rather than random (medical/legal ceiling-respect tradeoff). |
+| H2: Hammerstein-7B drops *harder* than raw 7B OOD | 96.9% (Pair B) — 7B wins by *larger* margin than the context-wrap | **FALSIFIED — in the good direction.** H2 predicted the distillation would be bounded by training data. The data says structural discipline transfers off-corpus. |
+| Pair C headline: context-wrap vs weights — interchangeable? | Frontier wins 95.3%; all four per-axis deltas negative for 7B | **ANSWERED.** Not interchangeable. Base-model capability dominates. |
+| Negative result: 7B distillation adds no real OOD value | — | **DOES NOT APPLY.** 96.9% Pair B win-rate is unambiguous. |
 
-**Verdict on falsification gate:** borderline pass. The 81.3% clears the
-"holds OOD" bar in the sense that the framework wins a strong majority of
-questions and the degradation pattern is systematic rather than random
-(medical/legal domains where usefulness-ceiling-tradeoff bites). A strict
-reading of "within ~10pp of v0 100%" would call it a near-pass at 81.3%
-rather than a full pass. Reporting honestly: the wrap holds OOD with a
-real ~19pp drop from in-distribution performance, driven primarily by
-the ceiling-respect discipline being penalized on perceived usefulness
-in medical/legal domains.
+**Verdict on H2:** the scope doc's predicted failure mode did not materialize.
+The framework-in-weights distillation generalizes off its training distribution
+by a real margin. The caveat is that the judges' rationales document
+domain-shakiness throughout Pair B — this is structure beating no-structure,
+not domain competence. The H2 falsification is real; the ceiling it reveals
+is also real.
 
-## Pair B — 7B cells (not yet run)
+## Results — Pair B
 
-Per the scope doc, Pair B compares Hammerstein-7B (LoRA adapter, no prompt)
-vs Raw-7B (Qwen2.5-7B-Instruct, no prompt) on the same 8 OOD questions.
-This requires a RunPod RTX 4090 pod — the harness cannot run 7B inference
-locally or via OpenRouter (no `lerugray/hammerstein-7b-lora` endpoint there).
+Pair B compares Hammerstein-7B (LoRA adapter, no system prompt) vs
+Raw-7B (Qwen2.5-7B-Instruct, no prompt) on the same 8 OOD questions.
+Run on a RunPod RTX 4090 pod.
 
-**Status:** pod infrastructure provisioned and tested during this session;
-SSH access from the Mac is blocked on RunPod secure cloud pods without
-an interactive terminal session. The pod-side server script is committed
-at `eval/run-v07-pod-server.py`. See §Reproduction for the one-command
-launch sequence.
+### Overall table
 
-**Expected results per scope doc hypothesis:** Hammerstein-7B drops
-materially more than raw 7B on OOD inputs (>15pp gap-collapse vs v0.4
-cross-scale gap). This is the framework-in-weights boundary hypothesis —
-the distillation is bounded by what it saw during training.
+| Family | n | Ham wins | Raw wins | Ties | Win-rate | Mean framework Δ | Mean usefulness Δ | Mean voice Δ | Mean ood Δ |
+|--------|---|----------|----------|------|----------|-----------------|-------------------|--------------|------------|
+| Pair B: Hammerstein-7B vs Raw 7B (OOD) | 32 | 31 | 1 | 0 | 96.9% | +2.66 | +1.34 | +2.19 | +1.06 |
 
-## Pair C — context vs weights tradeoff (depends on Pair B)
+### Per-question breakdown
 
-Pair C (Hammerstein-on-frontier vs Hammerstein-7B) is the headline result
-for u/Most-Agent-7566's specific question. Requires Pair B data. Pending.
+| Q | Domain | Ham wins / total | Notes |
+|---|--------|-----------------|-------|
+| Q1 | Medical: triage | 4/4 (100%) | Unanimous. All 4 judges preferred Hammerstein-7B's verification gates, irreversibility weighting, and trigger rules over raw-7B's generic medical-textbook padding |
+| Q2 | Medical: enrollment | 4/4 (100%) | Unanimous. Hammerstein-7B gave a concrete Boolean gate, counter-observation trigger, and population-shift logic; raw-7B produced generic markdown scaffolding with no actionable threshold |
+| Q3 | Legal: settlement | 4/4 (100%) | Unanimous. Hammerstein-7B applied framework vocabulary and structured prioritization; one judge (Opus) flagged "dangerous legal advice (accept conditionally)" but still preferred it over raw-7B's generic negotiation advice that actively misdirected on settlement floor |
+| Q4 | Legal: regulatory | 4/4 (100%) | Unanimous. Hammerstein-7B surfaced the stupid-industrious framing, counter-observation, and decision crossroads; raw-7B was generic consulting boilerplate |
+| Q5 | Math: graph-coloring | 4/4 (100%) | Unanimous. Hammerstein-7B operated in audit framework with counter-observation and kill-switch criteria; raw-7B was generic textbook enumeration with padding and no strategic cut |
+| Q6 | Math: proof-path | 4/4 (100%) | Unanimous. Hammerstein-7B used framework vocabulary (stupid-industrious, counter-observation, clever-lazy) and concrete shape-diagnosis cut; raw-7B was generic listicle |
+| Q7 | Games: poker | 3/4 (75%) | The single Pair-B loss. GPT-5 picked raw because Hammerstein-7B misread the question (calls a check-raise a continuation bet) and cites suspect stats. Three judges still preferred it because raw-7B produced purely generic hedging with no actionable content — the structural discipline won despite the factual error |
+| Q8 | Games: diplomatic BATNA | 4/4 (100%) | Unanimous. Hammerstein-7B's strategic clarity, refusal to verify unverified claims, and telegraphic voice outperformed raw-7B's generic diplomatic approach |
+
+### What 96.9% means — and what it doesn't
+
+The Pair B result is structure-beats-no-structure. Every winning rationale
+praises the Hammerstein-7B's structural architecture (gates, counter-observation,
+verification discipline) against raw-7B's padding and generic lists. But
+the judge rationales throughout flag domain shakiness:
+
+- **Q3 (legal):** Opus noted "dangerous legal advice (accept conditionally)"
+  — the 7B applied the framework's vocabulary while producing a legally
+  dubious conclusion. It still won because raw-7B misdirected on the
+  settlement floor entirely.
+- **Q7 (poker):** The 7B misread the scenario ("hit a draw, not missed")
+  and cited what GPT-5 called "bogus poker stats." The single Pair-B loss.
+  Three judges gave it a marginal win anyway because the alternative was
+  pure generic hedging — low bar.
+
+The defensible claim is: **the framework's structural discipline transfers
+OOD.** Not: the 7B is competent at medicine, law, or poker. A practitioner
+in those domains would need the frontier-wrap version. The 7B's value is
+for use cases where a trained decision-structure beats a blank slate —
+which is most of them — not for use cases requiring reliable domain facts.
+
+### Axis scores
+
+| Axis | Mean Δ (Ham 7B − Raw 7B) | vs Pair A Δ | Interpretation |
+|------|--------------------------|-------------|----------------|
+| framework-fidelity | +2.66 | +1.28 (Pair A) | Larger gain against 7B raw: raw 7B produces no structure at all; raw frontier at least has implied reasoning scaffolding |
+| usefulness | +1.34 | −0.38 (Pair A) | Sign flip from Pair A: against raw 7B's padding, structured discipline IS more useful. Against capable frontier, ceiling-respect costs perceived usefulness |
+| voice-match | +2.19 | +1.44 (Pair A) | Telegraphic Hammerstein voice transfers into the weights cleanly |
+| ood-handling | +1.06 | +0.94 (Pair A) | Similar magnitude: both deployment paths show graceful degradation vs their raw baseline |
+
+**The usefulness sign-flip is not a contradiction.** It reflects different
+baselines. Against raw frontier, the framework's discipline of refusing to
+perform domain expertise it doesn't have costs perceived actionability —
+judges prefer a capable model giving confident (if imperfect) domain
+answers. Against raw 7B's generic padding, the same structured discipline
+is genuinely more useful. Both numbers are honest.
+
+## Results — Pair C
+
+Pair C compares Hammerstein-on-frontier vs Hammerstein-7B directly — the
+context-vs-weights question u/Most-Agent-7566's challenge was asking.
+
+### Overall table
+
+| Family | n | Ham-frontier wins | Ham-7B wins | Ties | Win-rate (frontier) |
+|--------|---|-------------------|-------------|------|---------------------|
+| Pair C: Hammerstein-on-frontier vs Hammerstein-7B | 32 | 30 | 1 | 1 | 95.3% |
+
+Pair C win-rate stated from the frontier's perspective above. From the 7B's
+perspective: ~4.7% (1 win + 1 tie, ties as 0.5 = 1.5/32).
+
+### Per-question breakdown
+
+| Q | Domain | Frontier wins / total | Notes |
+|---|--------|----------------------|-------|
+| Q1 | Medical: triage | 4/4 (100%) | Unanimous. Frontier's falsification-speed × downside-asymmetry rule, commit trigger, and legible-failure fallback beat the 7B's structurally muddled filter/queue jargon |
+| Q2 | Medical: enrollment | 2.5/4 (62.5%) | GPT-5 went 7B (structural gate with verification and counter-observation scored as more actionable than frontier's ceiling-call refusal); Sonnet tied (both fail, differently — frontier calls its ceiling, 7B hallucinates clinical-trial pseudo-structure). Opus + DeepSeek preferred frontier |
+| Q3 | Legal: settlement | 4/4 (100%) | Unanimous. Frontier correctly refused out-of-scope legal strategy and offered counter-observation; 7B hallucinated confident litigation advice ("accept conditionally") while name-dropping framework vocabulary — judges cited it as a load-bearing hallucination |
+| Q4 | Legal: regulatory | 4/4 (100%) | Unanimous. Frontier identified the three-scenario structure, externalized the precedent calculus, and set a real decision gate; 7B stayed generic and misframed the regulatory intent analysis |
+| Q5 | Math: graph-coloring | 4/4 (100%) | Unanimous. Frontier named the OOD limit, gave concrete actionable signals (clique gap, integrality gap, DSATUR) and reasoned from first principles; 7B performed framework vocabulary without substance — vague heuristics and a 5-step structure with no real switch criteria |
+| Q6 | Math: proof-path | 4/4 (100%) | Unanimous. Frontier gave specific structural stall signals for each approach and a salvage analysis; 7B deflected to pre-work and generic advice without answering the actual switching-cost question |
+| Q7 | Games: poker | 4/4 (100%) | Unanimous. Frontier reasoned from first principles, refused false precision, identified the key variables correctly; 7B hallucinates statistics, misreads the scenario (calls the check-raise a "missed draw"), and applies generic structure with wrong facts |
+| Q8 | Games: diplomatic BATNA | 4/4 (100%) | Unanimous. Frontier delivered a concrete probe sequence, signal lists, and honest counter-observation; 7B was thin, jargon-heavy, and — per Opus — misspelled BATNA while offering shallow framing |
+
+### Per-axis mean deltas (Hammerstein-7B − Hammerstein-on-frontier)
+
+| Axis | Mean Δ (7B − frontier) |
+|------|------------------------|
+| framework-fidelity | −1.28 |
+| usefulness | −1.53 |
+| voice-match | −1.53 |
+| ood-handling | −2.00 |
+
+All four axes negative. The largest gap is OOD-handling (−2.00): even when
+both cells use the Hammerstein framework, the frontier model reasons from
+first principles and names its limits correctly under domain pressure; the
+7B reaches for framework vocabulary but its domain-level reasoning cracks.
+Q7's poker misread and Q3's "accept conditionally" legal advice are the
+clearest instances.
+
+### What Pair C settles
+
+The two deployment paths are not interchangeable. Base-model capability
+dominates when it's available. The 7B distillation is real — Pair B
+established that. It is still a 7B. For hosted product on a frontier base,
+framework-in-context is the correct architecture. For
+cheap/offline/owned-hardware deployment where frontier inference isn't an
+option, framework-in-weights delivers genuine lift over a blank raw model.
+That is the actual architecture recommendation the data supports.
 
 ## Cost
 
-- **Cells (16 runs):** $0.45 OpenRouter
-- **Judges (32 ratings):** ~$2.80 estimated (Opus @ ~$0.08/call, GPT-5 @ ~$0.06/call, Sonnet @ ~$0.01/call, DeepSeek @ ~$0.001/call)
-- **Pod provisioning (2 pods, both terminated before 7B inference ran):** ~$0.12 (two short-lived pods provisioned/terminated in the same session; model download never started)
-- **Total so far:** ~$3.40 (well within $6-8 scope estimate even with Pair B to come)
-- **Pair B cost estimate:** ~$0.30-0.50 RunPod + ~$2 judge calls if run
+- **Cells — frontier (Pair A, 16 runs):** $0.45 OpenRouter
+- **Cells — 7B (Pairs B + C, 32 runs on RunPod RTX 4090):** ~$0.80 RunPod
+- **Judges — Pair A (32 ratings):** ~$2.80 (Opus @ ~$0.08/call, GPT-5 @ ~$0.06/call, Sonnet @ ~$0.01/call, DeepSeek @ ~$0.001/call)
+- **Judges — Pairs B + C (64 ratings):** ~$1.90
+- **Pod provisioning (early session, 2 pods terminated before inference ran):** ~$0.12
+- **Total:** ~$6.07 — within the scope doc's $6-8 estimate
 
 ## Caveats
 
-1. **Sample size (n=8) is tight.** The 95% CI on 81.3% with n=32 ratings
-   spans roughly 64%–92%. The finding is directionally robust but not
-   tight enough for confident decimal-level claims.
+1. **Sample size (n=8 questions) is tight.** The 95% CI on 81.3% with n=32
+   ratings spans roughly 64%–92%. The finding is directionally robust but
+   not tight enough for confident decimal-level claims. Pair B's 96.9% and
+   Pair C's 95.3% have narrower practical CIs given how lopsided the wins
+   are, but the same caveat applies.
 
 2. **DeepSeek framework-fidelity calibration.** DeepSeek-chat's 50%
-   win-rate for Hammerstein may reflect a genuine 4th-vendor perspective
-   OR miscalibration of the framework-fidelity axis (scoring structured
-   output as framework-shaped). The 3-vendor consensus on each question
-   is the more reliable signal.
+   win-rate for Hammerstein in Pair A may reflect a genuine 4th-vendor
+   perspective OR miscalibration of the framework-fidelity axis (scoring
+   structured output as framework-shaped regardless of whether it is
+   Hammerstein-shaped). The 3-vendor consensus on each question is the
+   more reliable signal. DeepSeek showed no such calibration issue in
+   Pairs B and C (near-unanimous agreement with the panel throughout).
 
-3. **Negative usefulness Δ is real.** The −0.38 mean usefulness Δ is
-   not an artifact. Hammerstein's ceiling-respect discipline (acknowledging
-   limits in medical/legal domains instead of performing confident expertise)
-   costs perceived actionability. This is load-bearing for any marketing
-   claim about the framework's OOD performance.
+3. **The usefulness sign-flip is honest, not a contradiction.** Pair A
+   shows −0.38 mean usefulness Δ; Pair B shows +1.34. Different baselines,
+   consistent phenomenon. Against capable frontier, ceiling-respect costs
+   perceived usefulness. Against raw-7B padding, it's genuinely more
+   useful. Both claims are defensible.
 
-4. **Pair B/C incomplete.** The OOD hypothesis about 7B is unresolved. The
-   framework-in-context result is clear; the framework-in-weights OOD
-   result is the open empirical question.
+4. **Pair B's 96.9% is structure beats no-structure.** The
+   Hammerstein-7B wins by generating decision architecture where raw 7B
+   generates none. Judge rationales document domain-shaky output
+   throughout — dangerous legal advice (Q3), bogus poker stats and
+   scenario misread (Q7). The structural discipline transfers; domain
+   competence does not. Any marketing claim about the 7B should be scoped
+   to "structured reasoning lift" not "domain reliability."
 
-5. **No human-expert baseline.** Same open question from v0.6. A wargame
-   expert, a ER physician, or a trial attorney reviewing these questions
-   blind would give the most defensible ground truth. Still not closed.
+5. **No human-expert baseline.** Same open question from v0.6. An ER
+   physician, trial attorney, or mathematician reviewing the cells blind
+   would give the most defensible ground truth for the domain-accuracy
+   question. Still not closed.
 
 ## Reproducing
 
@@ -276,6 +396,8 @@ python eval/run-v07-ood.py --run v07-ood-2026-05-21 --cells rp-7b-raw rp-7b-ham 
 
 Then run judges with `--v07 --append` to add Pair B + C results to the same run dir.
 
+All three pairs are complete; the above is the full reproduction path.
+
 ## Files
 
 - `eval/QSET-v0.7-OOD.md` — locked 8-question OOD Q-set
@@ -291,14 +413,15 @@ decorative at frontier scale), v0.4 (7B beats raw Sonnet 79.2%), v0.5/v0.6
 (Grok family tested, counter-prompt survived).
 
 **What's next:**
-- Pair B/C: run the 7B cells via RunPod to resolve the framework-in-weights
-  OOD hypothesis.
-- Reply to u/Most-Agent-7566 with Pair A numbers + honest "Pair B pending"
-  framing. "The wrap holds OOD, 81.3% on 4 new domains, within 19pp of
-  in-distribution. The framework-in-weights OOD question is the open one."
-- Update the landing-page caveat to be more specific: "OOD tested on 4
-  domains (medical/legal/math/games); 81.3% win rate vs raw frontier.
-  7B model's OOD performance not yet benchmarked."
+- Reply to u/Most-Agent-7566 with the full 3-pair result. The data directly
+  answers their challenge: framework-in-weights generalizes off-corpus, and
+  does so by a larger margin than the context-wrap. Pair C confirms the
+  frontier-wrap is still the stronger architecture when base-model capability
+  is available — which is the honest read they were implicitly asking for.
+- Update the landing-page caveat to: "OOD tested on 4 domains
+  (medical/legal/math/games); 81.3% (frontier-wrap) and 96.9% (7B
+  distillation) vs respective raw baselines. Both margins reflect structural
+  discipline, not domain expertise."
 - v0.8 target: human-expert baseline. Close the "no human ground truth"
   caveat with at least one domain (wargame strategy, where the
   conflict-simulation community is already engaged).
