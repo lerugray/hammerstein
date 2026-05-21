@@ -116,30 +116,28 @@ def generate(tokenizer, model, text: str, use_adapter: bool) -> tuple[str, int]:
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer([prompt], return_tensors="pt").to("cuda")
     start = time.perf_counter()
+
+    def _run():
+        with torch.no_grad():
+            return model.generate(
+                **inputs,
+                max_new_tokens=MAX_NEW_TOKENS,
+                do_sample=False,
+                pad_token_id=tokenizer.eos_token_id,
+            )
+
+    # A peft PeftModel keeps its adapter active by default — the Hammerstein
+    # cell just generates directly. The raw-7B cell runs under the
+    # disable_adapter() context manager. The old code called
+    # model.enable_adapters() (plural), a transformers PeftAdapterMixin
+    # method that does NOT exist on a peft PeftModel — that's what failed
+    # the Hammerstein cell on the first pod run 2026-05-21.
     if use_adapter:
-        model.enable_adapters()
-        ctx = torch.no_grad()
+        out = _run()
     else:
-        ctx = model.disable_adapter()
-    with ctx:
-        if not use_adapter:
-            import torch as _torch
-            with _torch.no_grad():
-                out = model.generate(
-                    **inputs,
-                    max_new_tokens=MAX_NEW_TOKENS,
-                    do_sample=False,
-                    pad_token_id=tokenizer.eos_token_id,
-                )
-        else:
-            import torch as _torch
-            with _torch.no_grad():
-                out = model.generate(
-                    **inputs,
-                    max_new_tokens=MAX_NEW_TOKENS,
-                    do_sample=False,
-                    pad_token_id=tokenizer.eos_token_id,
-                )
+        with model.disable_adapter():
+            out = _run()
+
     elapsed = int((time.perf_counter() - start) * 1000)
     new_ids = [o[len(i):] for i, o in zip(inputs["input_ids"], out)]
     response = tokenizer.batch_decode(new_ids, skip_special_tokens=True)[0].strip()
