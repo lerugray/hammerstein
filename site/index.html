@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hammerstein — Discipline you can install</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600;8..60,700&family=Geist+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#f4f1ea;
+  --ink:#1a1814;
+  --ink-soft:#3b362e;
+  --ink-muted:#857c6c;
+  --rule:#cbc4b3;
+  --rule-soft:#e2dccc;
+  --accent:#8b2f1f;
+  --accent-soft:#8b2f1f1a;
+  --hairline:1px;
+  --col:680px;
+  --serif:"Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+html[data-theme="dark"]{
+  --paper:#16140f;
+  --ink:#ece6d6;
+  --ink-soft:#c9c2af;
+  --ink-muted:#7d7665;
+  --rule:#3a352b;
+  --rule-soft:#26221b;
+  --accent:#d76048;
+  --accent-soft:#d7604822;
+}
+html[data-theme="white"]{
+  --paper:#ffffff;
+  --ink:#111111;
+  --ink-soft:#333333;
+  --ink-muted:#888888;
+  --rule:#d8d8d8;
+  --rule-soft:#ececec;
+}
+html[data-accent="olive"]{ --accent:#5c5a2a; --accent-soft:#5c5a2a1f; }
+html[data-accent="olive"][data-theme="dark"]{ --accent:#b3b070; }
+html[data-accent="ink"]{ --accent:var(--ink); --accent-soft:transparent; }
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:18px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  font-feature-settings:"onum","kern";
+}
+::selection{background:var(--accent);color:var(--paper)}
+
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--rule)}
+a:hover{text-decoration-color:var(--accent);color:var(--accent)}
+
+.page{max-width:var(--col);margin:0 auto;padding:0 28px}
+.wide{max-width:920px;margin:0 auto;padding:0 28px}
+
+/* Masthead */
+.masthead{
+  border-bottom:var(--hairline) solid var(--rule);
+  padding:18px 0 16px;
+  display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
+}
+.masthead .mark{
+  font-family:var(--serif);font-weight:600;font-size:18px;
+  letter-spacing:.005em;
+}
+.masthead .mark em{font-style:italic;color:var(--ink-muted);font-weight:400;margin-left:8px;font-size:13px;letter-spacing:.02em}
+.masthead .meta{color:var(--ink-muted);display:flex;gap:22px}
+.masthead .meta a{color:var(--ink-soft);text-decoration:none}
+.masthead .meta a:hover{color:var(--accent)}
+
+/* Section markers */
+.sec{padding:72px 0;border-top:var(--hairline) solid var(--rule-soft)}
+.sec:first-of-type{border-top:none}
+.sec-label{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-muted);
+  margin:0 0 28px;display:flex;gap:18px;align-items:baseline;
+}
+.sec-label .num{color:var(--ink)}
+.sec-label .dash{flex:1;border-bottom:var(--hairline) solid var(--rule);transform:translateY(-3px)}
+
+h1,h2,h3{font-weight:400;margin:0}
+h1{
+  font-family:var(--serif);font-weight:600;
+  font-size:54px;line-height:1.04;letter-spacing:-0.018em;
+  margin:0 0 22px;
+  text-wrap:balance;
+}
+h1 .break{display:block}
+h1 em{font-style:italic;font-weight:500;color:var(--ink-soft)}
+
+h2{
+  font-family:var(--serif);font-weight:600;
+  font-size:28px;line-height:1.2;letter-spacing:-0.01em;
+  margin:0 0 18px;
+  text-wrap:balance;
+}
+h3{
+  font-family:var(--mono);font-weight:500;font-size:13px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink);
+  margin:28px 0 10px;
+}
+
+p{margin:0 0 16px;max-width:62ch;text-wrap:pretty}
+p.lede{font-size:21px;line-height:1.5;color:var(--ink-soft);margin-bottom:36px}
+p.lede strong{color:var(--ink);font-weight:600}
+
+.dim{color:var(--ink-muted)}
+.mono{font-family:var(--mono)}
+code, .code{font-family:var(--mono);font-size:.92em}
+.kbd{
+  font-family:var(--mono);font-size:.86em;
+  border:var(--hairline) solid var(--rule);
+  padding:1px 6px;border-radius:2px;background:var(--rule-soft);
+}
+
+/* Hero credo */
+.credo{
+  font-family:var(--serif);font-style:italic;
+  font-size:18px;line-height:1.5;color:var(--ink-soft);
+  border-left:2px solid var(--accent);
+  padding:2px 0 2px 18px;margin:0 0 32px;
+  max-width:60ch;
+}
+
+/* Primary link */
+.cta{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:13px;letter-spacing:.04em;
+  padding:11px 16px 11px 14px;
+  border:var(--hairline) solid var(--ink);
+  color:var(--ink);text-decoration:none;background:transparent;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.cta:hover{background:var(--ink);color:var(--paper);text-decoration:none}
+.cta .arrow{font-family:var(--serif);font-style:italic;font-size:15px}
+.cta-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.cta-row .ghost{
+  font-family:var(--mono);font-size:13px;color:var(--ink-muted);
+  text-decoration:none;
+}
+.cta-row .ghost:hover{color:var(--accent)}
+
+/* Terminal */
+.term-wrap{
+  position:relative;
+  margin:38px 0 18px;
+}
+.term-wrap .tag{
+  position:absolute;top:-10px;left:18px;
+  background:var(--paper);color:var(--ink-muted);
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;border:var(--hairline) solid var(--rule);
+  z-index:2;
+}
+.term{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:13.5px;line-height:1.6;
+  padding:26px 24px 24px;
+  border:var(--hairline) solid var(--ink);
+  position:relative;
+  overflow-x:auto;
+}
+html[data-theme="dark"] .term{background:#0c0a07;border-color:#2a261e}
+.term .row{white-space:pre-wrap}
+.term .prompt{color:#9aa39b}
+.term .cmd{color:#f4f1ea;font-weight:500}
+.term .arg{color:#d9b27a}
+.term .out-label{color:#9aa39b}
+.term .verdict{color:#ec8a72;font-weight:500}
+.term .ok{color:#9bbf8f}
+.term .warn{color:#e8c47a}
+.term .bad{color:#e07a63}
+.term .dim{color:#6e6b62}
+.term .cursor{display:inline-block;width:.55em;height:1em;background:var(--paper);vertical-align:-2px;animation:blink 1.05s steps(2) infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+
+.term-caption{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+  color:var(--ink-muted);margin-top:6px;text-align:right;
+}
+
+/* What-it-is principles */
+.principles{
+  margin:6px 0 0;padding:0;list-style:none;
+  border-top:var(--hairline) solid var(--rule-soft);
+}
+.principles li{
+  display:grid;grid-template-columns:90px 1fr;gap:24px;
+  padding:18px 0;border-bottom:var(--hairline) solid var(--rule-soft);
+  align-items:baseline;
+}
+.principles .k{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-muted);
+}
+.principles .v{font-size:17px;line-height:1.5;color:var(--ink)}
+.principles .v em{font-style:italic;color:var(--ink-soft)}
+
+/* CLI verbs */
+.verbs{
+  margin:8px 0 0;border-top:var(--hairline) solid var(--rule-soft);
+}
+.verb{
+  display:grid;grid-template-columns:110px 1fr;gap:24px;
+  padding:16px 0;border-bottom:var(--hairline) solid var(--rule-soft);
+  align-items:baseline;
+}
+.verb .cmd{
+  font-family:var(--mono);font-size:14px;color:var(--ink);font-weight:500;
+}
+.verb .cmd .sub{color:var(--ink-muted);font-weight:400}
+.verb .desc{font-size:16.5px;line-height:1.5;color:var(--ink-soft)}
+.verb .desc b{color:var(--ink);font-weight:600}
+
+.providers{
+  display:flex;flex-wrap:wrap;gap:8px 6px;margin:22px 0 0;
+  font-family:var(--mono);font-size:11.5px;
+}
+.providers .lbl{color:var(--ink-muted);margin-right:6px;letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+.providers .chip{
+  border:var(--hairline) solid var(--rule);padding:4px 9px;color:var(--ink-soft);
+}
+
+/* Benchmarks */
+.bench-callout{
+  font-family:var(--serif);font-size:42px;line-height:1.05;font-weight:600;
+  letter-spacing:-0.015em;color:var(--ink);
+  margin:6px 0 8px;
+}
+.bench-callout .pct{color:var(--accent)}
+.bench-callout .of{font-family:var(--mono);font-size:18px;color:var(--ink-muted);font-weight:400;letter-spacing:.02em;margin-left:6px;vertical-align:8px}
+.bench-sub{font-family:var(--mono);font-size:12.5px;color:var(--ink-muted);letter-spacing:.04em;margin-bottom:30px}
+
+.chart{
+  margin:14px 0 8px;
+  border-top:var(--hairline) solid var(--rule);
+  border-bottom:var(--hairline) solid var(--rule);
+  padding:18px 0 14px;
+}
+.bar{
+  display:grid;grid-template-columns:1fr 86px;gap:18px;
+  align-items:center;padding:11px 0;
+}
+.bar + .bar{border-top:var(--hairline) solid var(--rule-soft)}
+.bar .label{
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);
+  letter-spacing:.02em;
+}
+.bar .label .who{color:var(--ink);font-weight:500}
+.bar .track{
+  grid-column:1 / -1;
+  position:relative;height:14px;
+  background:var(--rule-soft);
+  border:var(--hairline) solid var(--rule);
+}
+.bar .fill{
+  position:absolute;left:0;top:0;bottom:0;background:var(--accent);
+  width:var(--w,0%);
+  transition:width 1.1s cubic-bezier(.2,.7,.2,1);
+}
+.bar .raw-fill{
+  position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(45deg,var(--ink-muted) 0 2px,transparent 2px 5px);
+  width:var(--w,0%);opacity:.5;
+}
+.bar .ticks{
+  grid-column:1 / -1;display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-muted);
+  padding:4px 0 0;letter-spacing:.06em;
+}
+.bar .num{
+  font-family:var(--mono);font-size:14px;color:var(--ink);font-weight:500;
+  text-align:right;
+}
+.bar .num .frac{color:var(--ink-muted);font-size:11.5px;display:block;font-weight:400}
+
+.bench-grid{
+  margin:34px 0 0;
+  display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border-top:var(--hairline) solid var(--rule);
+}
+.bench-grid .cell{
+  padding:22px 22px 22px 0;
+  border-bottom:var(--hairline) solid var(--rule-soft);
+}
+.bench-grid .cell:nth-child(odd){border-right:var(--hairline) solid var(--rule-soft);padding-right:28px}
+.bench-grid .cell:nth-child(even){padding-left:28px;padding-right:0}
+.bench-grid .big{
+  font-family:var(--mono);font-size:30px;font-weight:500;color:var(--ink);
+  letter-spacing:-0.005em;
+}
+.bench-grid .big .unit{color:var(--ink-muted);font-size:14px;margin-left:6px;letter-spacing:.04em}
+.bench-grid .cap{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-muted);margin:2px 0 8px;
+}
+.bench-grid .desc{font-size:15.5px;line-height:1.5;color:var(--ink-soft);max-width:42ch}
+
+.method{
+  margin-top:30px;padding-top:18px;
+  border-top:var(--hairline) solid var(--rule-soft);
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-muted);
+  letter-spacing:.02em;line-height:1.7;
+}
+.method b{color:var(--ink-soft);font-weight:500}
+
+/* Limits */
+.limits li{
+  list-style:none;padding:14px 0 14px 24px;
+  border-bottom:var(--hairline) solid var(--rule-soft);
+  position:relative;font-size:17px;line-height:1.5;color:var(--ink-soft);
+}
+.limits{padding:0;margin:0;border-top:var(--hairline) solid var(--rule-soft)}
+.limits li::before{
+  content:"—";position:absolute;left:0;top:14px;
+  font-family:var(--mono);color:var(--ink-muted);
+}
+.limits b{color:var(--ink);font-weight:600}
+
+/* Get it */
+.install{
+  background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-size:13.5px;line-height:1.65;
+  padding:20px 22px;margin:14px 0 22px;
+  position:relative;
+}
+html[data-theme="dark"] .install{background:#0c0a07;border:var(--hairline) solid #2a261e}
+.install .row{white-space:pre-wrap}
+.install .c{color:#9aa39b}
+.install .v{color:#f4f1ea;font-weight:500}
+
+/* Ecosystem */
+.eco{
+  margin:8px 0 0;border-top:var(--hairline) solid var(--rule-soft);
+}
+.eco-row{
+  display:grid;grid-template-columns:170px 1fr auto;gap:24px;
+  padding:18px 0;border-bottom:var(--hairline) solid var(--rule-soft);
+  align-items:baseline;
+}
+.eco-row .name{font-family:var(--mono);font-size:13.5px;color:var(--ink);font-weight:500;letter-spacing:.01em}
+.eco-row .what{font-size:16px;color:var(--ink-soft);line-height:1.45}
+.eco-row .link{font-family:var(--mono);font-size:12px;color:var(--ink-muted);text-decoration:none;letter-spacing:.04em}
+.eco-row .link:hover{color:var(--accent)}
+.eco-row .link::after{content:" ↗";color:var(--ink-muted)}
+
+/* Footer / colophon */
+.colophon{
+  border-top:var(--hairline) solid var(--rule);
+  margin-top:40px;
+  padding:28px 0 48px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-muted);
+  letter-spacing:.04em;line-height:1.7;
+  display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end;
+}
+.colophon .left b{color:var(--ink-soft);font-weight:500}
+.colophon .closing{
+  font-family:var(--serif);font-style:italic;font-size:15px;
+  color:var(--ink-soft);letter-spacing:normal;
+  max-width:36ch;text-align:right;line-height:1.4;
+}
+
+/* Quote in masthead area */
+.intro-quote{
+  font-family:var(--serif);font-style:italic;
+  font-size:14.5px;color:var(--ink-muted);line-height:1.45;
+  max-width:54ch;margin:2px 0 0;
+}
+
+@media (max-width:640px){
+  body{font-size:17px}
+  h1{font-size:38px}
+  h2{font-size:24px}
+  .bench-callout{font-size:32px}
+  .principles li, .verb, .eco-row{grid-template-columns:1fr;gap:6px}
+  .bench-grid{grid-template-columns:1fr}
+  .bench-grid .cell:nth-child(odd){border-right:none;padding-right:0}
+  .bench-grid .cell:nth-child(even){padding-left:0}
+  .masthead{flex-direction:column;align-items:flex-start;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- §0 Masthead -->
+  <header class="masthead">
+    <div class="mark">Hammerstein<em>strategic-reasoning framework</em></div>
+    <nav class="meta">
+      <a href="#what">What</a>
+      <a href="#cli">CLI</a>
+      <a href="#bench">Benchmarks</a>
+      <a href="#limits">Limits</a>
+      <a href="https://github.com/lerugray/hammerstein">GitHub</a>
+    </nav>
+  </header>
+
+  <!-- §1 Hero -->
+  <section class="sec" id="hero" style="padding-top:64px">
+    <div class="sec-label"><span class="num">§ 01</span><span>Hero</span><span class="dash"></span><span>v0.1 · MIT</span></div>
+
+    <h1 id="headline">
+      <span class="break">Discipline you can install.</span>
+      <span class="break"><em>Reasoning you can measure.</em></span>
+    </h1>
+
+    <p class="lede">
+      <strong>Hammerstein</strong> is a portable framework — a system prompt and curated
+      corpus — that makes any model reason like a good staff officer: verify before
+      shipping, prefer the lazy-but-correct path, fail legibly. Open source.
+      Benchmarked in the open.
+    </p>
+
+    <p class="credo">
+      Clever-lazy over stupid-industrious,<br>
+      verification over enthusiasm,<br>
+      legible failure over hidden success.
+    </p>
+
+    <!-- Terminal -->
+    <div class="term-wrap">
+      <span class="tag">demo · h audit</span>
+      <div class="term" aria-label="Terminal example">
+<div class="row"><span class="prompt">~/proj $</span> <span class="cmd">h audit</span> <span class="arg">"ship the new pricing page by friday; QA after launch"</span></div>
+<div class="row"><span class="dim">·· loading corpus (Hammerstein-Equord) ················· ok</span></div>
+<div class="row"><span class="dim">·· model: claude-opus  |  judge: off  |  scope: plan</span></div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="out-label">VERDICT</span>  <span class="verdict">stupid-industrious</span></div>
+<div class="row"><span class="out-label">why</span>     QA-after-launch inverts verification and shipping.</div>
+<div class="row">           The deadline is the load-bearing claim; pricing is</div>
+<div class="row">           a reversible change. You are buying urgency with</div>
+<div class="row">           a hidden failure mode.</div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="out-label">ask</span>     <span class="warn">→</span> what breaks if friday slips by 4 days?</div>
+<div class="row">           <span class="warn">→</span> can pricing ship behind a flag, QA'd live?</div>
+<div class="row">           <span class="warn">→</span> who reads the post-launch QA — and acts on it?</div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="out-label">next</span>    run <span class="cmd">h scope</span> on the friday constraint, then</div>
+<div class="row">           <span class="cmd">h sharper</span> on the rollback plan.</div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="prompt">~/proj $</span> <span class="cursor"></span></div>
+      </div>
+    </div>
+    <div class="term-caption">fig. 01 — the framework, doing its thing.</div>
+
+    <div class="cta-row" style="margin-top:30px">
+      <a class="cta" href="https://github.com/lerugray/hammerstein">
+        Hammerstein on GitHub <span class="arrow">→</span>
+      </a>
+      <a class="ghost" href="https://github.com/lerugray/hammerstein#install">$ pip install hammerstein</a>
+    </div>
+  </section>
+
+  <!-- §2 What it is -->
+  <section class="sec" id="what">
+    <div class="sec-label"><span class="num">§ 02</span><span>What it is</span><span class="dash"></span></div>
+    <h2>A portable system-prompt + RAG corpus, encoding the Hammerstein-Equord doctrine.</h2>
+    <p>
+      Kurt von Hammerstein-Equord sorted officers into four boxes along two axes: clever or
+      stupid, lazy or industrious. The lazy-and-clever belong at the top. The
+      industrious-and-stupid are dangerous and must be removed. Hammerstein the
+      framework applies that typology to reasoning. It is not a model. It is the
+      discipline you wrap around one.
+    </p>
+
+    <ul class="principles">
+      <li>
+        <span class="k">Clever-lazy</span>
+        <span class="v">Find the cheapest path to a correct, reversible answer. <em>Refuse the heroic version.</em></span>
+      </li>
+      <li>
+        <span class="k">Verification</span>
+        <span class="v">Before shipping, name the load-bearing claim and the failure mode. <em>Enthusiasm is not evidence.</em></span>
+      </li>
+      <li>
+        <span class="k">Legibility</span>
+        <span class="v">When the model can't help, say so on the record. <em>A refusal is a result.</em></span>
+      </li>
+      <li>
+        <span class="k">Scope</span>
+        <span class="v">Reason inside the question. Reject scope-creep that smuggles in new claims. <em>Answer one thing, well.</em></span>
+      </li>
+      <li>
+        <span class="k">Portability</span>
+        <span class="v">No fine-tune required. Same prompt, same corpus, any model. <em>The discipline travels.</em></span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- §3 CLI -->
+  <section class="sec" id="cli">
+    <div class="sec-label"><span class="num">§ 03</span><span>How you use it</span><span class="dash"></span><span>command-line</span></div>
+    <h2>Five verbs and a REPL. That's the surface.</h2>
+    <p>
+      The CLI ships as <code>h</code>. Each verb takes a plan, a claim, a draft —
+      something concrete — and returns a verdict in the framework's voice.
+      The <code>hsh</code> REPL keeps state across turns when you want to argue back.
+    </p>
+
+    <div class="verbs">
+      <div class="verb">
+        <span class="cmd">h audit <span class="sub">&lt;plan&gt;</span></span>
+        <span class="desc"><b>Classify the plan</b> in the Hammerstein quadrants. Names the load-bearing assumption. Tells you which kind of officer you're being.</span>
+      </div>
+      <div class="verb">
+        <span class="cmd">h next <span class="sub">&lt;state&gt;</span></span>
+        <span class="desc"><b>The single next move</b> that maximises learning per unit effort. No roadmap. One step.</span>
+      </div>
+      <div class="verb">
+        <span class="cmd">h scope <span class="sub">&lt;question&gt;</span></span>
+        <span class="desc"><b>Tighten the question</b> until it's answerable. Strips smuggled premises. Returns a shorter question and the things you just gave up.</span>
+      </div>
+      <div class="verb">
+        <span class="cmd">h worth <span class="sub">&lt;task&gt;</span></span>
+        <span class="desc"><b>Is this task worth doing at all?</b> Cost, reversibility, blast radius, alternatives. The lazy-clever filter.</span>
+      </div>
+      <div class="verb">
+        <span class="cmd">h sharper <span class="sub">&lt;draft&gt;</span></span>
+        <span class="desc"><b>Adversarial edit pass.</b> The framework reads your draft like the smartest person who hates it. Returns the cuts and the open questions.</span>
+      </div>
+      <div class="verb">
+        <span class="cmd">hsh</span>
+        <span class="desc"><b>Interactive REPL.</b> Carries the campaign across turns. Useful when the work is bigger than a single verb.</span>
+      </div>
+    </div>
+
+    <div class="providers">
+      <span class="lbl">Provider-agnostic ·</span>
+      <span class="chip">Anthropic</span>
+      <span class="chip">OpenAI</span>
+      <span class="chip">OpenRouter</span>
+      <span class="chip">DeepSeek</span>
+      <span class="chip">Ollama (local)</span>
+      <span class="chip">vLLM</span>
+    </div>
+  </section>
+
+  <!-- §4 Benchmarks -->
+  <section class="sec" id="bench">
+    <div class="sec-label"><span class="num">§ 04</span><span>Benchmarks</span><span class="dash"></span><span>blind · multi-judge</span></div>
+
+    <p class="bench-callout">
+      <span class="pct">98.1%</span>
+      <span class="of">53 of 54 blind ratings</span>
+    </p>
+    <p class="bench-sub">preferred frontier-models-running-Hammerstein over their raw selves.</p>
+
+    <p>
+      Three frontier models — <b>Claude Opus</b>, <b>GPT-5</b>, <b>Claude Sonnet</b> —
+      were each asked the same prompts twice: once raw, once with the Hammerstein
+      system prompt and corpus loaded. Four blind LLM judges, no knowledge of which
+      was which, picked the better answer. The framework won 53 of 54 head-to-heads.
+    </p>
+
+    <div class="chart" aria-label="Win-rate chart">
+      <div class="bar" data-w="98.1">
+        <span class="label"><span class="who">Hammerstein vs. raw frontier</span> — in-distribution</span>
+        <span class="num">98.1%<span class="frac">53 / 54</span></span>
+        <div class="track"><span class="fill" style="--w:98.1%"></span></div>
+      </div>
+      <div class="bar" data-w="100">
+        <span class="label"><span class="who">OOD · corpus offers no direct help</span></span>
+        <span class="num">100%<span class="frac">48 / 48</span></span>
+        <div class="track"><span class="fill" style="--w:100%"></span></div>
+      </div>
+      <div class="bar" data-w="81.3">
+        <span class="label"><span class="who">OOD stress · hard novel domains</span></span>
+        <span class="num">81.3%<span class="frac">39 / 48</span></span>
+        <div class="track"><span class="fill" style="--w:81.3%"></span></div>
+      </div>
+      <div class="bar" data-w="0" style="padding-top:6px">
+        <span class="ticks" style="grid-column:1 / -1">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="bench-grid">
+      <div class="cell">
+        <div class="cap">Out-of-distribution</div>
+        <div class="big">48 / 48<span class="unit">100%</span></div>
+        <div class="desc">On four questions the corpus can't help with, Hammerstein still won every blind rating. The discipline travels; the corpus is only half the lift.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">OOD stress · novel domains</div>
+        <div class="big">81.3%<span class="unit">39 / 48</span></div>
+        <div class="desc">On hard novel domains, Hammerstein beat raw frontier 81.3% — <em>and refused</em> out-of-scope medical/legal calls where raw models confidently hallucinated.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">Models tested</div>
+        <div class="big">3<span class="unit">Opus · GPT-5 · Sonnet</span></div>
+        <div class="desc">Three frontier models, identical prompts, two conditions each. The lift held across all three; the dominant component differed by model.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">Total blind ratings</div>
+        <div class="big">~246<span class="unit">4 judges</span></div>
+        <div class="desc">Four blind LLM judges with no view of condition. Position and label confounds checked separately. Harness in the repo.</div>
+      </div>
+    </div>
+
+    <p class="method">
+      <b>Methodology.</b> Blind, multi-judge, ~246 ratings total, ~$10 in API cost,
+      ~90 minutes wall-clock. <b>Reproducible:</b> the full harness, prompts,
+      judges, and raw rating logs live in <code>/bench</code> in the repo.
+      Confound checks (position bias, label leakage, judge agreement) are reported
+      alongside. <a href="https://github.com/lerugray/hammerstein/tree/main/bench">Read the harness →</a>
+    </p>
+  </section>
+
+  <!-- §5 Limits -->
+  <section class="sec" id="limits">
+    <div class="sec-label"><span class="num">§ 05</span><span>Honest limits</span><span class="dash"></span><span>what we won't claim</span></div>
+    <h2>What Hammerstein does not claim.</h2>
+    <p>
+      The numbers above are real and the harness is open. So are these caveats.
+      We list them here because a framework that hides its edges is itself
+      stupid-industrious.
+    </p>
+    <ul class="limits">
+      <li><b>The dominant component is model-dependent.</b> For some models the system prompt does the heavy lifting; for others, the corpus. We can't yet say which carries which model in general.</li>
+      <li><b>A fine-tuned 7B does not match frontier-with-context on novel domains.</b> Small-model Hammerstein is a useful artifact, not a frontier substitute.</li>
+      <li><b>LLM judges are not human judges.</b> The 98.1% is preference among four blind LLM judges. Human evaluation is ongoing and will be reported separately.</li>
+      <li><b>Benchmarks are not deployment.</b> The harness covers reasoning quality on bounded prompts. It does not certify safety, accuracy, or fitness for any specific production use.</li>
+      <li><b>The corpus is opinionated.</b> Hammerstein-Equord doctrine is one stance on reasoning, not the only one. If you disagree with the priors, the framework will not pretend otherwise.</li>
+    </ul>
+  </section>
+
+  <!-- §6 Get it -->
+  <section class="sec" id="get">
+    <div class="sec-label"><span class="num">§ 06</span><span>Get it</span><span class="dash"></span><span>MIT · github</span></div>
+    <h2>Clone it. Run it on your own model and key.</h2>
+    <p>
+      Hammerstein is MIT-licensed. No account, no telemetry, no hosted dependency.
+      You bring the model and the API key; the framework brings the discipline.
+    </p>
+
+    <div class="install">
+<div class="row"><span class="c"># 1. install the CLI</span></div>
+<div class="row"><span class="v">$ pip install hammerstein</span></div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="c"># 2. point it at a model — any model</span></div>
+<div class="row"><span class="v">$ export HAMMERSTEIN_PROVIDER=openrouter</span></div>
+<div class="row"><span class="v">$ export OPENROUTER_API_KEY=sk-…</span></div>
+<div class="row">&nbsp;</div>
+<div class="row"><span class="c"># 3. audit something</span></div>
+<div class="row"><span class="v">$ h audit "rewrite the auth layer this sprint"</span></div>
+    </div>
+
+    <div class="cta-row">
+      <a class="cta" href="https://github.com/lerugray/hammerstein">Repository <span class="arrow">→</span></a>
+      <a class="ghost" href="https://github.com/lerugray/hammerstein#readme">README</a>
+      <a class="ghost" href="https://github.com/lerugray/hammerstein/tree/main/bench">/bench harness</a>
+      <a class="ghost" href="https://github.com/lerugray/hammerstein/blob/main/LICENSE">LICENSE</a>
+    </div>
+  </section>
+
+  <!-- §7 Ecosystem -->
+  <section class="sec" id="eco">
+    <div class="sec-label"><span class="num">§ 07</span><span>Ecosystem</span><span class="dash"></span><span>related, not required</span></div>
+    <div class="eco">
+      <div class="eco-row">
+        <span class="name">hammerstein.ai</span>
+        <span class="what">A hosted version with persistent campaigns and shared corpora. Same framework, web UI.</span>
+        <a class="link" href="https://hammerstein.ai">hammerstein.ai</a>
+      </div>
+      <div class="eco-row">
+        <span class="name">GeneralStaff</span>
+        <span class="what">Applies the Hammerstein framework to autonomous coding agents. Same doctrine, different surface.</span>
+        <a class="link" href="https://github.com/lerugray/generalstaff">generalstaff</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- §8 Colophon -->
+  <footer class="colophon">
+    <div class="left">
+      <div><b>Hammerstein</b> · v0.1 · MIT · github.com/lerugray/hammerstein</div>
+      <div>Set in Source Serif 4 &amp; Geist Mono. No trackers. No cookies. No newsletter.</div>
+      <div>© 2026 — the framework, not the man.</div>
+    </div>
+    <div class="closing">
+      "The work lives in the gates,<br>not the cover."
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -71,3 +71,7 @@ human-judge-pairs.json
 human-judge-mapping.json
 human-judge-pairs-judgments.json
 human-judge-v*.json
+
+# Claude Design artifacts (preview + zip) — local reference, not repo content
+claude-design-output/
+claude-design-output-site/
