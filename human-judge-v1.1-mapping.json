@@ -1,0 +1,102 @@
+{
+  "version": "human-judge-runner/1.0",
+  "generated_at": "2026-05-13T18:00:18.780382+00:00",
+  "run_dir": "eval/results/2026-05-13T175448Z",
+  "cell_pairs": [
+    {
+      "a": "or-claude-sonnet-raw",
+      "b": "or-claude-sonnet"
+    },
+    {
+      "a": "or-grok-raw",
+      "b": "or-grok"
+    }
+  ],
+  "seed": 11,
+  "mapping": [
+    {
+      "pair_id": "p001",
+      "question_id": 1,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet-raw",
+      "side_b_cell": "or-claude-sonnet"
+    },
+    {
+      "pair_id": "p002",
+      "question_id": 2,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet",
+      "side_b_cell": "or-claude-sonnet-raw"
+    },
+    {
+      "pair_id": "p003",
+      "question_id": 3,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet",
+      "side_b_cell": "or-claude-sonnet-raw"
+    },
+    {
+      "pair_id": "p004",
+      "question_id": 4,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet-raw",
+      "side_b_cell": "or-claude-sonnet"
+    },
+    {
+      "pair_id": "p005",
+      "question_id": 5,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet",
+      "side_b_cell": "or-claude-sonnet-raw"
+    },
+    {
+      "pair_id": "p006",
+      "question_id": 6,
+      "cell_pair_group": "or-claude-sonnet-raw_vs_or-claude-sonnet",
+      "side_a_cell": "or-claude-sonnet",
+      "side_b_cell": "or-claude-sonnet-raw"
+    },
+    {
+      "pair_id": "p007",
+      "question_id": 1,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok-raw",
+      "side_b_cell": "or-grok"
+    },
+    {
+      "pair_id": "p008",
+      "question_id": 2,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok",
+      "side_b_cell": "or-grok-raw"
+    },
+    {
+      "pair_id": "p009",
+      "question_id": 3,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok",
+      "side_b_cell": "or-grok-raw"
+    },
+    {
+      "pair_id": "p010",
+      "question_id": 4,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok",
+      "side_b_cell": "or-grok-raw"
+    },
+    {
+      "pair_id": "p011",
+      "question_id": 5,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok-raw",
+      "side_b_cell": "or-grok"
+    },
+    {
+      "pair_id": "p012",
+      "question_id": 6,
+      "cell_pair_group": "or-grok-raw_vs_or-grok",
+      "side_a_cell": "or-grok-raw",
+      "side_b_cell": "or-grok"
+    }
+  ]
+}

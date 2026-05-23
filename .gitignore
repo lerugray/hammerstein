@@ -65,3 +65,6 @@ docs/MESSAGES-FOR-RAY.md
 # Editor/agent session caches (machine-local)
 .aider*
 .cursor/
+
+# Benchmark game logs ARE reproduction evidence — keep these
+!eval/diplomacy/*.log

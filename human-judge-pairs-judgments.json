@@ -1,0 +1,66 @@
+{
+  "version": "human-judge/1.0",
+  "judge_name": "Evan",
+  "judgments": [
+    {
+      "pair_id": "p012",
+      "choice": "a",
+      "note": "Data Presentation, organization of other factors"
+    },
+    {
+      "pair_id": "p004",
+      "choice": "a",
+      "note": ""
+    },
+    {
+      "pair_id": "p006",
+      "choice": "b",
+      "note": "Increased clarity in rationale and actionable tasks per item"
+    },
+    {
+      "pair_id": "p010",
+      "choice": "b",
+      "note": ""
+    },
+    {
+      "pair_id": "p008",
+      "choice": "a",
+      "note": "More context aware while maintaining clarity and actionable paths"
+    },
+    {
+      "pair_id": "p002",
+      "choice": "a",
+      "note": ""
+    },
+    {
+      "pair_id": "p009",
+      "choice": "b",
+      "note": "More branching but still actionable context-based recommendations"
+    },
+    {
+      "pair_id": "p011",
+      "choice": "tie",
+      "note": ""
+    },
+    {
+      "pair_id": "p003",
+      "choice": "a",
+      "note": ""
+    },
+    {
+      "pair_id": "p007",
+      "choice": "a",
+      "note": ""
+    },
+    {
+      "pair_id": "p001",
+      "choice": "b",
+      "note": ""
+    },
+    {
+      "pair_id": "p005",
+      "choice": "tie",
+      "note": ""
+    }
+  ]
+}
