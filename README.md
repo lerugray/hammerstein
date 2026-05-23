@@ -4,13 +4,13 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v1.0](https://img.shields.io/badge/status-v1.0-success.svg)](https://github.com/lerugray/hammerstein/releases)
+[![Status: v0.0.1](https://img.shields.io/badge/status-v0.0.1-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
 Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framework.
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
 
-> **Status:** v1.0 shipped. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all 5 templates so non-programmer operators can evaluate output without parsing framework vocabulary. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end; daily-brief integration tested in production.
+> **Status:** v0.0.1 — Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all 5 templates so non-programmer operators can evaluate output without parsing framework vocabulary. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end; production-tested via the maintainer's daily brief workflow (integration lives in a separate operator-side repo).
 
 ## What this is
 
@@ -337,7 +337,7 @@ Adding new templates is non-breaking. Removing or renaming any of the five above
 
 ## License
 
-[MIT](LICENSE)
+[AGPL-3.0](LICENSE)
 
 ---
 
