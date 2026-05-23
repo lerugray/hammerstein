@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hammerstein-ai"
+version = "0.0.1"
+description = "Hammerstein: strategic-reasoning harness packaged as a minimal CLI."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0-only" }
+authors = [{ name = "Ray Weiss" }]
+dependencies = [
+  "typer>=0.12",
+  "pyyaml>=6.0",
+  "pytest>=8",
+  "pyreadline3>=3.4 ; sys_platform == 'win32'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+hammerstein = "hammerstein_cli:main"
+hd = "hammerstein_cli.dispatch:main"
+hsh = "hammerstein_cli.shell:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["harness", "."]
+
+[tool.setuptools.package-data]
+corpus = ["**/*.md"]
+"corpus.entries" = ["**/*.md"]
+prompts = ["**/*.md"]
+"prompts.templates" = ["**/*.md"]
+hammerstein_resources = ["**/*.yaml"]
+

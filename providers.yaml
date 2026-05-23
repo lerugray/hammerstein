@@ -1,0 +1,24 @@
+chain:
+  - id: openrouter-primary
+    backend: openrouter
+    model: qwen/qwen3.6-plus
+    timeout_seconds: 90
+  - id: openrouter-soft-fallback
+    backend: openrouter
+    model: qwen/qwen3-coder-plus
+    timeout_seconds: 90
+  - id: deepseek-isolated
+    backend: deepseek
+    model: deepseek-chat
+    timeout_seconds: 90
+  - id: ollama-local
+    backend: ollama
+    model: qwen3:8b
+    timeout_seconds: 120
+
+on_429: next
+on_timeout: next
+on_empty_response: next
+on_parse_error: next
+on_backend_error: next
+

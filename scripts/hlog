@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# hlog — structured tail of Hammerstein call log.
+#
+# Phase A of the TUI roadmap (ham-012). Reads the JSONL call log at
+# ~/.hammerstein/logs/hammerstein-calls.jsonl, projects key fields,
+# column-aligns. Pipe-friendly so it composes with grep/less/awk.
+#
+# Deps: jq (required).
+#
+# Usage:
+#   hlog                      # last 20 entries, column-aligned
+#   hlog 50                   # last N entries
+#   hlog | grep audit         # filter by template / query substring
+#   hlog | less -S            # paginate without wrapping
+
+set -euo pipefail
+
+LOG_FILE="$HOME/.hammerstein/logs/hammerstein-calls.jsonl"
+N="${1:-20}"
+
+if [[ ! -f "$LOG_FILE" ]]; then
+  echo "error: log not found at $LOG_FILE" >&2
+  echo "(run hammerstein at least once to create the log)" >&2
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "error: jq is required for hlog." >&2
+  echo "install via: brew install jq  (mac)  |  apt install jq  (linux)" >&2
+  exit 2
+fi
+
+{
+  printf 'TIMESTAMP\tPROVIDER\tTEMPLATE\tLATENCY\tCOST\tQUERY\n'
+  tail -n "$N" "$LOG_FILE" | jq -r '
+    [
+      (.timestamp // "?"),
+      (.provider_id // .backend // "?"),
+      (.template // "?"),
+      "\(.latency_ms // 0)ms",
+      "$\(.cost_usd // 0)",
+      ((.query // "") | gsub("\\n"; " ") | .[0:60])
+    ] | @tsv
+  '
+} | column -t -s $'\t'

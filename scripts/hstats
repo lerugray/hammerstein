@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# hstats — Hammerstein usage stats with falsification-gate verdict.
+#
+# Phase A of the TUI roadmap (ham-012). Reads the JSONL call log and
+# answers the gate question automatically: are you using Hammerstein
+# enough to justify Phase B (heavier REPL/TUI work)?
+#
+# Deps: jq (required).
+#
+# Usage:
+#   hstats                    # last 7 days (the default falsification window)
+#   hstats 30                 # last N days
+#   hstats --gate             # 7-day window + explicit gate verdict (PASS / FAIL)
+#   hstats --by-host          # break out per-machine usage (cross-machine view)
+
+set -euo pipefail
+
+LOG_FILE="$HOME/.hammerstein/logs/hammerstein-calls.jsonl"
+
+if [[ ! -f "$LOG_FILE" ]]; then
+  echo "error: log not found at $LOG_FILE" >&2
+  echo "(run hammerstein at least once to create the log)" >&2
+  exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "error: jq is required for hstats." >&2
+  echo "install via: brew install jq  (mac)  |  apt install jq  (linux)" >&2
+  exit 2
+fi
+
+# Argument parsing
+SHOW_GATE=0
+BY_HOST=0
+DAYS=7
+for arg in "$@"; do
+  case "$arg" in
+    --gate)    SHOW_GATE=1 ;;
+    --by-host) BY_HOST=1 ;;
+    [0-9]*)    DAYS="$arg" ;;
+    *)         echo "unknown arg: $arg" >&2; exit 2 ;;
+  esac
+done
+
+# Compute window cutoff (ISO-8601 UTC, N days back)
+# Mac: date -u -v-Nd ; Linux: date -u --date="N days ago"
+if date -v-1d >/dev/null 2>&1; then
+  CUTOFF=$(date -u -v-"${DAYS}"d +"%Y-%m-%dT%H:%M:%SZ")
+else
+  CUTOFF=$(date -u --date="${DAYS} days ago" +"%Y-%m-%dT%H:%M:%SZ")
+fi
+
+# Filter log to window
+WINDOW=$(jq -c --arg cutoff "$CUTOFF" 'select(.timestamp >= $cutoff)' "$LOG_FILE")
+
+if [[ -z "$WINDOW" ]]; then
+  echo "No Hammerstein calls in the last $DAYS days."
+  if [[ "$SHOW_GATE" == 1 ]]; then
+    echo ""
+    echo "Falsification gate: FAIL (zero usage)"
+    echo "Verdict: kill the TUI/REPL track. Phase B should NOT ship."
+  fi
+  exit 0
+fi
+
+# Aggregates
+TOTAL_CALLS=$(echo "$WINDOW" | wc -l | tr -d ' ')
+TOTAL_COST=$(echo "$WINDOW" | jq -s 'map(.cost_usd // 0) | add' | awk '{printf "%.4f", $1}')
+CALLS_PER_DAY=$(awk "BEGIN { printf \"%.2f\", $TOTAL_CALLS / $DAYS }")
+CALLS_PER_WEEK=$(awk "BEGIN { printf \"%.2f\", $TOTAL_CALLS * 7 / $DAYS }")
+
+# Output
+printf 'Hammerstein usage — last %s days (since %s)\n' "$DAYS" "$CUTOFF"
+printf '%s\n' "$(printf '%.0s-' $(seq 1 60))"
+printf '  Calls           %s\n' "$TOTAL_CALLS"
+printf '  Calls/day avg   %s\n' "$CALLS_PER_DAY"
+printf '  Calls/week eq.  %s\n' "$CALLS_PER_WEEK"
+printf '  Total cost      $%s\n' "$TOTAL_COST"
+printf '\n'
+
+# Template breakdown
+printf 'By template:\n'
+echo "$WINDOW" | jq -r '.template // "?"' | sort | uniq -c | sort -rn | awk '{printf "  %-32s  %s\n", $2, $1}'
+printf '\n'
+
+# Hostname breakdown (when requested OR multi-host detected)
+HOST_COUNT=$(echo "$WINDOW" | jq -r '.hostname // "unknown"' | sort -u | wc -l | tr -d ' ')
+if [[ "$BY_HOST" == 1 || "$HOST_COUNT" -gt 1 ]]; then
+  printf 'By host:\n'
+  echo "$WINDOW" | jq -r '.hostname // "unknown"' | sort | uniq -c | sort -rn | awk '{printf "  %-32s  %s\n", $2, $1}'
+  printf '\n'
+fi
+
+# Hour-of-day distribution (when call burst happens)
+printf 'By hour of day (UTC):\n'
+echo "$WINDOW" | jq -r '(.timestamp // "?") | .[11:13]' | sort | uniq -c | awk '{printf "  %s:00  %s\n", $2, $1}'
+printf '\n'
+
+# Falsification-gate verdict
+if [[ "$SHOW_GATE" == 1 ]]; then
+  printf 'Falsification gate (Phase A → Phase B decision)\n'
+  printf '%s\n' "$(printf '%.0s-' $(seq 1 60))"
+  printf '  Threshold:  >= 3 calls/week (7-day window)\n'
+  printf '  Observed:   %s calls/week-equivalent\n' "$CALLS_PER_WEEK"
+
+  PASS=$(awk "BEGIN { print ($CALLS_PER_WEEK >= 3) ? 1 : 0 }")
+  if [[ "$PASS" == 1 ]]; then
+    printf '\n  Frequency gate: PASS\n'
+    printf '\n  Next step: self-observe friction reduction. If using Hammerstein\n'
+    printf '  saved you ~10+ min/day or noticeably reduced "where did I write\n'
+    printf '  that down" friction, file Phase B (Bun+Ink REPL or Python+\n'
+    printf '  prompt_toolkit). If it did NOT save time but you used it anyway,\n'
+    printf '  the friction-source is wrong (juggling sessions, not finding) —\n'
+    printf '  kill the track regardless of frequency.\n'
+  else
+    printf '\n  Frequency gate: FAIL\n'
+    printf '\n  Verdict: kill the TUI/REPL track. Phase B should NOT ship.\n'
+    printf '  Remove the scripts: rm hammerstein/scripts/{hquery,hlog,hstats}\n'
+    printf '  Hammerstein-the-CLI + /audit slash-command stay; only Phase A\n'
+    printf '  shell wrappers go.\n'
+  fi
+fi
