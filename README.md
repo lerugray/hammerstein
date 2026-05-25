@@ -166,7 +166,8 @@ yours to author.
 
 ```bash
 # Requires Python 3.11+
-pip install -e .
+pip install hammerstein     # from PyPI
+# or: pip install -e .      # from a local clone, for development
 export OPENROUTER_API_KEY="..."
 
 # Quick-fire verb wrappers (recommended for daily use; scripts/h or scripts/h.ps1)

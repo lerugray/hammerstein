@@ -7,6 +7,12 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-05-25
+
+### Fixed
+
+- **`hammerstein --version` reported `0.0.0`.** The version-lookup helper was hardcoded to `version("hammerstein-ai")` from before the PyPI package was renamed to `hammerstein` for the 1.3.0 publish. Now looks up the correct distribution name. Cosmetic — install + run were unaffected. 1.3.0 has been yanked on PyPI; `pip install hammerstein` resolves to 1.3.1.
+
 ## [1.3] — 2026-05-25
 
 ### Added

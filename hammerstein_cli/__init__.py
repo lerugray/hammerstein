@@ -12,7 +12,7 @@ from hammerstein import classifier
 
 def _pkg_version() -> str:
     try:
-        return version("hammerstein-ai")
+        return version("hammerstein")
     except PackageNotFoundError:
         return "0.0.0"
 
