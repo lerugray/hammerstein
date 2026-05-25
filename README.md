@@ -2,15 +2,15 @@
 
 ![Hammerstein — A framework that survives the model. Clever-lazy · Verify · Legible failure](docs/images/banner.png)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v1.2](https://img.shields.io/badge/status-v1.2-success.svg)](https://github.com/lerugray/hammerstein/releases)
+[![Status: v1.3](https://img.shields.io/badge/status-v1.3-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
 Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framework.
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
 
-> **Status:** v1.2 shipped 2026-05-12. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 adds project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposes `--image` + `audit-this-visual` for vision audits, and corrects the benchmark headline to reflect the v0.2 cross-family ablation.
+> **Status:** v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
 
 ## What this is
 

@@ -7,6 +7,16 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+## [1.3] — 2026-05-25
+
+### Added
+
+- **Multi-format file-read for `--context-file`** — PDF (`pypdf`), DOCX (`python-docx`), XLSX (`openpyxl`), CSV (stdlib). Operator-pointed files of these formats are dispatched to format-specific extractors, UTF-8-sanitized at extraction (handles lone-surrogate / Windows mojibake that previously crashed the logger on real-world inputs), and injected into the prompt with a 16KB content cap (separate from the 2.2KB auto-discovery cap). XLSX renders each sheet as a `## <sheet>` heading + markdown table; CSV renders as a single markdown table. The existing safety scaffold (denylist + credential-pattern abort + symlink refusal + basename scrubbing) applies to both filename and extracted content. MD/TXT continue to use the existing read path. Closes ham-025 v1.
+
+### Notes
+
+- Falsification gate ran before the build: side-by-side paraphrase-vs-full-content prompts on three real docs via the existing CLI hitting OpenRouter Qwen 3.6-plus. Full-content prompts produced materially better Hammerstein judgment on 2 of 3 cases (research paper validation design, design-doc audit catching a scale-conversion debt the paraphrase compressed away). The third case was a wash. Empirically gated build over speculative spec.
+
 ## [1.2] — 2026-05-12
 
 ### Added

@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from . import parsers
+
 ContextMode = Literal["none", "minimal"]
 
 
@@ -117,9 +119,7 @@ def _guard_file_ok(path: Path) -> None:
 def _pick_project_root(project_root: Path | None) -> Path | None:
     if project_root is not None:
         return project_root.resolve()
-    # Prefer git root if available.
-    cwd = Path.cwd()
-    return detect_git_root(cwd)
+    return detect_git_root(Path.cwd())
 
 
 def _discover_state_file(root: Path) -> Path | None:
@@ -152,6 +152,23 @@ def build_project_context_preamble(
     else:
         state_path = _discover_state_file(root)
 
+    if context_file is not None:
+        sfx = context_file.suffix.lower()
+        if sfx in parsers.SUPPORTED_EXTENSIONS and sfx not in (".md", ".txt"):
+            cf_path = context_file.resolve()
+            try:
+                cf_path.relative_to(root)
+            except ValueError:
+                raise ContextDisabled("context file outside project root refused")
+            _guard_file_ok(cf_path)
+            extracted_text = parsers.extract_text(cf_path)
+            if _contains_possible_secret(extracted_text):
+                raise ContextDisabled("credential pattern in extracted file content")
+            preamble = f"## Context from {context_file.name}:\n\n{extracted_text}"
+            if str(root) in preamble:
+                preamble = preamble.replace(str(root), root.name)
+            return preamble
+
     # Read high-signal docs.
     doc_caps = {
         "MISSION.md": 600,
@@ -168,11 +185,7 @@ def build_project_context_preamble(
 
     state_text = ""
     if state_path is not None:
-        # Must be within root unless explicitly provided.
-        if context_file is None:
-            # auto-discovered; already under root
-            pass
-        else:
+        if context_file is not None:
             try:
                 state_path.relative_to(root)
             except ValueError:
@@ -198,14 +211,7 @@ def build_project_context_preamble(
         if remaining <= 0:
             break
 
-    # Secret-scan everything we might inject.
-    combined_for_scan = "\n".join(
-        [
-            state_text,
-            *(t for _, t in docs),
-            identity.get("remote", ""),
-        ]
-    )
+    combined_for_scan = "\n".join([state_text, *(t for _, t in docs), identity.get("remote", "")])
     if _contains_possible_secret(combined_for_scan):
         raise ContextDisabled("possible secret detected")
 
@@ -231,10 +237,8 @@ def build_project_context_preamble(
     preamble = "\n".join(parts).rstrip()
 
     if len(preamble) > hard_cap:
-        # v0 should never hit this due to caps, but keep a hard guardrail.
         preamble = preamble[:hard_cap].rstrip()
 
-    # Extra paranoia: avoid leaking the absolute path.
     if str(root) in preamble:
         preamble = preamble.replace(str(root), repo_root_basename)
 
