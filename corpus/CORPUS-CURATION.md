@@ -1,6 +1,6 @@
 # Hammerstein Corpus — Curation Index v1
 
-**Status:** v1, locked by the research session 2026-05-04. 50 entries.
+**Status:** v1, locked by the research session 2026-05-04. 50 entries (+ #51 added 2026-06-02 from hammerstein-model dogfooding = 51).
 **Implementation:** entries live as individual `.md` files in
 `corpus/entries/<NN>-<short-title>.md` with YAML front-matter. Index
 table below maps each entry's tags. Implementation phase reads this
@@ -46,6 +46,7 @@ index plus the entry files as the RAG corpus.
 - `[PIH-Project]` — `PIH/ideas/Hammerstein AI/hammerstein_ai_project.md`
 - `[Research-Brief]` — `hammerstein experiments/hammerstein-article/research_brief.md`
 - `[Experiments]` — `hammerstein experiments/hammerstein-ai-misalignment/README.md`
+- `[HM]` — `hammerstein-model` repo (this project's own distillation training + evals)
 
 ## Index
 
@@ -101,12 +102,13 @@ index plus the entry files as the RAG corpus.
 | 48 | Bateson Learning II as identity-not-behavior | clever_lazy | verification_first | [Essay:¶39-46] | high | [48-bateson-learning-ii.md](entries/48-bateson-learning-ii.md) |
 | 49 | Drafting as falsification | clever_lazy | counter_observation | [CDNA-Log:2026-04-14] | high | [49-drafting-as-falsification.md](entries/49-drafting-as-falsification.md) |
 | 50 | The append-only log as the load-bearing artifact | clever_industrious | legible_failure | [Site-Essay:¶what-I-have-sharpened] | high | [50-append-only-log-load-bearing.md](entries/50-append-only-log-load-bearing.md) |
+| 51 | The grader penalized the trained virtue | clever_lazy | verification_first | [HM:2026-06-02 grader-fix] | high | [51-grader-penalized-trained-virtue.md](entries/51-grader-penalized-trained-virtue.md) |
 
 ## Distribution
 
 By **quadrant**:
 
-- clever_lazy: 18 entries
+- clever_lazy: 19 entries
 - clever_industrious: 19 entries
 - stupid_lazy: 2 entries
 - stupid_industrious: 11 entries
@@ -120,7 +122,7 @@ already excludes most of it).
 
 By **principle**:
 
-- verification_first: 12 entries
+- verification_first: 13 entries
 - legible_failure: 9 entries
 - bring_your_own_imagination: 8 entries
 - game_design_framing: 6 entries
@@ -173,4 +175,4 @@ entries thicken the pattern but are not few-shot template fillers.
 ---
 
 *v1 corpus locked 2026-05-04. Implementation phase reads this index +
-the 50 entry files as the RAG corpus.*
+the 51 entry files as the RAG corpus.*
