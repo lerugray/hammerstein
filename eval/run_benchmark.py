@@ -40,6 +40,7 @@ if str(HARNESS_DIR) not in sys.path:
 from hammerstein import (  # noqa: E402
     backends,
     classifier,
+    cli as cli_inner,
     corpus as corpus_mod,
     logger as call_logger,
     prompt as prompt_mod,
@@ -68,6 +69,8 @@ _CELLS: list[Cell] = [
     Cell("openrouter-qwen36-plus", "openrouter", "qwen/qwen3.6-plus", mode="default"),
     Cell("ollama-qwen3-8b-no-corpus", "ollama", "qwen3:8b", mode="no-corpus"),
     Cell("ollama-qwen3-8b-corpus-only", "ollama", "qwen3:8b", mode="corpus-only"),
+    Cell("openrouter-claude-fable-5", "openrouter", "anthropic/claude-fable-5", mode="default"),
+    Cell("openrouter-claude-fable-5-no-corpus", "openrouter", "anthropic/claude-fable-5", mode="no-corpus"),
 ]
 
 
@@ -155,16 +158,20 @@ def run_cell(
     """Returns (ok, message)."""
     template_name = cell.template or classifier.classify(question.query)
 
-    system_prompt = prompt_mod.load_system_prompt(_cli.DEFAULT_PROMPT_PATH)
+    system_prompt = prompt_mod.load_system_prompt(
+        REPO_ROOT / "prompts" / "SYSTEM-PROMPT.md"
+    )
     template_text = (
         None
         if cell.mode == "corpus-only"
-        else prompt_mod.load_template(_cli.DEFAULT_TEMPLATES_DIR, template_name)
+        else prompt_mod.load_template(
+            REPO_ROOT / "prompts" / "templates", template_name
+        )
     )
     if cell.mode == "no-corpus":
         retrieved: list[corpus_mod.CorpusEntry] = []
     else:
-        all_entries = corpus_mod.load_corpus(_cli.DEFAULT_CORPUS_DIR)
+        all_entries = corpus_mod.load_corpus(REPO_ROOT / "corpus" / "entries")
         retrieved = corpus_mod.retrieve(
             all_entries, question.query, template=template_name, top_k=4
         )
@@ -192,7 +199,9 @@ def run_cell(
     error: str | None = None
     start = time.perf_counter()
     try:
-        result = _cli._dispatch(cell.backend, cell.model, full_prompt)
+        result = cli_inner._dispatch(
+            cell.backend, cell.model, full_prompt, timeout_seconds=300
+        )
     except backends.BackendError as exc:
         error = str(exc)
         record.error = error
