@@ -6,6 +6,10 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Status: v1.3](https://img.shields.io/badge/status-v1.3-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
+## In plain English
+
+Most AI assistants are eager to please. They agree with you and tell you your plan is great. Hammerstein is a method for getting the opposite: an AI that pushes back. It refuses plans that are wasteful or dishonest, points out the weak spots in an idea, and when it says no it tells you what would turn that no into a yes. The goal is an assistant that helps you think, not one that flatters you. It works the same way whichever AI is running underneath.
+
 Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framework.
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
