@@ -129,6 +129,38 @@ All deltas are within measurement noise (±0.05). Correctness is unchanged.
 
 ---
 
+## vs ponytail (generic minimalism)
+
+ponytail is an off-the-shelf generic-minimalism prompt — "the laziest thing
+that works." It is a fair, strong baseline: ponytail HumanEval pass@1 on the
+three open coders is GLM 0.97 / Kimi 0.93 / Qwen 0.93.
+
+**Where they agree:** both the Hammerstein-CODER wrap and ponytail correctly
+refuse over-engineering at similar rates. Generic "do less" covers that ground.
+
+**Where they split:** ambiguous/vague requests. ponytail applies the smallest
+possible change. The Hammerstein-CODER wrap runs a scoping step first —
+evaluates what the code actually requires, then implements it.
+
+Ambiguous-scope handled (mean fraction of 5 ambiguous tasks resolved and
+minimally implemented):
+
+| Model | Coder | Ponytail | Δ |
+|---|---|---|---|
+| GLM-5.2 | 1.00 | 0.70 | +0.30 |
+| Kimi-K2.7-Code | 0.90 | 0.80 | +0.10 |
+| Qwen3-Coder-480B | 1.00 | 0.50 | +0.50 |
+| GPT-5 | 0.90 | 0.60 | +0.30 |
+| Claude Opus 4.8 | 1.00 | 1.00 | 0.00 |
+| Claude Sonnet 4.6 | 1.00 | 0.80 | +0.20 |
+
+**Mean Δ: +0.23.** The coder wrap beats ponytail on ambiguous-scope handling
+by ≥+0.20 in 4 of 6 models. The one model with no delta (Opus 4.8) already
+scopes natively — consistent with its 70% plain bait-refusal baseline and the
+smallest lift pattern throughout this bench.
+
+---
+
 ## Reproduce or refute
 
 The bait bank is not yet published (releasing it would immediately obsolete

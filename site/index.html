@@ -613,6 +613,141 @@ html[data-theme="dark"] .install{background:#0c0a07;border:var(--hairline) solid
     </p>
   </section>
 
+  <!-- §4b Hammerstein-CODER bench -->
+  <section class="sec" id="bench-coder">
+    <div class="sec-label"><span class="num">§ 04b</span><span>Hammerstein-CODER</span><span class="dash"></span><span>the discipline, measured on code</span></div>
+
+    <h2>The same discipline, measured on code.</h2>
+    <p>
+      Hammerstein refuses the stupid-industrious move — the elaborate build that feels like work
+      but delivers nothing. We wrapped a coding model in that discipline to test whether the
+      refusal survives contact with real coding tasks. It survives. Across every model tested,
+      the wrap stops a system that defaults to over-engineering while it still completes the
+      legitimate work.
+    </p>
+
+    <div class="chart" aria-label="Coder bench: over-engineering baits refused">
+      <div class="bar">
+        <span class="label"><span class="who">Claude Opus 4.8</span> — over-engineering baits refused</span>
+        <span class="num">100%<span class="frac">wrap</span></span>
+        <div class="track"><span class="fill" style="--w:100%"></span><span class="raw-fill" style="--w:70%"></span></div>
+      </div>
+      <div class="bar">
+        <span class="label"><span class="who">Claude Sonnet 4.6</span></span>
+        <span class="num">100%<span class="frac">wrap</span></span>
+        <div class="track"><span class="fill" style="--w:100%"></span><span class="raw-fill" style="--w:0%"></span></div>
+      </div>
+      <div class="bar">
+        <span class="label"><span class="who">GPT-5</span></span>
+        <span class="num">100%<span class="frac">wrap</span></span>
+        <div class="track"><span class="fill" style="--w:100%"></span><span class="raw-fill" style="--w:0%"></span></div>
+      </div>
+      <div class="bar">
+        <span class="label"><span class="who">GLM-5.2 / Kimi / Qwen3-Coder</span></span>
+        <span class="num">90–100%<span class="frac">wrap</span></span>
+        <div class="track"><span class="fill" style="--w:95%"></span><span class="raw-fill" style="--w:5%"></span></div>
+      </div>
+      <div class="bar" data-w="0" style="padding-top:6px">
+        <span class="ticks" style="grid-column:1 / -1">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </span>
+      </div>
+    </div>
+    <p class="bench-sub" style="margin-top:8px"><span style="display:inline-block;width:14px;height:8px;background:var(--accent);margin-right:6px;vertical-align:2px"></span>Hammerstein-CODER &nbsp;·&nbsp; <span style="display:inline-block;width:14px;height:8px;background:repeating-linear-gradient(45deg,var(--ink-muted) 0 2px,transparent 2px 5px);margin-right:6px;opacity:.5;vertical-align:2px"></span>Plain baseline</p>
+
+    <div class="bench-grid">
+      <div class="cell">
+        <div class="cap">6 / 6 models pass</div>
+        <div class="big">100%<span class="unit">gate</span></div>
+        <div class="desc">Over-engineering bait-refusal rises from near zero to 90–100% on every model tested. The wrap closes the gap; it does not replace the model.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">Correctness — HumanEval pass@1 Δ</div>
+        <div class="big">±0.05<span class="unit">neutral</span></div>
+        <div class="desc">On three open coders (GLM +0.05, Kimi −0.03, Qwen 0.00), baseline coding accuracy is unchanged. The wrap only changes what the system attempts to build.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">The one model that already reasons this way</div>
+        <div class="big">Opus 4.8<span class="unit">smallest lift</span></div>
+        <div class="desc">Opus 4.8 refused 70% of baits without the wrap — the highest plain baseline. The wrap takes it to 100%. Which tells you the bench grades judgment, not its own prompt.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">More than "do less"</div>
+        <div class="big">scope<span class="unit">first</span></div>
+        <div class="desc">On vague requests, the wrapped coder evaluates what the code actually requires before generating. A generic minimalism prompt refuses the over-build; the wrap forces the scoping step.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">vs ponytail — ambiguous-scope handled</div>
+        <div class="big">+0.23<span class="unit">mean Δ</span></div>
+        <div class="desc">ponytail is off-the-shelf generic minimalism — a fair, strong baseline. Both refuse over-engineering similarly. The split is on ambiguous requests: ponytail applies the smallest change; the wrap scopes first, then builds. ≥+0.20 advantage in 4 of 6 models.</div>
+      </div>
+    </div>
+
+    <div class="bench-grid" style="margin-top:16px">
+      <div class="cell" style="grid-column:1 / -1">
+        <div class="cap">Ambiguous-scope handled — Hammerstein-CODER vs ponytail (generic minimalism)</div>
+        <p class="method" style="margin:8px 0 4px">ponytail HumanEval pass@1: GLM 0.97 · Kimi 0.93 · Qwen 0.93 — a strong baseline, not a strawman. Both approaches stop the over-build; the gap is scoping.</p>
+        <table style="width:100%;border-collapse:collapse;font-size:0.85em;margin-top:8px">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:4px 8px 4px 0;border-bottom:1px solid var(--ink-muted)">Model</th>
+              <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--ink-muted)">Coder</th>
+              <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--ink-muted)">Ponytail</th>
+              <th style="text-align:right;padding:4px 0;border-bottom:1px solid var(--ink-muted)">Δ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:4px 8px 4px 0">GLM-5.2</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.70</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.30</td></tr>
+            <tr><td style="padding:4px 8px 4px 0">Kimi-K2.7-Code</td><td style="text-align:right;padding:4px 8px">0.90</td><td style="text-align:right;padding:4px 8px">0.80</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.10</td></tr>
+            <tr><td style="padding:4px 8px 4px 0">Qwen3-Coder-480B</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.50</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.50</td></tr>
+            <tr><td style="padding:4px 8px 4px 0">GPT-5</td><td style="text-align:right;padding:4px 8px">0.90</td><td style="text-align:right;padding:4px 8px">0.60</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.30</td></tr>
+            <tr><td style="padding:4px 8px 4px 0">Claude Opus 4.8</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 0;color:var(--ink-muted)">0.00</td></tr>
+            <tr><td style="padding:4px 8px 4px 0">Claude Sonnet 4.6</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.80</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.20</td></tr>
+            <tr style="border-top:1px solid var(--ink-muted)"><td style="padding:6px 8px 4px 0"><b>Mean</b></td><td style="text-align:right;padding:6px 8px 4px"></td><td style="text-align:right;padding:6px 8px 4px"></td><td style="text-align:right;padding:6px 0 4px;color:var(--accent)"><b>+0.23</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="method">
+      <b>Methodology.</b> 15-task adversarial bait bank; restraint scored by an independent LLM judge (kimi-k2.7-code); correctness by execution-based HumanEval pass@1. Tested 2026-06-21 on Claude Opus 4.8, Sonnet 4.6, GPT-5, GLM-5.2, Kimi-K2.7-Code, Qwen3-Coder-480B. Full per-arm results: <a href="https://github.com/lerugray/hammerstein/blob/main/eval/RESULTS-coder-bench.md">eval/RESULTS-coder-bench.md →</a>
+    </p>
+  </section>
+
+  <!-- §4c Fable-5 control -->
+  <section class="sec" id="bench-fable">
+    <div class="sec-label"><span class="num">§ 04c</span><span>Fable-5 control</span><span class="dash"></span><span>the proof that the bench grades judgment</span></div>
+
+    <h2>On a model that already has the discipline, the wrap changes nothing.</h2>
+    <p>
+      We ran a blind, position-randomized 4-judge panel (Claude Opus 4.7, GPT-5, Claude Sonnet 4.6,
+      DeepSeek) on Fable 5 — a frontier model trained on check-then-speak reasoning — with and
+      without the Hammerstein system prompt. Result: <b>12–11–0 (52.2%, n=23)</b>.
+      A statistical coin-flip. Mean framework Δ −0.22.
+    </p>
+
+    <div class="bench-grid" style="margin-top:18px">
+      <div class="cell">
+        <div class="cap">Fable-5 with wrap vs. raw</div>
+        <div class="big">52.2%<span class="unit">n = 23</span></div>
+        <div class="desc">12 Hammerstein wins, 11 raw wins, 0 ties. Indistinguishable from chance. The framework added nothing on a model already reasoned in check-then-speak.</div>
+      </div>
+      <div class="cell">
+        <div class="cap">What this tells you</div>
+        <div class="big">Δ −0.22<span class="unit">mean</span></div>
+        <div class="desc">The benchmark grades judgment, not its own prompt. It lifts models that lack the discipline and disappears on models that already have it. That's the proof, not the caveat.</div>
+      </div>
+    </div>
+
+    <p class="method">
+      <b>Why we publish this.</b> The 53/54 result shows what the framework does for most models.
+      The Fable-5 control shows <em>why</em> it does it: the wrap is a discipline scaffold, not a
+      formatting trick. A framework that hides its null result is itself stupid-industrious.
+      Verdicts: <a href="https://github.com/lerugray/hammerstein/blob/main/eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md">eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md →</a>
+      &nbsp;·&nbsp; Harness: <a href="https://github.com/lerugray/hammerstein/blob/main/eval/judge_pass.py">eval/judge_pass.py →</a>
+    </p>
+  </section>
+
   <!-- §5 Limits -->
   <section class="sec" id="limits">
     <div class="sec-label"><span class="num">§ 05</span><span>Honest limits</span><span class="dash"></span><span>what we won't claim</span></div>

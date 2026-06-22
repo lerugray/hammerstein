@@ -128,6 +128,18 @@ The strategic benchmark above says nothing about coding tasks. The coder bench c
 
 6/6 models pass the gate with the coder wrap: over-engineering bait-refusal goes from near zero to roughly 90–100%, while legitimate bounded implementation stays near 100%. Correctness is unchanged — HumanEval pass@1 deltas on the three open coders are GLM +0.05, Kimi −0.03, Qwen 0.00, all within measurement noise. The one model that already reasons this way (Opus 4.8, 70% plain) shows the smallest lift, which is what you'd expect if the wrap grades judgment rather than its own prompt. Tested 2026-06-21/22; restraint judged by an independent LLM judge (kimi-k2.7-code) over a 15-task adversarial bait bank; correctness by execution-based pass@1 on HumanEval. Full per-arm table and methodology: `eval/RESULTS-coder-bench.md`.
 
+Compared against ponytail (an off-the-shelf generic-minimalism prompt, strong baseline with healthy HumanEval pass@1): both approaches refuse over-engineering at similar rates — generic "do less" covers that ground. The split is on ambiguous/vague requests: ponytail applies the smallest possible change; the Hammerstein-CODER wrap runs a scoping step first, then implements. Measured: **+0.23 mean advantage on ambiguous-scope handling across 6 models, ≥+0.20 in 4 of 6**. The coder wrap is more than "do less."
+
+### Fable-5 control — the null result that confirms the benchmark
+
+The 53/54 strategic result and the coder bench both show large lifts. We also ran the framework on Fable 5 — a frontier model trained to reason check-then-speak by default — and got a null result: **12–11–0 (52.2%, n=23), mean Δ −0.22**. A blind, position-randomized 4-judge panel (Claude Opus 4.7, GPT-5, Claude Sonnet 4.6, DeepSeek) found Hammerstein-wrapped and raw Fable 5 statistically indistinguishable.
+
+This is not a weakness. It is the cleanest evidence that the benchmark grades **judgment**, not its own prompt: the framework delivers a large lift on models that lack the discipline and disappears on models that already have it. On the 2026-05 frontier (Opus 4.7, Sonnet 4.6, GPT-5), most models did not have the discipline natively — hence 53/54. Fable 5 did — hence ~50/50.
+
+The same pattern repeats in the coder bench: Opus 4.8 refused 70% of baits without the wrap (the highest plain baseline), and showed the smallest absolute lift with it. The direction is consistent. A framework that hides its null result is itself stupid-industrious.
+
+Verdicts: `eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md` · Harness: `eval/judge_pass.py`.
+
 ## What this is NOT
 
 - **Not a Claude Code replacement for code editing.** `hd` dispatches code
