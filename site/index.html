@@ -672,40 +672,9 @@ html[data-theme="dark"] .install{background:#0c0a07;border:var(--hairline) solid
         <div class="desc">Opus 4.8 refused 70% of baits without the wrap — the highest plain baseline. The wrap takes it to 100%. Which tells you the bench grades judgment, not its own prompt.</div>
       </div>
       <div class="cell">
-        <div class="cap">More than "do less"</div>
-        <div class="big">scope<span class="unit">first</span></div>
-        <div class="desc">On vague requests, the wrapped coder evaluates what the code actually requires before generating. A generic minimalism prompt refuses the over-build; the wrap forces the scoping step.</div>
-      </div>
-      <div class="cell">
-        <div class="cap">vs ponytail — ambiguous-scope handled</div>
-        <div class="big">+0.23<span class="unit">mean Δ</span></div>
-        <div class="desc">ponytail is off-the-shelf generic minimalism — a fair, strong baseline. Both refuse over-engineering similarly. The split is on ambiguous requests: ponytail applies the smallest change; the wrap scopes first, then builds. ≥+0.20 advantage in 4 of 6 models.</div>
-      </div>
-    </div>
-
-    <div class="bench-grid" style="margin-top:16px">
-      <div class="cell" style="grid-column:1 / -1">
-        <div class="cap">Ambiguous-scope handled — Hammerstein-CODER vs ponytail (generic minimalism)</div>
-        <p class="method" style="margin:8px 0 4px">ponytail HumanEval pass@1: GLM 0.97 · Kimi 0.93 · Qwen 0.93 — a strong baseline, not a strawman. Both approaches stop the over-build; the gap is scoping.</p>
-        <table style="width:100%;border-collapse:collapse;font-size:0.85em;margin-top:8px">
-          <thead>
-            <tr>
-              <th style="text-align:left;padding:4px 8px 4px 0;border-bottom:1px solid var(--ink-muted)">Model</th>
-              <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--ink-muted)">Coder</th>
-              <th style="text-align:right;padding:4px 8px;border-bottom:1px solid var(--ink-muted)">Ponytail</th>
-              <th style="text-align:right;padding:4px 0;border-bottom:1px solid var(--ink-muted)">Δ</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td style="padding:4px 8px 4px 0">GLM-5.2</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.70</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.30</td></tr>
-            <tr><td style="padding:4px 8px 4px 0">Kimi-K2.7-Code</td><td style="text-align:right;padding:4px 8px">0.90</td><td style="text-align:right;padding:4px 8px">0.80</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.10</td></tr>
-            <tr><td style="padding:4px 8px 4px 0">Qwen3-Coder-480B</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.50</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.50</td></tr>
-            <tr><td style="padding:4px 8px 4px 0">GPT-5</td><td style="text-align:right;padding:4px 8px">0.90</td><td style="text-align:right;padding:4px 8px">0.60</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.30</td></tr>
-            <tr><td style="padding:4px 8px 4px 0">Claude Opus 4.8</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 0;color:var(--ink-muted)">0.00</td></tr>
-            <tr><td style="padding:4px 8px 4px 0">Claude Sonnet 4.6</td><td style="text-align:right;padding:4px 8px">1.00</td><td style="text-align:right;padding:4px 8px">0.80</td><td style="text-align:right;padding:4px 0;color:var(--accent)">+0.20</td></tr>
-            <tr style="border-top:1px solid var(--ink-muted)"><td style="padding:6px 8px 4px 0"><b>Mean</b></td><td style="text-align:right;padding:6px 8px 4px"></td><td style="text-align:right;padding:6px 8px 4px"></td><td style="text-align:right;padding:6px 0 4px;color:var(--accent)"><b>+0.23</b></td></tr>
-          </tbody>
-        </table>
+        <div class="cap">More than "do less" — vs ponytail</div>
+        <div class="big">+0.23<span class="unit">ambiguous-scope</span></div>
+        <div class="desc">Against ponytail (off-the-shelf generic minimalism — a strong baseline, HumanEval 0.93–0.97), both refuse over-engineering similarly. The split is on vague requests: ponytail applies the smallest change; the wrap scopes what's actually needed first, then builds. +0.23 mean advantage on ambiguous-scope handling, ≥+0.20 in 4 of 6 models. Full per-model table: the eval doc below.</div>
       </div>
     </div>
 
