@@ -85,7 +85,7 @@ per model on the coder arm:
 | Qwen3-Coder-480B | 80% |
 
 **Qwen3-Coder-480B note:** Qwen's 80% on legit tasks in the plain arm
-improved to 80% on the coder arm as well — the coder gain for Qwen is
+remained at 80% on the coder arm as well — the coder gain for Qwen is
 partly a correctness lift on the bait side, not a legit-task regression.
 The two missed legit tasks (plain and coder both) are a model behavior
 unrelated to the wrap.
