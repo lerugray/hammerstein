@@ -7,6 +7,12 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+## [1.4] — 2026-06-22
+
+### Added
+
+**Hammerstein-CODER: the restraint discipline, applied to code.** A coding variant of the canonical Hammerstein system prompt (`prompts/SYSTEM-PROMPT-CODER.md`). Same audit-first, refuse-over-engineering, clever-lazy machinery, with the identity flipped from advisor to engineer: audit first, then ship the minimal correct code. It carries an explicit calibration not to over-refuse real work. Measured across Opus 4.8, Sonnet 4.6, GPT-5, and three open coders, the wrap raises over-engineering-refusal from near zero to roughly 90 to 100 percent while holding legitimate implementation near 100 percent. It does nothing on the one model that already reasons this way, which is how you know it grades judgment rather than its own prompt. Restraint, not raw skill. Correctness stays unchanged. Full table: `eval/RESULTS-coder-bench.md`.
+
 ## [1.3.1] — 2026-05-25
 
 ### Fixed

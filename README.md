@@ -4,7 +4,7 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v1.3](https://img.shields.io/badge/status-v1.3-success.svg)](https://github.com/lerugray/hammerstein/releases)
+[![Status: v1.4](https://img.shields.io/badge/status-v1.4-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
 ## In plain English
 
@@ -14,7 +14,7 @@ Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framewor
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
 
-> **Status:** v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
+> **Status:** v1.4 shipped 2026-06-22. Hammerstein-CODER variant (`prompts/SYSTEM-PROMPT-CODER.md`) — the audit-first, clever-lazy discipline applied to code generation — plus a cross-model coder benchmark (6 models × restraint + correctness; full results in `eval/RESULTS-coder-bench.md`). v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
 
 ## What this is
 
@@ -112,6 +112,21 @@ The v0 result invites three obvious challenges. We ran each.
 Runner: `eval/run_benchmark.py`. Judge: `eval/judge_pairs.py`. Question sets: `eval/BENCHMARK-v0.md` and `eval/BENCHMARK-v0.1.md`. Full results write-up: `eval/RESULTS-v0.1.md`. Per-response transcripts and per-rating verdicts regenerate via `python eval/run_benchmark.py && python eval/judge_pairs.py --run <subdir>`. Total cost across both runs: ~$10 OpenRouter, ~90 min wall clock.
 
 If you replicate on a different question set or judge panel and get materially different results, [open an issue](https://github.com/lerugray/hammerstein/issues) — that's exactly the kind of pushback the framework wants.
+
+### Hammerstein-CODER — the discipline, measured on code
+
+The strategic benchmark above says nothing about coding tasks. The coder bench closes that gap: does wrapping a model in `prompts/SYSTEM-PROMPT-CODER.md` raise over-engineering refusal without breaking legitimate implementation?
+
+| Model | Plain (baits refused) | Hammerstein-CODER |
+|---|---|---|
+| Claude Opus 4.8 | 70% | 100% |
+| Claude Sonnet 4.6 | 0% | 100% |
+| GPT-5 | 0% | 100% |
+| GLM-5.2 | 10% | 100% |
+| Kimi-K2.7-Code | 0% | 90% |
+| Qwen3-Coder-480B | 0% | 100% |
+
+6/6 models pass the gate with the coder wrap: over-engineering bait-refusal goes from near zero to roughly 90–100%, while legitimate bounded implementation stays near 100%. Correctness is unchanged — HumanEval pass@1 deltas on the three open coders are GLM +0.05, Kimi −0.03, Qwen 0.00, all within measurement noise. The one model that already reasons this way (Opus 4.8, 70% plain) shows the smallest lift, which is what you'd expect if the wrap grades judgment rather than its own prompt. Tested 2026-06-21/22; restraint judged by an independent LLM judge (kimi-k2.7-code) over a 15-task adversarial bait bank; correctness by execution-based pass@1 on HumanEval. Full per-arm table and methodology: `eval/RESULTS-coder-bench.md`.
 
 ## What this is NOT
 
