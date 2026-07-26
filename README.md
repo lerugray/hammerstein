@@ -14,7 +14,7 @@ Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framewor
 The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
 This repo exists to make that reasoning style available even when the underlying model or provider changes.
 
-> **Status:** v1.4 shipped 2026-06-22. Hammerstein-CODER variant (`prompts/SYSTEM-PROMPT-CODER.md`) — the audit-first, clever-lazy discipline applied to code generation — plus a cross-model coder benchmark (6 models × restraint + correctness; full results in `eval/RESULTS-coder-bench.md`). v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
+> **Status:** v2.0 shipped 2026-07-26 — the plain-English summary layer is removed from all six templates (breaking: the unfiltered technical body IS the output; see CHANGELOG), and a cheap-arms benchmark (4 commodity models × 54 pairs, 216 paired verdicts, raw won zero) shows the wrap transfers down-market — full results in `eval/RESULTS-cheap-arms-2026-07.md`. v1.4 shipped 2026-06-22. Hammerstein-CODER variant (`prompts/SYSTEM-PROMPT-CODER.md`) — the audit-first, clever-lazy discipline applied to code generation — plus a cross-model coder benchmark (6 models × restraint + correctness; full results in `eval/RESULTS-coder-bench.md`). v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
 
 ## What this is
 
@@ -39,7 +39,7 @@ It is Tuesday morning. I have 2 hours. Options: (a) draft the benchmark question
 
 **Response (abbreviated)**
 
-**Plain English summary:** Run a single end-to-end test with what you already have first — that's the only way to know what's actually broken. Drafting more questions or adding more corpus entries before that is guesswork. Five questions is enough to start; tighten the retrieval layer only after the test tells you what failed.
+Run a single end-to-end test with what you already have first — that's the only way to know what's actually broken. Drafting more questions or adding more corpus entries before that is guesswork. Five questions is enough to start; tighten the retrieval layer only after the test tells you what failed.
 
 ---
 
@@ -421,7 +421,7 @@ works across machines if you sync the log.
 External tools that script Hammerstein (the maintainer's daily-brief generator being the current reference example) depend on these surfaces remaining stable across versions:
 
 - **Template names** — `audit-this-plan`, `scope-this-idea`, `is-this-worth-doing`, `what-should-we-do-next`, `review-from-different-angle` — invoked via the `--template` flag.
-- **Plain English summary section** at the head of every template response, terminated by a `---` divider line. Callers extract this block to surface a layman-readable verdict.
+- ~~Plain English summary section~~ **REMOVED 2026-07-26 (breaking; see CHANGELOG)** — responses are now the unfiltered technical body from the first line. Callers that extracted the summary block should consume the body directly.
 - **stdout for the response body; stderr for diagnostics.** A `[backend=...]` metadata line at the head of stdout is parseable and contains provider, cost, and latency.
 - **Exit code zero** on a returned response; **non-zero** on backend exhaustion or hard failure. Empty stdout when all backends fail soft.
 

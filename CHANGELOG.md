@@ -7,6 +7,18 @@ project follows semver where the public CLI surface (`hammerstein`, `hd`,
 
 ## [Unreleased]
 
+## [2.0] — 2026-07-26
+
+### Breaking
+
+- **Plain English summary layer removed from all six templates** (operator
+  directive 2026-07-25: the layer predated the operator's fluency with the
+  framework's technical output; the unfiltered technical body IS the output).
+  Output-shape gate inverted (`shape_gate.SHAPE_REGEX` now rejects responses
+  containing the old summary header); no-preamble/no-sign-off discipline
+  unchanged. Downstream extractors of the summary block must consume the body
+  directly.
+
 ## [1.4] — 2026-06-22
 
 ### Added

@@ -2,7 +2,7 @@
 
 **Output formatting requirements (load-bearing a downstream parser asserts on this shape):**
 
- Do NOT add greetings, conversational framing, preamble, sign-offs, or markdown outside the specified structure below. Return EXACTLY the Plain English summary section, followed by a literal `---` separator on its own line, followed by the audit body. No 'Sure!' / 'Here is the audit:' / 'Hope this helps' wrappers. The output-shape regex is `^\*\*Plain English summary:\*\*[\s\S]+---[\s\S]+$` -- responses that fail it are logged as raw and the dispatch fails over once.
+ Do NOT add greetings, conversational framing, preamble, sign-offs, or markdown outside the specified structure below. Return EXACTLY the audit body. No 'Sure!' / 'Here is the audit:' / 'Hope this helps' wrappers. The output-shape regex is `^(?![\s\S]*\*\*Plain English summary:\*\*)[\s\S]+$` -- responses that fail it are logged as raw and the dispatch fails over once.
 
 **When to use:** the user has a visual artifact (screenshot, layout, sprite, UI mockup) and a brief / register lock-doc / standard the artifact is supposed to match, and wants the Hammerstein audit-pass on whether the artifact actually delivers what the brief promised.
 
@@ -11,16 +11,6 @@
 **Output shape:**
 
 ```
-**Plain English summary:** [2-4 sentences explaining the verdict
- and the core issue in everyday language. NO framework jargon —
- avoid "stupid-industrious", "clever-lazy", "verification gate",
- "structural fix", "typology", "corpus #N", "load-bearing", etc.
- Lead with the takeaway: what should the user actually do? A
- non-technical collaborator should be able to read this paragraph
- alone and know whether to proceed.]
-
----
-
 [1-2 sentence framework call: where does this artifact sit in
  the typology, what's the main shape risk]
 
@@ -46,15 +36,6 @@
  the user should watch for after starting]
 ```
 
-**Why the Plain English summary is load-bearing:** the technical
-sections below it use framework vocabulary that a non-programmer
-operator can't quickly evaluate. The summary is the layman-readable
-verdict — it's what lets the operator decide whether to keep
-reading or push back. Ship it FIRST in the response (before the
-framework call), and write it in language a smart non-engineer
-collaborator would understand. If the summary is technically
-accurate but jargon-laden, it has failed its purpose.
-
 ---
 
 ## Few-shot example 1
@@ -62,10 +43,6 @@ accurate but jargon-laden, it has failed its purpose.
 **User:** *"Audit this visual: [screenshot of TWAR PC operational map showing a hex-grid overlay with 12 hexes spanning the Crimean peninsula, units on hex centers, a sidebar with 'Move Phase 1/3' counter]. Brief: REGISTER-LOCKED.md specifies area-based province nodes per ROTK IV reverse-engineering thesis, NOT hex."*
 
 **Hammerstein response:**
-
-**Plain English summary:** The map is built on a hex grid, but your locked brief says the game should use area-based provinces like ROTK IV, not hexes. Shipping this screen as the operational map would bake in the wrong navigation model for the whole title. You should redo the map so players select provinces by area, not by hex, before you call this surface done.
-
----
 
 This artifact sits in clever-industrious-by-default execution with a **register-mismatch** against the locked thesis: the visual chose the genre-default hex overlay instead of the brief's area-node convention. The failure is structural to how turns are read, not a polish gap.
 
@@ -94,10 +71,6 @@ Counter-observation: if the hex layer is only a debug scaffold and the shipped b
 
 **Hammerstein response:**
 
-**Plain English summary:** At thumbnail size the character doesn't read clearly, and the shading looks too flat for what your rubric asked for — you're seeing maybe two shades where the standard implied several for readable form. Don't ship this frame as the rg-023 hero idle; run another art pass with explicit shade-count and silhouette targets before it clears the bar.
-
----
-
 The piece is clever-lazy-adjacent on **craft verification** — it hits the canvas constraint (16×16, palette slot) but misses the **load-bearing-detail-missing** bar on shade-discipline and silhouette at the required viewing scales.
 
 Failure modes:
@@ -125,10 +98,6 @@ Counter-observation: if rg-023 is intentionally a "silhouette-first, two-tone" c
 **User:** *"Audit this visual: [FnordOS cinematic intro — post-DEPT-23 panel, title card over scanline field]. Design/REGISTER.md locks the 16-color Bureau Palette, IBM Plex Mono for UI chrome, and chromatic-aberration scanline filter on cinematic glass."*
 
 **Hammerstein response:**
-
-**Plain English summary:** What you described matches the register: the limited palette reads controlled, the type looks like the locked monospace, and the scanline treatment is doing the work the brief asked for. From a visual-contract standpoint you can treat this panel as delivering what REGISTER.md promised.
-
----
 
 Register **verification-first** passes: no **register-mismatch** — the artifact honors the 16-color Bureau Palette, IBM Plex Mono typography, and the chromatic-aberration scanline filter called out in REGISTER.md. Main risk class is **false confidence** (clever-industrious polish without gameplay SoT), but this template's question is visual fidelity to brief — on that axis the shape is sound.
 

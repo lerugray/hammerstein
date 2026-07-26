@@ -17,14 +17,15 @@ from typing import Callable, Optional
 from . import backends
 
 
-SHAPE_REGEX = re.compile(r"^\*\*Plain English summary:\*\*[\s\S]+---[\s\S]+$")
+SHAPE_REGEX = re.compile(r"^(?![\s\S]*\*\*Plain English summary:\*\*)[\s\S]+$")
 
 _PATH_SAFE = re.compile(r"[^A-Za-z0-9._-]+")
 
 
 def is_well_shaped(response: str | None) -> bool:
-    """True iff response begins with `**Plain English summary:**`,
-    contains a `---` separator, and has body content after."""
+    """True iff response is non-empty and does NOT contain the retired
+    `**Plain English summary:**` layer (removed 2026-07-25, operator
+    directive: the unfiltered technical body IS the output)."""
     if not response:
         return False
     return bool(SHAPE_REGEX.match(response))

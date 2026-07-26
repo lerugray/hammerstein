@@ -29,15 +29,11 @@ def _result(
 
 
 def test_is_well_shaped_accepts_canonical_audit_response() -> None:
-    text = (
-        "**Plain English summary:** Yes ship it.\n\n"
-        "---\n\n"
-        "[audit body content here]"
-    )
+    text = "[unfiltered technical audit body from the first line]"
     assert shape_gate.is_well_shaped(text) is True
 
 
-def test_is_well_shaped_rejects_missing_summary_header() -> None:
+def test_is_well_shaped_rejects_retired_summary_header() -> None:
     text = (
         "Sure! Here is the audit:\n\n"
         "**Plain English summary:** ...\n\n---\n\nbody"
@@ -45,7 +41,7 @@ def test_is_well_shaped_rejects_missing_summary_header() -> None:
     assert shape_gate.is_well_shaped(text) is False
 
 
-def test_is_well_shaped_rejects_missing_separator() -> None:
+def test_is_well_shaped_rejects_header_only_response() -> None:
     assert shape_gate.is_well_shaped("**Plain English summary:** ok") is False
 
 
@@ -83,9 +79,7 @@ def test_log_raw_response_sanitizes_model_label(tmp_path: Path) -> None:
 def test_run_with_shape_gate_returns_outcome_when_primary_passes(
     tmp_path: Path,
 ) -> None:
-    good = (
-        "**Plain English summary:** ok\n\n---\n\nbody"
-    )
+    good = "technical audit body"
     primary = _result(good)
 
     def primary_call() -> backends.CallResult:
@@ -105,8 +99,8 @@ def test_run_with_shape_gate_returns_outcome_when_primary_passes(
 def test_run_with_shape_gate_falls_over_once_on_primary_fail(
     tmp_path: Path,
 ) -> None:
-    bad = "nope"
-    good = "**Plain English summary:** ok\n\n---\n\nbody"
+    bad = "**Plain English summary:** nope\n\n---\n\nbody"
+    good = "technical audit body"
     failover = _result(good, model="gpt-4o")
 
     def primary_call() -> backends.CallResult:
@@ -130,7 +124,7 @@ def test_run_with_shape_gate_falls_over_once_on_primary_fail(
 
 
 def test_run_with_shape_gate_raises_on_dual_failure(tmp_path: Path) -> None:
-    bad = "still bad"
+    bad = "**Plain English summary:** still bad\n\n---\n\nbody"
 
     def primary_call() -> backends.CallResult:
         return _result(bad)
@@ -155,7 +149,7 @@ def test_run_with_shape_gate_raises_when_no_failover_configured(
     tmp_path: Path,
 ) -> None:
     def primary_call() -> backends.CallResult:
-        return _result("bad")
+        return _result("**Plain English summary:** bad\n\n---\n\nbody")
 
     with pytest.raises(shape_gate.ShapeGateFailure) as exc_info:
         shape_gate.run_with_shape_gate(

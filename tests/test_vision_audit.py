@@ -37,7 +37,7 @@ _EXPECTED_FNORDOS: tuple[tuple[str, ...], tuple[str, ...]] | None = None
 
 _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
-_SHAPED = "**Plain English summary:** test verdict\n\n---\n\nbody"
+_SHAPED = "technical audit body from the first line"
 
 
 def _result(
@@ -165,7 +165,7 @@ def test_retrogaze_shape_gate_harness_failover_on_malformed_primary(
         assert mt == "image/png"
         state["n"] += 1
         if state["n"] == 1:
-            return _result("unstructured model ramble", model=model)
+            return _result("**Plain English summary:** ramble\n\n---\n\nbody", model=model)
         return _result(_SHAPED, model=model)
 
     monkeypatch.setattr(backends, "call_openrouter", _sequential_fake)
@@ -219,8 +219,8 @@ def test_fnordos_shape_gate_harness_raises_on_dual_failure(
         assert mt == "image/png"
         state["n"] += 1
         if state["n"] == 1:
-            return _result("bad primary", model=model)
-        return _result("bad failover", model=model)
+            return _result("**Plain English summary:** bad primary\n\n---\n\nbody", model=model)
+        return _result("**Plain English summary:** bad failover\n\n---\n\nbody", model=model)
 
     monkeypatch.setattr(backends, "call_openrouter", _dual_fake)
 
