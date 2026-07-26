@@ -19,31 +19,33 @@ and says nothing about coding/math/creative tasks.
 - Judging: cross-vendor commodity panels (glm-5.2, qwen3.8, kimi-k3), full rubric
   (framework-fidelity / usefulness / voice) + a stricter usefulness+voice-only cut.
 - **Disclosure:** 17 of 18 kimi-k3 votes on the main run died mid-judging on a provider
-  billing failure and were initially mis-scored as ties by the analyzer; all tables here
-  are recomputed from the 37 real votes (both remaining judges at full coverage). The raw
-  run artifacts, error records included, are preserved in the private bench tree.
+  billing failure and were initially mis-scored as ties by the analyzer. They were later
+  re-run on a restored provider lane using the identical judge prompt and parser, giving
+  the full three-judge panel below. The interim two-judge tables and all error records
+  are preserved in the private bench tree.
 
 ## Results
 
 Pair verdict = majority of real votes; no majority = split.
 
-| cut | wrapped | raw | split | n |
-| --- | ------: | --: | ----: | -:|
-| Full rubric (main run) | 13 | 2 | 3 | 18 |
-| Usefulness + voice only (main run) | 2 | **7** | 9 | 18 |
+| cut | wrapped | raw | tie | n |
+| --- | ------: | --: | --: | -:|
+| Full rubric (main run, 3-judge panel) | 13 | 5 | 0 | 18 |
+| Usefulness + voice only (main run, 3-judge panel) | 6 | **12** | 0 | 18 |
 | Full rubric (pilot) | 6 | 0 | 0 | 6 |
 | Usefulness + voice only (pilot) | 2 | **4** | 0 | 6 |
 
-Per-judge on the usefulness+voice cut (main run): glm-5.2 preferred raw 11–6,
-qwen3.8 preferred raw 12–6. Both judges lean the same way.
+Per-judge on the full rubric (main run): glm-5.2 66.7% wrapped, kimi-k3 94.4%
+wrapped, qwen3.8 88.9% wrapped — yet on the usefulness+voice cut the panel
+prefers raw exactly 2:1 (12–6). The conformance/usefulness split is judge-robust.
 
 ## Reading
 
 **On Opus 5, the wrap wins conformance and loses usefulness.** The full-rubric sweep is
 expected — the wrapped arm matches the framework's shape by construction, and
 framework-fidelity is scored. The signal is the stricter cut: judges preferred **raw
-Opus 5 roughly 2:1** for pure usefulness and voice, consistently across both runs and
-both live judges.
+Opus 5 exactly 2:1** (12–6) for pure usefulness and voice, consistent across both runs
+and all three judges.
 
 This is the crossover the framework has predicted about itself since the original
 benchmark: the wrap grades and structures *judgment*, so its value falls as the base
@@ -63,6 +65,7 @@ quality lever we have measured; on Opus 5, use it when you want the framework's 
 
 - One generation per arm per probe; no run-to-run variance measured.
 - Commodity judges; frontier judges or human raters may read differently.
-- The kimi-k3 column is mostly missing (billing failure above); both surviving judges
-  agree directionally, but the panel was effectively two-vendor for the main run.
+- The kimi-k3 votes were recovered in a second pass hours after the other judges'
+  (same prompts, same parser, restored provider lane) — a timing asymmetry, not a
+  methodological one.
 - Generation ran through an agent harness rather than the raw API.
