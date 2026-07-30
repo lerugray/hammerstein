@@ -118,7 +118,7 @@ def cli(
 ) -> None:
     """Hammerstein is a minimal strategic-reasoning harness: system prompt + few-shot template + small retrieved corpus.
 
-    README: https://github.com/rayweiss/hammerstein
+    README: https://github.com/lerugray/hammerstein
     """
     if backend_tier is not None and backend_tier not in ("free", "paid"):
         typer.echo(
