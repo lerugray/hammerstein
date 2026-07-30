@@ -1,207 +1,51 @@
 # Hammerstein
 
-![Hammerstein — A framework that survives the model. Clever-lazy · Verify · Legible failure](docs/images/banner.png)
+![Hammerstein: a framework that survives the model. Clever-lazy · Verify · Legible failure](docs/images/banner.png)
 
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v1.4](https://img.shields.io/badge/status-v1.4-success.svg)](https://github.com/lerugray/hammerstein/releases)
+[![Status: v2.0](https://img.shields.io/badge/status-v2.0-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
 ## In plain English
 
 Most AI assistants are eager to please. They agree with you and tell you your plan is great. Hammerstein is a method for getting the opposite: an AI that pushes back. It refuses plans that are wasteful or dishonest, points out the weak spots in an idea, and when it says no it tells you what would turn that no into a yes. The goal is an assistant that helps you think, not one that flatters you. It works the same way whichever AI is running underneath.
 
-Hammerstein is a strategic-reasoning assistant tuned to the Hammerstein framework.
-The load-bearing artifact is the framework encoded as a portable system prompt plus a small retrieved corpus.
-This repo exists to make that reasoning style available even when the underlying model or provider changes.
+## What this repo is
 
-> **Status:** v2.0 shipped 2026-07-26 — the plain-English summary layer is removed from all six templates (breaking: the unfiltered technical body IS the output; see CHANGELOG), and a cheap-arms benchmark (4 commodity models × 54 pairs, 216 paired verdicts, raw won zero) shows the wrap transfers down-market — full results in `eval/RESULTS-cheap-arms-2026-07.md`, and a lowcap benchmark (3 small open models, n=18 per model, 54 paired verdicts, 53 of 54 wrapped preferences on the full rubric) shows the largest measured lift on small open models (`eval/RESULTS-lowcap-2026-07.md`). Same week: on the newly-GA Claude Opus 5 the predicted crossover arrived — the wrap wins framework conformance but raw Opus 5 is preferred ~2:1 on usefulness+voice (`eval/RESULTS-opus5-2026-07.md`); the framework reports where it stops helping, which is the point. v1.4 shipped 2026-06-22. Hammerstein-CODER variant (`prompts/SYSTEM-PROMPT-CODER.md`) — the audit-first, clever-lazy discipline applied to code generation — plus a cross-model coder benchmark (6 models × restraint + correctness; full results in `eval/RESULTS-coder-bench.md`). v1.3 shipped 2026-05-25. Continuity Track complete (`hammerstein` CLI + `hd` dispatch wrapper + `hsh` interactive shell). Plain English summaries across all templates. Provider fallback chain (OpenRouter → DeepSeek → Ollama) validated end-to-end. v1.2 added project-context injection (`--context`, `--project-root`, `--context-file`) with credential denylists, exposed `--image` + `audit-this-visual` for vision audits, and corrected the benchmark headline to reflect the v0.2 cross-family ablation. v1.3 extends `--context-file` to read PDF, DOCX, XLSX, and CSV (in addition to MD/TXT), parsing and injecting content with the same safety gates so reasoning runs against the real document rather than an operator paraphrase.
+This repo is the **open-source framework and CLI**: the Hammerstein reasoning
+discipline encoded as a portable system prompt, a set of few-shot templates, a
+small retrieved corpus, and a Python harness that routes them to whichever model
+you have. Point it at a frontier API, a cheap per-token endpoint, or a local
+Ollama model. The reasoning style stays the same.
 
-## What this is
+The load-bearing artifact is the framework, not the model. That is the whole
+design goal: when the underlying model or provider changes, the reasoning
+survives.
 
-Hammerstein is a **focused strategic-reasoning model** — not a general-purpose
-AI. It's tuned to think the way the Hammerstein framework prescribes:
-clever-lazy over stupid-industrious, verification over enthusiasm, legible
-failure over hidden success, "bring your own imagination" over generic
-generation.
+**Hammerstein is three separate things. This repo is only the first.**
 
-The project's load-bearing artifact is **the framework itself encoded as
-portable system-prompt + RAG infrastructure** — so any underlying model
-(Claude when affordable, paid Qwen on OpenRouter, local Llama/Qwen via
-Ollama, future open-weight models) can reason in Hammerstein-style on demand.
-
-## Example
-
-*A typical strategic-reasoning consult — the framework ranks options, names what to deprioritize, and surfaces a counter-observation that could change the call.*
-
-**Query**
-
-It is Tuesday morning. I have 2 hours. Options: (a) draft the benchmark questions, (b) harden the RAG retrieval, (c) add more corpus entries, (d) run the harness end to end and record one baseline run. What should I do first?
-
-**Response (abbreviated)**
-
-Run a single end-to-end test with what you already have first — that's the only way to know what's actually broken. Drafting more questions or adding more corpus entries before that is guesswork. Five questions is enough to start; tighten the retrieval layer only after the test tells you what failed.
-
----
-
-This is clever-industrious work with an easy stupid-industrious trap: adding corpus before you can measure whether retrieval works.
-
-1. Run (d) and record a baseline run. You need a working loop before you add more inputs.
-2. Draft (a) as a short locked list. Five questions is enough to start.
-3. Harden (b) only after the baseline tells you what broke.
-
-Deprioritize (c) for now. More examples do not help if the harness cannot retrieve the right ones.
-
-Counter-observation: if the baseline run already produces useful retrieval and the failure is prompt shape, skip retrieval hardening and spend the remaining time tightening the system prompt instead.
-
-## Benchmark — does the framework actually help?
-
-**Yes, by a wide margin: 53 of 54 blind LLM-judge ratings preferred Hammerstein-on-frontier over raw frontier models. Which component delivers the lift is model-dependent.**
-
-We ran a two-pass benchmark on 2026-05-10. v0 measured Hammerstein-vs-raw on 6 strategic-reasoning questions × 3 frontier families × 3 LLM judges. v0.1 stress-tested the result with a 4th vendor judge (DeepSeek), 4 generic out-of-domain questions, and a prompt-vs-corpus ablation. v0.2 extended the ablation across all 3 frontier families and complicated the original "system prompt is load-bearing" reading — see § "v0.2 update" below. Full methodology + verdicts in `eval/RESULTS-v0.1.md`.
-
-### Where the framework belongs (2026-07 benchmark)
-
-| Model class | Raw | Wrapped | Result |
-|---|---|---|---|
-| Frontier (Opus 5, n=18) | 12 | 6 | Conformance and shorter output. No usefulness gain. |
-| Mid-tier (4 models, n=216 pairs) | 3 | 182 | 31 ties. Lift survives the strict cut. |
-| Local/small (3 models, n=54 pairs) | 4 | 50 | Largest measured lift. |
-
-Counts are usefulness+voice preferences from the blind pairwise panel. Use the wrap on frontier models when you want structured output and shorter replies. Use it on local or cheap models when the model will otherwise skip steps or drift. The framework does not fix weak reasoning. It enforces a checklist so the model cannot ignore it. Full lowcap results in `eval/RESULTS-lowcap-2026-07.md`.
-
-### v0 — main result
-
-6 questions (Q1–Q6 from `eval/BENCHMARK-v0.md`) × 3 frontier model families (Opus 4.7, Sonnet 4.6, GPT-5) × {raw model, Hammerstein-on-frontier} = 36 responses. Then blind LLM-judge head-to-head, position-randomized, scored on framework-fidelity / usefulness / voice-match plus overall preference.
-
-**Result with the 4-judge panel (Opus, Sonnet, GPT-5, DeepSeek): 53 of 54 parsed ratings preferred Hammerstein-on-frontier. Win-rate 98.1%.**
-
-| Family | n | Hammerstein wins | Raw wins | Win-rate |
-|---|---|---|---|---|
-| Claude Opus 4.7 | 18 | 18 | 0 | 100% |
-| Claude Sonnet 4.6 | 18 | 17 | 1 | 94.4% |
-| GPT-5 | 18 | 18 | 0 | 100% |
-
-The single raw-pick was DeepSeek on Q2/Sonnet — one outlier across 54 ratings.
-
-### v0.1 — three caveats stress-tested
-
-The v0 result invites three obvious challenges. We ran each.
-
-**Caveat 1 — does the framework win because the corpus matched the question?** We added 4 generic strategic-reasoning questions (Q9–Q12 in `eval/BENCHMARK-v0.1.md`: DB optimization meta-question, B2B SaaS prepaid contract, PhD dissertation third experiment, 4-person product team allocation) constructed to fall outside any specific domain. The Hammerstein corpus has nothing relevant to retrieve.
-
-**Result: 48 of 48 ratings preferred Hammerstein. 100% across all 4 judges and all 3 frontier families.** The "Hammerstein only wins on home turf" hypothesis is falsified.
-
-**Caveat 2 — is it the system prompt or the RAG corpus doing the work?** We added two ablation cells on Sonnet 4.6 (cheapest paid Claude): `mode=no-corpus` (system prompt + framework template, but no retrieved corpus) and `mode=corpus-only` (corpus retrieval, but no system prompt or template). Then judged blind against full Hammerstein-on-Sonnet.
-
-| Pair | n | Full wins | Ablated wins | Ties | Win-rate (full) |
-|---|---|---|---|---|---|
-| Full vs corpus-only | 24 | 19 | 3 | 2 | 83.3% |
-| Full vs prompt-only | 24 | 11 | 11 | 2 | 50.0% |
-
-**On Sonnet 4.6:** the system prompt is load-bearing and the RAG corpus is decorative. Adding the corpus to the prompt-only setup produces a statistical tie; adding the prompt to the corpus-only setup is a clear improvement.
-
-**v0.2 update — cross-family ablation:** the Sonnet finding does NOT generalize. On Opus 4.7, full / prompt-only / corpus-only are all statistically tied; on GPT-5, corpus-only actually outperforms the full stack. The component contribution is model-dependent — see § "v0.2 update" in `eval/RESULTS-v0.1.md` for the full table.
-
-**Caveat 3 — are the judges biased toward their own training distribution?** We added DeepSeek as a 4th vendor judge (not Anthropic, not OpenAI). DeepSeek agreed on 17 of 18 v0 ratings (94.4%) and 12 of 12 Caveat 1 ratings (100%). The result isn't a frontier-judge artifact.
-
-### Two confound checks we added
-
-**Length bias.** Hammerstein-on-GPT-5 is *1258 chars shorter* than raw GPT-5 yet still won 100% of GPT-5 family ratings. Length doesn't explain the result.
-
-**Framework-fidelity tautology.** That rubric axis is rigged — the system prompt elicits Hammerstein vocabulary; judges score "uses Hammerstein vocabulary" as 5; circular. Recomputed using only `usefulness + voice`: v0 = 96.3%, Caveat 1 = 97.9%. The headline isn't carried by the rigged axis.
-
-### Honest limits remaining
-
-- **All four judges are LLMs** trained on overlapping web distributions. Lay-person rater pilot is a v0.2 follow-up.
-- **The ablation now covers all 3 frontier families (v0.2 update).** The Sonnet-only finding from v0.1 ("system prompt is load-bearing") does NOT generalize — extending the ablation to Opus + GPT-5 reveals the contribution pattern is **model-dependent**: on Sonnet the full stack beats both ablations, on Opus all three (full / prompt-only / corpus-only) are statistically tied, and on GPT-5 corpus-only actually outperforms full. The headline (Hammerstein-on-frontier beats raw 98.1%) is unchanged; only the claim about which component delivers the lift becomes model-specific. Full v0.2 result in `eval/RESULTS-v0.1.md` § "v0.2 update".
-- **Strategic-reasoning is the framework's home turf.** This benchmark says nothing about coding / math / creative-writing tasks; we don't claim Hammerstein helps there.
-- **Total sample is 246 ratings** across the four runs (v0 + Caveat 1 + v0.1-Sonnet ablation + v0.2-Opus+GPT-5 ablation).
-
-### Reproduce or refute it
-
-Runner: `eval/run_benchmark.py`. Judge: `eval/judge_pairs.py`. Question sets: `eval/BENCHMARK-v0.md` and `eval/BENCHMARK-v0.1.md`. Full results write-up: `eval/RESULTS-v0.1.md`. Per-response transcripts and per-rating verdicts regenerate via `python eval/run_benchmark.py && python eval/judge_pairs.py --run <subdir>`. Total cost across both runs: ~$10 OpenRouter, ~90 min wall clock.
-
-If you replicate on a different question set or judge panel and get materially different results, [open an issue](https://github.com/lerugray/hammerstein/issues) — that's exactly the kind of pushback the framework wants.
-
-### Hammerstein-CODER — the discipline, measured on code
-
-The strategic benchmark above says nothing about coding tasks. The coder bench closes that gap: does wrapping a model in `prompts/SYSTEM-PROMPT-CODER.md` raise over-engineering refusal without breaking legitimate implementation?
-
-| Model | Plain (baits refused) | Hammerstein-CODER |
+| | What it is | Where it lives |
 |---|---|---|
-| Claude Opus 4.8 | 70% | 100% |
-| Claude Sonnet 4.6 | 0% | 100% |
-| GPT-5 | 0% | 100% |
-| GLM-5.2 | 10% | 100% |
-| Kimi-K2.7-Code | 0% | 90% |
-| Qwen3-Coder-480B | 0% | 100% |
+| **Framework + CLI** | The portable prompt, templates, corpus, and harness. MIT licensed. | This repo |
+| **Hammerstein-7B** | The framework distilled into local open weights. | Separate project |
+| **hammerstein.ai** | A hosted product built on the same discipline. | [hammerstein.ai](https://hammerstein.ai) |
 
-6/6 models pass the gate with the coder wrap: over-engineering bait-refusal goes from near zero to roughly 90–100%, while legitimate bounded implementation holds at 100% for five of the six models (Qwen3-Coder-480B at 80%). Correctness is unchanged — HumanEval pass@1 deltas on the three open coders are GLM +0.05, Kimi −0.03, Qwen 0.00, all within measurement noise. The one model that already reasons this way (Opus 4.8, 70% plain) shows the smallest lift, which is what you'd expect if the wrap grades judgment rather than its own prompt. Tested 2026-06-21/22; restraint judged by an independent LLM judge (kimi-k2.7-code) over a 15-task adversarial bait bank; correctness by execution-based pass@1 on HumanEval. Full per-arm table and methodology: `eval/RESULTS-coder-bench.md`.
+They share a name and a doctrine. They do not share a codebase, and a claim
+measured on one does not transfer to the others.
 
-Compared against ponytail (an off-the-shelf generic-minimalism prompt, strong baseline with healthy HumanEval pass@1): both approaches refuse over-engineering at similar rates — generic "do less" covers that ground. The split is on ambiguous/vague requests: ponytail applies the smallest possible change; the Hammerstein-CODER wrap runs a scoping step first, then implements. Measured: **+0.23 mean advantage on ambiguous-scope handling across 6 models, ≥+0.20 in 4 of 6**. The coder wrap is more than "do less."
+**Current release: v2.0** (2026-07-26). The plain-English summary layer is gone
+from all six templates, which is a breaking change for anything that parsed it.
+Full history in [CHANGELOG.md](CHANGELOG.md).
 
-### Fable-5 control — the null result that confirms the benchmark
+## What it is tuned for
 
-The 53/54 strategic result and the coder bench both show large lifts. We also ran the framework on Fable 5 — a frontier model trained to reason check-then-speak by default — and got a null result: **12–11–0 (52.2%, n=23), mean Δ −0.22**. A blind, position-randomized 4-judge panel (Claude Opus 4.7, GPT-5, Claude Sonnet 4.6, DeepSeek) found Hammerstein-wrapped and raw Fable 5 statistically indistinguishable.
+Hammerstein reasons the way the framework prescribes: clever-lazy over
+stupid-industrious, verification over enthusiasm, legible failure over hidden
+success, "bring your own imagination" over generic generation.
 
-This is not a weakness. It is the cleanest evidence that the benchmark grades **judgment**, not its own prompt: the framework delivers a large lift on models that lack the discipline and disappears on models that already have it. On the 2026-05 frontier (Opus 4.7, Sonnet 4.6, GPT-5), most models did not have the discipline natively — hence 53/54. Fable 5 did — hence ~50/50.
-
-The same pattern repeats in the coder bench: Opus 4.8 refused 70% of baits without the wrap (the highest plain baseline), and showed the smallest absolute lift with it. The direction is consistent. A framework that hides its null result is itself stupid-industrious.
-
-Verdicts: `eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md` · Harness: `eval/judge_pass.py`.
-
-## What this is NOT
-
-- **Not a Claude Code replacement for code editing.** `hd` dispatches code
-  work to [aider](https://aider.chat/) for the actual file edits + git
-  operations — useful as a substitute when Claude Code is unavailable, but
-  it's a wrapper, not a first-party code-editing tool. For bulk code
-  generation, route through OpenRouter (paid Qwen Coder Plus / DeepSeek) or
-  Cursor IDE Auto directly.
-- **Not a from-scratch model.** Pre-training a foundation model is
-  decisively out of scope. The realistic ceiling is fine-tuning a small
-  open-weight model (Qwen 8B / Llama 3.1 8B-70B) — and that's only if the
-  prompt-engineering + RAG path proves insufficient for a given operator.
-- **Not authoritative for every operator's framework.** The shipped corpus
-  is a reference implementation drawn from one operator's accumulated
-  reasoning. The framework structure transfers as-is; the corpus content is
-  yours to author. See § Customize the corpus.
-
-## Why it exists
-
-The portfolio survives an Anthropic outage / account ban / affordability
-collapse for **code work** — cursor-agent CLI + OpenRouter Qwen + Gemini
-CLI + Ollama already cover it. The gap is **strategic reasoning** — the
-staff-officer / orchestrator role that interactive Claude currently fills.
-No existing fallback matches it.
-
-Hammerstein closes that gap. The framework is more important than the
-model — once the framework is encoded portably, any underlying model can
-fill the strategic-reasoning role.
-
-## Customize the corpus
-
-The corpus shipped here (`corpus/entries/`) is a **reference implementation**
-— a small curated set of Hammerstein-style reasoning entries that
-illustrate the framework's structure. It's not meant to be authoritative
-for every operator.
-
-**To make Hammerstein useful for your specific work:**
-
-1. Clone this repo.
-2. Read `research/HAMMERSTEIN-FRAMEWORK.md` for the framework synthesis.
-3. Replace or augment `corpus/entries/` with reasoning examples drawn from
-   your own work — incidents where you caught a stupid-industrious trap,
-   structural fixes that compounded, verification-gates that paid off,
-   counter-observations that reshaped a plan. The provenance + framing
-   pattern (one principle per entry; tagged with quadrant + principle +
-   source + quality) generalizes; the specific examples shouldn't.
-4. Update `corpus/CORPUS-CURATION.md` to index your entries.
-5. Optionally tune `prompts/SYSTEM-PROMPT.md` for your project's idiom.
-
-The framework structure (system prompt + few-shot templates + retrieval
-layer + provider fallback chain) transfers as-is. The corpus content is
-yours to author.
+Refusal is a feature. When the framework declines a plan it names the specific
+condition that would change the answer, so a no is actionable rather than a dead
+end. A wrapper that never refuses is not grading anything.
 
 ## Quickstart
 
@@ -226,20 +70,240 @@ hsh
 ```
 
 The harness reads `providers.yaml` for the fallback chain and routes through
-OpenRouter (qwen3.6-plus) by default, with auto-fallover to a secondary OpenRouter model, DeepSeek, and Ollama if the primary fails. See `harness/README.md` for the full flag set
-and `tests/test_continuity_chain.py` for the smoke-test harness.
+OpenRouter (qwen3.6-plus) by default, falling over to a secondary OpenRouter
+model, then DeepSeek, then local Ollama if the primary fails. See
+`harness/README.md` for the full flag set and `tests/test_continuity_chain.py`
+for the smoke-test harness.
 
-**Optional:** `scripts/hquery` (fzf corpus search) + `scripts/hlog` (call
-history) + `scripts/hstats` (usage stats) round out the terminal-native
+**Optional:** `scripts/hquery` (fzf corpus search), `scripts/hlog` (call
+history), and `scripts/hstats` (usage stats) round out the terminal-native
 workflow. See § Companion shell utilities.
 
-## `hsh` — Hammerstein Shell (Continuity Track Phase 2)
+## Example
 
-For operators who prefer a conversational, stay-in-the-environment workflow,
-`hsh` drops you into an interactive REPL with bounded prior-turn context.
-Type prose, get an audit, push back with more prose, get a refined audit —
-the iteration pattern that makes strategic-reasoning tools actually useful
-in real work.
+*A typical strategic-reasoning consult. The framework ranks options, names what
+to deprioritize, and surfaces a counter-observation that could change the call.*
+
+**Query**
+
+It is Tuesday morning. I have 2 hours. Options: (a) draft the benchmark questions, (b) harden the RAG retrieval, (c) add more corpus entries, (d) run the harness end to end and record one baseline run. What should I do first?
+
+**Response (abbreviated)**
+
+Run a single end-to-end test with what you already have first. That is the only way to know what's actually broken. Drafting more questions or adding more corpus entries before that is guesswork. Five questions is enough to start; tighten the retrieval layer only after the test tells you what failed.
+
+---
+
+This is clever-industrious work with an easy stupid-industrious trap: adding corpus before you can measure whether retrieval works.
+
+1. Run (d) and record a baseline run. You need a working loop before you add more inputs.
+2. Draft (a) as a short locked list. Five questions is enough to start.
+3. Harden (b) only after the baseline tells you what broke.
+
+Deprioritize (c) for now. More examples do not help if the harness cannot retrieve the right ones.
+
+Counter-observation: if the baseline run already produces useful retrieval and the failure is prompt shape, skip retrieval hardening and spend the remaining time tightening the system prompt instead.
+
+## Benchmark: does the framework actually help?
+
+**It depends on the model, and we measured where it stops.** The lift tracks
+whatever judgment the base model lacks. On weaker models it is large. On the
+strongest current model it inverts.
+
+Published results and methodology: [hammerstein.ai/benchmark](https://hammerstein.ai/benchmark).
+
+### The 2026-07 picture
+
+| Model class | Raw preferred | Wrapped preferred | Reading |
+|---|---|---|---|
+| Frontier (Claude Opus 5, n=18) | 12 | 6 | Wrap adds conformance and shorter output, not usefulness |
+| Commodity (4 models, n=216) | 3 | 182 | 31 ties. Lift survives the strict cut |
+| Local/small (3 models, n=54) | 4 | 50 | Largest measured lift |
+
+Counts are usefulness-plus-voice preferences from a blind pairwise panel of
+cross-vendor judges. Use the wrap on frontier models when you want structured,
+auditable output and shorter replies. Use it on local or cheap models when the
+model would otherwise skip steps or drift. The framework does not repair weak
+reasoning. It enforces a checklist the model cannot skip.
+
+Full results: `eval/RESULTS-opus5-2026-07.md`,
+`eval/RESULTS-cheap-arms-2026-07.md`, `eval/RESULTS-lowcap-2026-07.md`.
+
+### The 2026-05 frontier result
+
+On the frontier panel as it stood in May 2026 (Claude Opus 4.7, Claude Sonnet
+4.6, GPT-5), blind LLM judges preferred the wrapped arm on **53 of 54 paired
+ratings**, a 98.1% win rate.
+
+6 questions (Q1 through Q6 from `eval/BENCHMARK-v0.md`) × 3 model families ×
+{raw, wrapped} = 36 responses, then blind head-to-head judging,
+position-randomized, scored on framework-fidelity, usefulness, and voice-match
+plus an overall preference.
+
+| Family | n | Wrapped wins | Raw wins | Win-rate |
+|---|---|---|---|---|
+| Claude Opus 4.7 | 18 | 18 | 0 | 100% |
+| Claude Sonnet 4.6 | 18 | 17 | 1 | 94.4% |
+| GPT-5 | 18 | 18 | 0 | 100% |
+
+The single raw pick was DeepSeek on Q2/Sonnet, one outlier across 54 ratings.
+
+This claim is bound to those three models on that question set at that date. It
+is not a claim about any current model, and the Opus 5 run above shows exactly
+how it ages.
+
+### Three caveats, stress-tested
+
+**Did the corpus just match the questions?** We added 4 generic
+strategic-reasoning questions built to fall outside any domain the corpus covers
+(Q9 through Q12 in `eval/BENCHMARK-v0.1.md`). **48 of 48 ratings preferred the
+wrapped arm**, unanimous across 4 judges and 3 families. The home-turf
+hypothesis is falsified.
+
+**Is it the prompt or the RAG corpus?** Two ablation cells on Sonnet 4.6:
+`mode=no-corpus` and `mode=corpus-only`, judged blind against the full stack.
+
+| Pair | n | Full wins | Ablated wins | Ties | Win-rate (full) |
+|---|---|---|---|---|---|
+| Full vs corpus-only | 24 | 19 | 3 | 2 | 83.3% |
+| Full vs prompt-only | 24 | 11 | 11 | 2 | 50.0% |
+
+On Sonnet the system prompt carries the weight and the corpus is decorative.
+**That finding does not generalize.** Extending the ablation to Opus 4.7 and
+GPT-5 (v0.2) found all three configurations statistically tied on Opus, and
+corpus-only actually beating the full stack on GPT-5. Which component delivers
+the lift is model-dependent. Table in `eval/RESULTS-v0.1.md` § "v0.2 update".
+
+**Are the judges biased toward their own outputs?** We added DeepSeek as a
+fourth vendor judge. It agreed on 17 of 18 v0 ratings and 12 of 12 on the
+out-of-domain set. The result is not a single-vendor artifact.
+
+### Two confound checks
+
+**Length bias.** Wrapped GPT-5 output ran 1258 characters *shorter* than raw and
+still won every GPT-5 rating. Length does not explain the result.
+
+**Framework-fidelity tautology.** That rubric axis is rigged: the system prompt
+elicits Hammerstein vocabulary, and judges score "uses Hammerstein vocabulary"
+highly. Recomputed on usefulness and voice alone, v0 lands at 96.3% and the
+out-of-domain set at 97.9%. The headline does not rest on the rigged axis.
+
+### Limits we have not closed
+
+- **Every judge is an LLM**, trained on overlapping web distributions. A
+  lay-person rater pilot is still outstanding.
+- **Strategic reasoning is the home turf.** These runs say nothing about coding,
+  math, or creative writing. The coder bench below covers code separately.
+- **Total sample for the 2026-05 arc is 246 ratings** across four runs (v0, the
+  out-of-domain set, the Sonnet ablation, and the Opus/GPT-5 ablation).
+- **One generation per arm** on the 2026-07 runs, so no run-to-run variance was
+  measured.
+
+### Reproduce it or refute it
+
+Runner: `eval/run_benchmark.py`. Judge: `eval/judge_pairs.py`. Question sets:
+`eval/BENCHMARK-v0.md` and `eval/BENCHMARK-v0.1.md`. Write-up:
+`eval/RESULTS-v0.1.md`. Transcripts and per-rating verdicts regenerate via
+`python eval/run_benchmark.py && python eval/judge_pairs.py --run <subdir>`.
+Cost across both runs was roughly $10 of OpenRouter credit and 90 minutes of
+wall clock.
+
+If you replicate on a different question set or judge panel and get materially
+different results, [open an issue](https://github.com/lerugray/hammerstein/issues).
+That is exactly the kind of pushback the framework wants.
+
+### Hammerstein-CODER: the discipline, measured on code
+
+The strategic benchmark says nothing about coding. The coder bench closes that
+gap. Does wrapping a model in `prompts/SYSTEM-PROMPT-CODER.md` raise
+over-engineering refusal without breaking legitimate implementation?
+
+| Model | Plain (baits refused) | Hammerstein-CODER |
+|---|---|---|
+| Claude Opus 4.8 | 70% | 100% |
+| Claude Sonnet 4.6 | 0% | 100% |
+| GPT-5 | 0% | 100% |
+| GLM-5.2 | 10% | 100% |
+| Kimi-K2.7-Code | 0% | 90% |
+| Qwen3-Coder-480B | 0% | 100% |
+
+All six models pass the gate with the coder wrap. Bait-refusal climbs from near
+zero to roughly 90-100%, while legitimate bounded implementation holds at 100%
+for five of the six (Qwen3-Coder-480B at 80%). Correctness barely moves:
+HumanEval pass@1 deltas on the three open coders are GLM +0.05, Kimi −0.03, and
+Qwen 0.00, all inside measurement noise.
+
+The model that already reasons this way (Opus 4.8, at 70% plain) shows the
+smallest lift. That is what you would expect if the wrap grades judgment rather
+than its own prompt.
+
+Tested 2026-06-21/22. Restraint judged by an independent LLM judge
+(kimi-k2.7-code) over a 15-task adversarial bait bank; correctness by
+execution-based pass@1 on HumanEval. Full methodology in
+`eval/RESULTS-coder-bench.md`.
+
+Against ponytail, an off-the-shelf generic-minimalism prompt and a strong
+baseline, both approaches refuse over-engineering at similar rates. Generic "do
+less" covers that ground. The split shows up on vague requests: ponytail applies
+the smallest possible change, while the coder wrap runs a scoping step first and
+then implements. Measured at **+0.23 mean advantage on ambiguous-scope handling
+across 6 models, and ≥+0.20 in 4 of 6**.
+
+### The Fable-5 null result
+
+We ran the framework on Fable 5, a model already trained to reason check-then-speak,
+and got nothing: **12-11-0 (52.2%, n=23), mean Δ −0.22**. A blind,
+position-randomized 4-judge panel found wrapped and raw statistically
+indistinguishable.
+
+We publish it because it is the cleanest evidence that the benchmark grades
+judgment rather than its own vocabulary. The framework delivers a large lift on
+models that lack the discipline and vanishes on models that already have it. The
+coder bench repeats the pattern, and so does the Opus 5 crossover above. A
+framework that hides its null results is itself stupid-industrious.
+
+Verdicts: `eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md`. Harness:
+`eval/judge_pass.py`.
+
+## What this is NOT
+
+- **Not a Claude Code replacement for editing code.** `hd` hands the actual file
+  edits and git operations to [aider](https://aider.chat/). It is a wrapper, not
+  a first-party code-editing tool.
+- **Not a from-scratch model.** Pre-training a foundation model is out of scope.
+  The realistic ceiling is fine-tuning a small open-weight model, and only if
+  the prompt-plus-RAG path proves insufficient.
+- **Not authoritative for your framework.** The shipped corpus is a reference
+  implementation drawn from one operator's accumulated reasoning. The structure
+  transfers as-is. The content is yours to author. See § Customize the corpus.
+
+## Customize the corpus
+
+The corpus in `corpus/entries/` is a **reference implementation**: a small
+curated set of Hammerstein-style reasoning entries that illustrate the
+framework's structure. It is not meant to be authoritative for anyone else.
+
+To make Hammerstein useful for your own work:
+
+1. Clone this repo.
+2. Read `research/HAMMERSTEIN-FRAMEWORK.md` for the framework synthesis.
+3. Replace or augment `corpus/entries/` with reasoning drawn from your own work:
+   incidents where you caught a stupid-industrious trap, structural fixes that
+   compounded, verification gates that paid off, counter-observations that
+   reshaped a plan. The provenance and framing pattern generalizes (one
+   principle per entry, tagged with quadrant, principle, source, and quality).
+   The specific examples should not.
+4. Update `corpus/CORPUS-CURATION.md` to index your entries.
+5. Optionally tune `prompts/SYSTEM-PROMPT.md` for your project's idiom.
+
+The framework structure transfers as-is: system prompt, few-shot templates,
+retrieval layer, provider fallback chain. The corpus content is yours.
+
+## `hsh`: the Hammerstein shell
+
+For a conversational, stay-in-the-environment workflow, `hsh` drops you into an
+interactive REPL with bounded prior-turn context. Type prose, get an audit, push
+back with more prose, get a refined audit.
 
 ```
 $ hsh
@@ -254,7 +318,7 @@ hsh:my-project> what if the auth flow is downstream of a billing change?
 [runs audit again, with prior turn injected as background context]
 
 hsh:my-project> :d add a TODO comment to auth.py noting the dependency
-[invokes `hd` for actual code work — full audit + aider dispatch]
+[invokes `hd` for actual code work: full audit + aider dispatch]
 
 hsh:my-project> !git status
 [bash passthrough]
@@ -262,45 +326,38 @@ hsh:my-project> !git status
 hsh:my-project> :exit
 ```
 
-Architectural design (override of audit 3's strict reading; preserves spirit):
+Design constraints, all load-bearing:
 
-- **Each Hammerstein-template call is still a discrete fresh invocation.**
-  No conversation history dumped into the few-shot template; corpus
-  retrieval is fresh per turn.
-- **Bounded prior-turn context (last 3 turns)** is injected as a prefix to
-  each new query so operator iteration works ("apply the same fix to X",
-  "given Y, retry"). Capped to prevent unbounded conversation hosting.
-- **Default action on plain prose is `audit-this-plan`** (read-only
-  thinking). Dispatch (which mutates files + commits) requires explicit
-  `:d` verb to prevent accidental execution — the one piece of audit 3's
-  verb-friction guidance that is preserved as load-bearing.
-- **Aider still owns conversation state, file edits, git operations** when
-  invoked via `:d`. State-ownership boundary is intact.
-- **Project state file (`:state`)**: If a `.hammerstein-state.md` file exists
-  in the project root (detected by walking up to the nearest project marker —
-  `.git`, `pyproject.toml`, `package.json`, `Cargo.toml`, `go.mod`, `Gemfile`,
-  or `requirements.txt`), its contents are automatically injected as a
-  preamble before the rolling context on every template call. Use `:state` to
-  view it; `:state edit` opens it in `$EDITOR` (nano fallback) and creates the
-  file at project root if missing. This lets you persist high-level project
-  constraints, active goals, or architectural decisions across shell sessions
-  without polluting the rolling turn buffer.
+- **Every template call is a discrete fresh invocation.** No conversation
+  history gets dumped into the few-shot template, and corpus retrieval runs
+  fresh per turn.
+- **Bounded prior-turn context (last 3 turns)** is injected as a prefix so
+  iteration works ("apply the same fix to X", "given Y, retry"). The cap
+  prevents the shell from quietly becoming a conversation host.
+- **Plain prose runs `audit-this-plan`**, which is read-only thinking.
+  Dispatching real file edits requires the explicit `:d` verb, so nothing
+  mutates by accident.
+- **Aider still owns conversation state, file edits, and git operations** when
+  invoked via `:d`. The state-ownership boundary stays intact.
+- **Project state file (`:state`).** If `.hammerstein-state.md` exists in the
+  project root (found by walking up to the nearest `.git`, `pyproject.toml`,
+  `package.json`, `Cargo.toml`, `go.mod`, `Gemfile`, or `requirements.txt`), its
+  contents are injected as a preamble before the rolling context on every call.
+  `:state` views it and `:state edit` opens it in `$EDITOR`, creating it if
+  missing. Use it to persist project constraints across sessions without
+  polluting the turn buffer.
 
 Falsification gate: if `hsh` produces noticeably worse audits than
-fresh-from-cold `hammerstein` calls — i.e., the bounded-context injection
-corrupts framework reasoning — kill the rolling-context injection and fall
-back to verb-only mode. Empirically testable: compare hsh audit quality vs
-fresh audit on the same query.
+fresh-from-cold `hammerstein` calls, the bounded-context injection is corrupting
+framework reasoning and should be killed in favour of verb-only mode. Compare
+hsh output against a fresh audit on the same query.
 
-## `hd` — Hammerstein Dispatch (Continuity Track Phase 1)
+## `hd`: Hammerstein dispatch
 
-A second console command, `hd`, ships alongside `hammerstein`. It's the
-Continuity Track's Phase 1: a thin wrapper that takes operator prose,
-runs it through Hammerstein's audit-this-plan pre-flight, and dispatches
-to [aider](https://aider.chat/) for the actual file editing + git work.
-The intent is to make Hammerstein viable as a daily driver substitute
-for tools like Claude Code when the underlying provider is unavailable
-or quota-constrained.
+`hd` is a thin wrapper that takes operator prose, runs it through the
+`audit-this-plan` pre-flight, and dispatches to [aider](https://aider.chat/) for
+the file editing and git work. It makes Hammerstein viable as a daily-driver
+substitute when your usual provider is unavailable or quota-constrained.
 
 ```bash
 # Default: audit, confirm, dispatch via OpenRouter Qwen3.6-plus
@@ -321,11 +378,10 @@ hd --dry-run "..."
 hd --list-providers
 ```
 
-State-ownership boundary (load-bearing): Hammerstein owns audit + scope +
-route + dispatch. Aider owns file editing, conversation state, tool-use
-loops, git operations. The wrapper does NOT track chat history, manage
-.git, or parse LLM tool-calls — those are aider's job. If the wrapper
-starts doing them, it has crossed into reinventing Claude Code.
+State-ownership boundary, load-bearing: Hammerstein owns audit, scope, route,
+and dispatch. Aider owns file editing, conversation state, tool-use loops, and
+git. The wrapper does not track chat history, manage `.git`, or parse tool
+calls. If it starts doing those, it has crossed into reinventing Claude Code.
 
 Provider routing table:
 
@@ -338,47 +394,35 @@ Provider routing table:
 | `claude-opus`      | `claude-opus-4-7`                  | `ANTHROPIC_API_KEY` (paid)    | aider         |
 | `claude-code`      | (Claude Code subscription)         | Pro/Max plan, no API key      | claude-code   |
 | `cursor-agent`     | (Cursor subscription)              | Cursor login, no API key      | cursor-agent  |
-| `ollama`           | `ollama/qwen3:8b`                  | (none — local)                | aider         |
+| `ollama`           | `ollama/qwen3:8b`                  | (none, local)                 | aider         |
 
-**Subscription-backed providers (`claude-code`, `cursor-agent`) — bypass
-aider, use the subscription's tool-using agent directly.** The audit
-pre-flight still runs through OpenRouter (cheap), so the costly part of the
-dispatch lands on whichever subscription the operator already pays for.
-Useful when you'd rather burn subscription rate-limits than pay-per-token
-API spend. The `--file` / `--read` / `--architect` flags don't apply to
-these executors (the underlying agent finds files via its own tool use);
-mention file references in the prose instead.
+**Subscription-backed providers (`claude-code`, `cursor-agent`) bypass aider and
+use the subscription's own tool-using agent.** The audit pre-flight still runs
+through OpenRouter, which is cheap, so the expensive part of the dispatch lands
+on a subscription you already pay for. Useful when you would rather burn
+subscription rate limits than pay per token. The `--file`, `--read`, and
+`--architect` flags do not apply to these executors, since the underlying agent
+finds files through its own tool use. Mention file references in the prose
+instead.
 
-- `claude-code` requires the `claude` CLI on PATH (Pro/Max plan; no API key).
+- `claude-code` requires the `claude` CLI on PATH (Pro/Max plan, no API key).
 - `cursor-agent` requires the `cursor-agent` CLI on PATH and a one-time
-  `cursor-agent login` (free composer-2-fast tier covers most tasks).
+  `cursor-agent login`.
 
-Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl` (separate
-from the audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`).
+Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl`, separate from the
+audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`.
 
-### Phase 1 scope (this release)
-
-- Single-shot dispatch (no multi-turn conversation state in the wrapper)
-- Single-tool downstream (aider only — cursor-agent in Phase 2)
-- Explicit provider selection (auto / quota-aware routing in Phase 3)
-- No file-detection logic (operator passes `--file` flags or aider's
-  repo-map handles it)
-
-### Falsification gate — CLEARED 2026-05-05
-
-Phase 1's 14-day window was: if the operator hasn't dispatched at
-least one real coding task via `hd` within 14 days, the architecture
-is wrong. Cleared by self-build — **Phase 3 (state-file injection)
-was implemented BY `hd` dispatching to aider** (public commit
-c875804, ~$1 OpenRouter spend, ~6.5 min run, 43 tests passing). The
-substitute carried meaningful architectural work, not just maintenance
-edits. The orchestrator vision matches observed behavior.
+**Falsification gate, cleared 2026-05-05.** The original test was: if the
+operator has not dispatched a real coding task through `hd` within 14 days, the
+architecture is wrong. It cleared by self-build. The state-file injection
+feature was implemented by `hd` dispatching to aider (public commit c875804,
+about $1 of OpenRouter spend, a 6.5 minute run, 43 tests passing). The
+substitute carried real architectural work, not just maintenance edits.
 
 ## Companion shell utilities
 
-Four thin shell scripts surface quick-fire template invocation, the
-corpus, the call log, and usage stats for terminal-native workflows.
-POSIX shell + `fzf` + `bat` + `jq`; zero UI framework.
+Four thin shell scripts surface template invocation, the corpus, the call log,
+and usage stats. POSIX shell plus `fzf`, `bat`, and `jq`. No UI framework.
 
 ```bash
 # Add scripts/ to PATH (or symlink h / hquery / hlog into ~/.local/bin/)
@@ -399,18 +443,15 @@ hlog                      # last 20 calls, column-aligned
 hlog 50                   # last N calls
 hlog | grep audit         # filter by template / query substring
 hstats                    # last 7 days usage stats (calls, cost, templates, hosts)
-hstats --gate             # 7-day window + explicit Phase A → Phase B verdict
+hstats --gate             # 7-day window + explicit Phase A -> Phase B verdict
 hstats --by-host          # cross-machine usage breakdown
 ```
 
-`h` is POSIX shell on Linux/Mac and `h.ps1` on Windows; both ship in
-`scripts/`. `hquery` requires `fzf` (`brew install fzf` on Mac, `apt
-install fzf` on Linux). `bat` is preferred for syntax-highlighted
-preview; falls back to `cat` if absent. `hlog` and `hstats` require `jq`
-(effectively ubiquitous). The call log lives at
-`~/.hammerstein/logs/hammerstein-calls.jsonl` (auto-created on first
-call; not in cwd). Each entry stamps the host, so `hstats --by-host`
-works across machines if you sync the log.
+`h` is POSIX shell on Linux and Mac, `h.ps1` on Windows; both ship in `scripts/`.
+`hquery` needs `fzf`. `bat` gives syntax-highlighted previews and falls back to
+`cat`. `hlog` and `hstats` need `jq`. The call log lives at
+`~/.hammerstein/logs/hammerstein-calls.jsonl`, created on first call. Each entry
+stamps the host, so `hstats --by-host` works across machines if you sync the log.
 
 ## How the layers compose
 
@@ -420,22 +461,31 @@ works across machines if you sync the log.
 | Mechanical spec | `design/PILLARS.md` | Framework as mechanical pillars |
 | Phased roadmap | `scope/PHASED-ROADMAP.md` | v0 / v1 / v2 trajectory |
 | System prompt | `prompts/SYSTEM-PROMPT.md` | The identity-framing prompt every call carries |
-| Templates | `prompts/templates/*.md` | Few-shot exemplars for 5 query shapes |
-| Corpus | `corpus/entries/*.md` | Retrieved examples — your own to curate |
-| Stack | `tech/STACK-DECISION.md` | Provider + model decisions, fallback chain rationale |
+| Templates | `prompts/templates/*.md` | Few-shot exemplars for 6 query shapes |
+| Corpus | `corpus/entries/*.md` | Retrieved examples, yours to curate |
+| Stack | `tech/STACK-DECISION.md` | Provider and model decisions, fallback chain rationale |
 | Harness | `harness/`, `hammerstein_cli/` | The Python CLI that ties it together |
-| Eval | `eval/`, `tests/` | Benchmarks + continuity smoke tests |
+| Eval | `eval/`, `tests/` | Benchmarks and continuity smoke tests |
 
 ## Stable downstream interface
 
-External tools that script Hammerstein (the maintainer's daily-brief generator being the current reference example) depend on these surfaces remaining stable across versions:
+Tools that script Hammerstein depend on these surfaces staying stable across
+versions:
 
-- **Template names** — `audit-this-plan`, `scope-this-idea`, `is-this-worth-doing`, `what-should-we-do-next`, `review-from-different-angle` — invoked via the `--template` flag.
-- ~~Plain English summary section~~ **REMOVED 2026-07-26 (breaking; see CHANGELOG)** — responses are now the unfiltered technical body from the first line. Callers that extracted the summary block should consume the body directly.
-- **stdout for the response body; stderr for diagnostics.** A `[backend=...]` metadata line at the head of stdout is parseable and contains provider, cost, and latency.
-- **Exit code zero** on a returned response; **non-zero** on backend exhaustion or hard failure. Empty stdout when all backends fail soft.
+- **Template names.** `audit-this-plan`, `scope-this-idea`,
+  `is-this-worth-doing`, `what-should-we-do-next`,
+  `review-from-different-angle`, invoked via `--template`.
+- ~~Plain English summary section~~ **removed in v2.0 (breaking; see CHANGELOG).**
+  Responses are now the unfiltered technical body from the first line. Callers
+  that extracted the summary block should consume the body directly.
+- **stdout carries the response body, stderr the diagnostics.** A `[backend=...]`
+  metadata line at the head of stdout is parseable and carries provider, cost,
+  and latency.
+- **Exit code zero** on a returned response, **non-zero** on backend exhaustion
+  or hard failure. Empty stdout when all backends fail soft.
 
-Adding new templates is non-breaking. Removing or renaming any of the five above is a major-version bump and lands under `### Breaking` in the CHANGELOG.
+Adding templates is non-breaking. Removing or renaming any of the five above is
+a major-version bump and lands under `### Breaking` in the CHANGELOG.
 
 ## License
 
@@ -444,8 +494,8 @@ Adding new templates is non-breaking. Removing or renaming any of the five above
 ---
 
 *Hammerstein-Equord, Kurt Freiherr von (1878-1943). Chief of the German Army
-Command 1930-1934. Surfaced the officer typology — clever-lazy / clever-
-industrious / stupid-lazy / stupid-industrious — that anchors this project's
+Command 1930-1934. Surfaced the officer typology (clever-lazy,
+clever-industrious, stupid-lazy, stupid-industrious) that anchors this project's
 namesake framework.*
 
 ```
@@ -491,4 +541,4 @@ namesake framework.*
 ```
 
 > *"A clean rendering. The work lives in the gates, not the cover."*
-> — Hammerstein, on this portrait.
+> Hammerstein, on this portrait.
