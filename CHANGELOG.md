@@ -2,10 +2,19 @@
 
 All notable changes to Hammerstein are documented here. The format is loosely
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
-project follows semver where the public CLI surface (`hammerstein`, `hd`,
+project follows semver where the public CLI surface (`hammerstein`,
 `hsh`) is the contract.
 
 ## [Unreleased]
+
+## [3.0.0] — 2026-07-31
+
+### Breaking
+
+- **`hd dispatch` removed.** The dispatch wrapper (audit pre-flight + aider
+  executor) is superseded by an external orchestration system. The framework
+  stays a reasoning/audit layer, not a coding stack. `hsh` no longer exposes
+  the `:d` dispatch verb.
 
 ## [2.0] — 2026-07-26
 

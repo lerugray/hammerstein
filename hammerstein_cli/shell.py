@@ -28,7 +28,6 @@ except ImportError:
         import pyreadline3 as readline  # Windows fallback
     except ImportError:
         readline = None  # No arrow-key history; shell still functions
-import shlex
 import socket
 import subprocess
 import sys
@@ -300,31 +299,6 @@ def run_template(prose: str, template: str, ctx: RollingContext) -> int:
     return result.returncode
 
 
-def run_dispatch(task: str, args: list[str]) -> int:
-    """Invoke `hd <task> <args...>` — dispatch to aider for actual code work."""
-    cmd = ["hd"] + args + [task]
-    start = time.time()
-    try:
-        result = subprocess.run(cmd, check=False)
-    except FileNotFoundError:
-        print("error: hd not on PATH (is hammerstein-ai installed?)", file=sys.stderr)
-        return 127
-    duration = time.time() - start
-
-    log_shell_turn(
-        {
-            "timestamp": now_iso(),
-            "hostname": socket.gethostname(),
-            "kind": "dispatch",
-            "task_chars": len(task),
-            "extra_args": args,
-            "duration_s": round(duration, 1),
-            "exit_code": result.returncode,
-        }
-    )
-    return result.returncode
-
-
 def run_bash(cmd_string: str) -> int:
     """Run a bash command via subprocess. Handle `cd` specially since it
     can't persist via subprocess; we update Python's cwd directly."""
@@ -367,12 +341,6 @@ Hammerstein Shell — verbs and patterns:
   :n <prose>              what-should-we-do-next template.
   :r <prose>              review-from-different-angle template.
 
-  :d <task>               Dispatch to aider via `hd`. Use for actual code
-                          work (file edits + git commits). Aider does the
-                          execution; Hammerstein's audit pre-flight runs.
-  :d --no-audit <task>    Skip the pre-flight audit (trivial tasks).
-  :d --provider X <task>  Force a specific provider (claude, deepseek, etc.).
-
   !<cmd>                  Run a bash command (cd, ls, git, cat, grep, etc.).
                           `cd` persists across turns within the session.
 
@@ -413,7 +381,6 @@ def parse_line(line: str) -> tuple[str, str]:
     """Return (verb, rest) where verb is one of:
         - 'prose'           => default audit on prose
         - 'template:<name>' => run named template
-        - 'dispatch'        => :d
         - 'bash'            => !
         - 'context'         => :context
         - 'clear'           => :clear
@@ -441,8 +408,6 @@ def parse_line(line: str) -> tuple[str, str]:
             return ("clear", "")
         if verb == "state":
             return ("state", rest)
-        if verb in ("d", "dispatch"):
-            return ("dispatch", rest)
         if verb in TEMPLATE_VERBS:
             return (f"template:{TEMPLATE_VERBS[verb]}", rest)
         return (f"unknown:{verb}", rest)
@@ -501,33 +466,6 @@ def main() -> int:
                 continue
             if verb == "bash":
                 run_bash(rest)
-                continue
-            if verb == "dispatch":
-                if not rest:
-                    print("usage: :d <task>  (or :d --provider X <task>)")
-                    continue
-                # Allow :d --provider X <task> by passing through args
-                tokens = shlex.split(rest)
-                pass_args: list[str] = []
-                while tokens and tokens[0].startswith("--"):
-                    flag = tokens.pop(0)
-                    if flag in ("--no-audit", "--no-auto-commits", "--architect", "--dry-run"):
-                        pass_args.append(flag)
-                    elif flag in ("--provider", "--file", "--read"):
-                        if not tokens:
-                            print(f"flag {flag} requires a value")
-                            tokens = []
-                            break
-                        pass_args.append(flag)
-                        pass_args.append(tokens.pop(0))
-                    else:
-                        # unknown flag — pass through and let hd error
-                        pass_args.append(flag)
-                task = " ".join(tokens)
-                if not task:
-                    print("usage: :d <task>")
-                    continue
-                run_dispatch(task, pass_args)
                 continue
             if verb.startswith("template:"):
                 template = verb.split(":", 1)[1]

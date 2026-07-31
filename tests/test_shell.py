@@ -107,12 +107,6 @@ def test_parse_scope_verb() -> None:
     assert verb == "template:scope-this-idea"
 
 
-def test_parse_dispatch() -> None:
-    verb, rest = shell.parse_line(":d fix the typo in README")
-    assert verb == "dispatch"
-    assert rest == "fix the typo in README"
-
-
 def test_parse_bash() -> None:
     verb, rest = shell.parse_line("!ls -la")
     assert verb == "bash"

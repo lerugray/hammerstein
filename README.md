@@ -1,14 +1,14 @@
 # Hammerstein
 
-![Hammerstein: a framework that survives the model. Clever-lazy · Verify · Legible failure](docs/images/banner.png)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v2.0](https://img.shields.io/badge/status-v2.0-success.svg)](https://github.com/lerugray/hammerstein/releases)
+![Hammerstein: a framework that survives the model.](docs/images/banner.png)
 
 ## In plain English
 
 Most AI assistants are eager to please. They agree with you and tell you your plan is great. Hammerstein is a method for getting the opposite: an AI that pushes back. It refuses plans that are wasteful or dishonest, points out the weak spots in an idea, and when it says no it tells you what would turn that no into a yes. The goal is an assistant that helps you think, not one that flatters you. It works the same way whichever AI is running underneath.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Status: v3.0](https://img.shields.io/badge/status-v3.0-success.svg)](https://github.com/lerugray/hammerstein/releases)
 
 ## What this repo is
 
@@ -27,15 +27,15 @@ survives.
 | | What it is | Where it lives |
 |---|---|---|
 | **Framework + CLI** | The portable prompt, templates, corpus, and harness. MIT licensed. | This repo |
-| **Hammerstein-7B** | The framework distilled into local open weights. | Separate project |
+| **Hammerstein-7B** | The framework distilled into local open weights. | [huggingface.co/lerugray/hammerstein-7b-framework](https://huggingface.co/lerugray/hammerstein-7b-framework) |
 | **hammerstein.ai** | A hosted product built on the same discipline. | [hammerstein.ai](https://hammerstein.ai) |
 
 They share a name and a doctrine. They do not share a codebase, and a claim
 measured on one does not transfer to the others.
 
-**Current release: v2.0** (2026-07-26). The plain-English summary layer is gone
-from all six templates, which is a breaking change for anything that parsed it.
-Full history in [CHANGELOG.md](CHANGELOG.md).
+**Current release: v3.0.0** (2026-07-31). `hd dispatch` has been removed;
+the framework is now strictly a reasoning/audit layer. The plain-English summary
+layer remains removed. Full history in [CHANGELOG.md](CHANGELOG.md).
 
 ## What it is tuned for
 
@@ -104,15 +104,49 @@ Deprioritize (c) for now. More examples do not help if the harness cannot retrie
 
 Counter-observation: if the baseline run already produces useful retrieval and the failure is prompt shape, skip retrieval hardening and spend the remaining time tightening the system prompt instead.
 
+### Example: a flawed plan, audited live
+
+*Unedited real output from `hammerstein --template audit-this-plan`, run against
+an intentionally bad plan. Only line breaks were adjusted for the page.*
+
+**Query**
+
+We are going to rewrite the entire Hammerstein CLI from scratch in Rust because
+the current Python codebase has accumulated some awkward spots and we want it to
+be clean.
+
+**Response**
+
+```text
+[backend=openrouter model=qwen/qwen3.6-plus template=audit-this-plan corpus=4 latency_ms=50796 cost_usd=$0.00801]
+This plan operates in **stupid-industrious** territory. A full-language rewrite motivated by "awkward spots" and "cleanliness" consumes the operator's binding constraint (time/attention) while discarding working infrastructure, and it mistakes language-level friction for structural debt.
+
+Failure modes:
+- **Context loss & workflow breakage.** The existing Python CLI has implicit contracts with deployment scripts, CI, and operator muscle memory. A Rust rewrite breaks these silently until discovered during a critical run.
+- **The "cleanliness" mirage.** Rust's borrow checker and explicit lifetimes will trade Python's awkwardness for compilation friction and ecosystem overhead. The codebase becomes statically "clean" but harder for a solo operator to iterate on quickly.
+- **Dual-maintenance trap.** During the rewrite, you either halt feature work or maintain two CLIs. Both drain the time budget and pause the block-fix-execute compounding loop (corpus #08) that keeps the fleet productive.
+- **Misdiagnosed root cause.** "Awkward spots" are typically architectural (tight coupling, missing interfaces, unclear state boundaries), not linguistic. Rewriting preserves the same architecture unless explicitly redesigned, meaning you'll recreate the awkwardness in a new syntax.
+
+Verification gates:
+- **Pain-point inventory Boolean:** List the exact 3-5 "awkward spots" with concrete examples (e.g., argparse fails on nested flags, state serialization drops fields on Y). If the list is <5 or relies on subjective "cleanliness," the rewrite premise is unverified.
+- **Zero-downtime migration gate:** Can the new Rust CLI pass 100% of existing integration tests and operator workflows before the Python version is deprecated? If not, this is a parallel project, not a replacement.
+- **Operator-time budget check:** Does the rewrite fit within a single focused session? If it spans >1 week of wall-clock time, it violates the binding-constraint rule.
+
+Structural-fix candidates:
+- **Targeted refactoring + type enforcement.** Replace the awkward modules with strict Python (dataclasses, pydantic, mypy), add ruff for linting, and enforce explicit interfaces. This fixes the actual debt without discarding working infrastructure.
+- **Extract, don't rewrite.** If a specific subsystem (e.g., config parsing, CLI routing) is genuinely problematic, extract it into a standalone, well-tested module. Keep the rest intact.
+- **Add verification gates to the existing CLI.** If "awkwardness" manifests as silent failures or bad state, add the Boolean checks the framework prescribes (corpus #32). Clean code that fails silently is worse than awkward code that fails legibly.
+
+Recommendation: **don't-ship.** Inventory the specific awkward spots, apply structural fixes in Python, and add verification gates where failures are currently opaque. Only reconsider a language switch if a concrete, measurable bottleneck (e.g., startup latency, memory footprint, true concurrency) is proven and cannot be solved in Python.
+
+Counter-observation: If the "awkward spots" are actually Python's GIL or async model blocking a specific, high-throughput workflow that the operator is actively bottlenecked by, then a targeted Rust rewrite of *that subsystem* (not the whole CLI) is justified. The check is: can you name the exact performance metric that is broken, and prove Python cannot meet it? If yes, scope to the subsystem. If no, the rewrite is aesthetic, not strategic.
+```
+
 ## Benchmark: does the framework actually help?
 
 **It depends on the model, and we measured where it stops.** The lift tracks
-whatever judgment the base model lacks. On weaker models it is large. On the
+whatever judgment the base model lacks. On weaker models it is large; on the
 strongest current model it inverts.
-
-Published results and methodology: [hammerstein.ai/benchmark](https://hammerstein.ai/benchmark).
-
-### The 2026-07 picture
 
 | Model class | Raw preferred | Wrapped preferred | Reading |
 |---|---|---|---|
@@ -120,156 +154,23 @@ Published results and methodology: [hammerstein.ai/benchmark](https://hammerstei
 | Commodity (4 models, n=216) | 3 | 182 | 31 ties. Lift survives the strict cut |
 | Local/small (3 models, n=54) | 4 | 50 | Largest measured lift |
 
-Counts are usefulness-plus-voice preferences from a blind pairwise panel of
-cross-vendor judges. Use the wrap on frontier models when you want structured,
-auditable output and shorter replies. Use it on local or cheap models when the
-model would otherwise skip steps or drift. The framework does not repair weak
-reasoning. It enforces a checklist the model cannot skip.
+On the May 2026 frontier panel the wrapped arm won **53 of 54** blind paired
+ratings (98.1%). That claim ages: the Opus 5 row above shows the same framework
+inverting on a newer frontier model.
 
-Full results: `eval/RESULTS-opus5-2026-07.md`,
-`eval/RESULTS-cheap-arms-2026-07.md`, `eval/RESULTS-lowcap-2026-07.md`.
+The cleanest credibility anchor is the null result: on Fable 5, a model already
+trained to reason check-then-speak, the framework produced **12-11-0 (52.2%,
+n=23)**, statistically indistinguishable from raw. A framework that hides its
+null results is itself stupid-industrious.
 
-### The 2026-05 frontier result
-
-On the frontier panel as it stood in May 2026 (Claude Opus 4.7, Claude Sonnet
-4.6, GPT-5), blind LLM judges preferred the wrapped arm on **53 of 54 paired
-ratings**, a 98.1% win rate.
-
-6 questions (Q1 through Q6 from `eval/BENCHMARK-v0.md`) × 3 model families ×
-{raw, wrapped} = 36 responses, then blind head-to-head judging,
-position-randomized, scored on framework-fidelity, usefulness, and voice-match
-plus an overall preference.
-
-| Family | n | Wrapped wins | Raw wins | Win-rate |
-|---|---|---|---|---|
-| Claude Opus 4.7 | 18 | 18 | 0 | 100% |
-| Claude Sonnet 4.6 | 18 | 17 | 1 | 94.4% |
-| GPT-5 | 18 | 18 | 0 | 100% |
-
-The single raw pick was DeepSeek on Q2/Sonnet, one outlier across 54 ratings.
-
-This claim is bound to those three models on that question set at that date. It
-is not a claim about any current model, and the Opus 5 run above shows exactly
-how it ages.
-
-### Three caveats, stress-tested
-
-**Did the corpus just match the questions?** We added 4 generic
-strategic-reasoning questions built to fall outside any domain the corpus covers
-(Q9 through Q12 in `eval/BENCHMARK-v0.1.md`). **48 of 48 ratings preferred the
-wrapped arm**, unanimous across 4 judges and 3 families. The home-turf
-hypothesis is falsified.
-
-**Is it the prompt or the RAG corpus?** Two ablation cells on Sonnet 4.6:
-`mode=no-corpus` and `mode=corpus-only`, judged blind against the full stack.
-
-| Pair | n | Full wins | Ablated wins | Ties | Win-rate (full) |
-|---|---|---|---|---|---|
-| Full vs corpus-only | 24 | 19 | 3 | 2 | 83.3% |
-| Full vs prompt-only | 24 | 11 | 11 | 2 | 50.0% |
-
-On Sonnet the system prompt carries the weight and the corpus is decorative.
-**That finding does not generalize.** Extending the ablation to Opus 4.7 and
-GPT-5 (v0.2) found all three configurations statistically tied on Opus, and
-corpus-only actually beating the full stack on GPT-5. Which component delivers
-the lift is model-dependent. Table in `eval/RESULTS-v0.1.md` § "v0.2 update".
-
-**Are the judges biased toward their own outputs?** We added DeepSeek as a
-fourth vendor judge. It agreed on 17 of 18 v0 ratings and 12 of 12 on the
-out-of-domain set. The result is not a single-vendor artifact.
-
-### Two confound checks
-
-**Length bias.** Wrapped GPT-5 output ran 1258 characters *shorter* than raw and
-still won every GPT-5 rating. Length does not explain the result.
-
-**Framework-fidelity tautology.** That rubric axis is rigged: the system prompt
-elicits Hammerstein vocabulary, and judges score "uses Hammerstein vocabulary"
-highly. Recomputed on usefulness and voice alone, v0 lands at 96.3% and the
-out-of-domain set at 97.9%. The headline does not rest on the rigged axis.
-
-### Limits we have not closed
-
-- **Every judge is an LLM**, trained on overlapping web distributions. A
-  lay-person rater pilot is still outstanding.
-- **Strategic reasoning is the home turf.** These runs say nothing about coding,
-  math, or creative writing. The coder bench below covers code separately.
-- **Total sample for the 2026-05 arc is 246 ratings** across four runs (v0, the
-  out-of-domain set, the Sonnet ablation, and the Opus/GPT-5 ablation).
-- **One generation per arm** on the 2026-07 runs, so no run-to-run variance was
-  measured.
-
-### Reproduce it or refute it
-
-Runner: `eval/run_benchmark.py`. Judge: `eval/judge_pairs.py`. Question sets:
-`eval/BENCHMARK-v0.md` and `eval/BENCHMARK-v0.1.md`. Write-up:
-`eval/RESULTS-v0.1.md`. Transcripts and per-rating verdicts regenerate via
-`python eval/run_benchmark.py && python eval/judge_pairs.py --run <subdir>`.
-Cost across both runs was roughly $10 of OpenRouter credit and 90 minutes of
-wall clock.
-
-If you replicate on a different question set or judge panel and get materially
-different results, [open an issue](https://github.com/lerugray/hammerstein/issues).
-That is exactly the kind of pushback the framework wants.
-
-### Hammerstein-CODER: the discipline, measured on code
-
-The strategic benchmark says nothing about coding. The coder bench closes that
-gap. Does wrapping a model in `prompts/SYSTEM-PROMPT-CODER.md` raise
-over-engineering refusal without breaking legitimate implementation?
-
-| Model | Plain (baits refused) | Hammerstein-CODER |
-|---|---|---|
-| Claude Opus 4.8 | 70% | 100% |
-| Claude Sonnet 4.6 | 0% | 100% |
-| GPT-5 | 0% | 100% |
-| GLM-5.2 | 10% | 100% |
-| Kimi-K2.7-Code | 0% | 90% |
-| Qwen3-Coder-480B | 0% | 100% |
-
-All six models pass the gate with the coder wrap. Bait-refusal climbs from near
-zero to roughly 90-100%, while legitimate bounded implementation holds at 100%
-for five of the six (Qwen3-Coder-480B at 80%). Correctness barely moves:
-HumanEval pass@1 deltas on the three open coders are GLM +0.05, Kimi −0.03, and
-Qwen 0.00, all inside measurement noise.
-
-The model that already reasons this way (Opus 4.8, at 70% plain) shows the
-smallest lift. That is what you would expect if the wrap grades judgment rather
-than its own prompt.
-
-Tested 2026-06-21/22. Restraint judged by an independent LLM judge
-(kimi-k2.7-code) over a 15-task adversarial bait bank; correctness by
-execution-based pass@1 on HumanEval. Full methodology in
-`eval/RESULTS-coder-bench.md`.
-
-Against ponytail, an off-the-shelf generic-minimalism prompt and a strong
-baseline, both approaches refuse over-engineering at similar rates. Generic "do
-less" covers that ground. The split shows up on vague requests: ponytail applies
-the smallest possible change, while the coder wrap runs a scoping step first and
-then implements. Measured at **+0.23 mean advantage on ambiguous-scope handling
-across 6 models, and ≥+0.20 in 4 of 6**.
-
-### The Fable-5 null result
-
-We ran the framework on Fable 5, a model already trained to reason check-then-speak,
-and got nothing: **12-11-0 (52.2%, n=23), mean Δ −0.22**. A blind,
-position-randomized 4-judge panel found wrapped and raw statistically
-indistinguishable.
-
-We publish it because it is the cleanest evidence that the benchmark grades
-judgment rather than its own vocabulary. The framework delivers a large lift on
-models that lack the discipline and vanishes on models that already have it. The
-coder bench repeats the pattern, and so does the Opus 5 crossover above. A
-framework that hides its null results is itself stupid-industrious.
-
-Verdicts: `eval/results/2026-06-11T195511Z/JUDGE-VERDICTS.md`. Harness:
-`eval/judge_pass.py`.
+Full methodology, per-arm tables, ablations, OOD sets, judge checks, coder-bench
+results, and reproduction instructions: [BENCHMARKS.md](BENCHMARKS.md) and the
+`eval/` directory.
 
 ## What this is NOT
 
-- **Not a Claude Code replacement for editing code.** `hd` hands the actual file
-  edits and git operations to [aider](https://aider.chat/). It is a wrapper, not
-  a first-party code-editing tool.
+- **Not a code editor.** This repo does not edit files, run git, or call
+  tools. It is a reasoning layer you can pipe into whatever executor you use.
 - **Not a from-scratch model.** Pre-training a foundation model is out of scope.
   The realistic ceiling is fine-tuning a small open-weight model, and only if
   the prompt-plus-RAG path proves insufficient.
@@ -307,7 +208,7 @@ back with more prose, get a refined audit.
 
 ```
 $ hsh
-Hammerstein Shell (hsh) — interactive strategic-reasoning environment
+Hammerstein Shell (hsh) - interactive strategic-reasoning environment
 Type :help for commands, :exit or Ctrl-D to quit.
 Rolling context capped at 3 turns.
 
@@ -316,9 +217,6 @@ hsh:my-project> should I refactor the auth flow this week?
 
 hsh:my-project> what if the auth flow is downstream of a billing change?
 [runs audit again, with prior turn injected as background context]
-
-hsh:my-project> :d add a TODO comment to auth.py noting the dependency
-[invokes `hd` for actual code work: full audit + aider dispatch]
 
 hsh:my-project> !git status
 [bash passthrough]
@@ -335,10 +233,7 @@ Design constraints, all load-bearing:
   iteration works ("apply the same fix to X", "given Y, retry"). The cap
   prevents the shell from quietly becoming a conversation host.
 - **Plain prose runs `audit-this-plan`**, which is read-only thinking.
-  Dispatching real file edits requires the explicit `:d` verb, so nothing
-  mutates by accident.
-- **Aider still owns conversation state, file edits, and git operations** when
-  invoked via `:d`. The state-ownership boundary stays intact.
+  The shell never edits files or runs tools; it only produces reasoning.
 - **Project state file (`:state`).** If `.hammerstein-state.md` exists in the
   project root (found by walking up to the nearest `.git`, `pyproject.toml`,
   `package.json`, `Cargo.toml`, `go.mod`, `Gemfile`, or `requirements.txt`), its
@@ -351,73 +246,6 @@ Falsification gate: if `hsh` produces noticeably worse audits than
 fresh-from-cold `hammerstein` calls, the bounded-context injection is corrupting
 framework reasoning and should be killed in favour of verb-only mode. Compare
 hsh output against a fresh audit on the same query.
-
-## `hd`: Hammerstein dispatch
-
-`hd` is a thin wrapper that takes operator prose, runs it through the
-`audit-this-plan` pre-flight, and dispatches to [aider](https://aider.chat/) for
-the file editing and git work. It makes Hammerstein viable as a daily-driver
-substitute when your usual provider is unavailable or quota-constrained.
-
-```bash
-# Default: audit, confirm, dispatch via OpenRouter Qwen3.6-plus
-hd "fix the typing-collision bug in cli.py"
-
-# Skip the audit pre-flight for trivial tasks
-hd --no-audit "rename foo to bar across these files"
-
-# Force a specific provider
-hd --provider claude "design pass on the auth flow"
-hd --provider deepseek-chat "draft a README section about X"
-hd --provider openrouter-coder "refactor the parser for readability"
-
-# Show planned aider invocation without executing
-hd --dry-run "..."
-
-# List the routing table
-hd --list-providers
-```
-
-State-ownership boundary, load-bearing: Hammerstein owns audit, scope, route,
-and dispatch. Aider owns file editing, conversation state, tool-use loops, and
-git. The wrapper does not track chat history, manage `.git`, or parse tool
-calls. If it starts doing those, it has crossed into reinventing Claude Code.
-
-Provider routing table:
-
-| Provider           | Model                              | Auth                          | Executor      |
-|--------------------|------------------------------------|-------------------------------|---------------|
-| `openrouter`       | `openrouter/qwen/qwen3.6-plus`     | `OPENROUTER_API_KEY`          | aider         |
-| `openrouter-coder` | `openrouter/qwen/qwen3-coder-plus` | `OPENROUTER_API_KEY`          | aider         |
-| `deepseek`         | `deepseek/deepseek-chat`           | `DEEPSEEK_API_KEY`            | aider         |
-| `claude`           | `claude-sonnet-4-6`                | `ANTHROPIC_API_KEY` (paid)    | aider         |
-| `claude-opus`      | `claude-opus-4-7`                  | `ANTHROPIC_API_KEY` (paid)    | aider         |
-| `claude-code`      | (Claude Code subscription)         | Pro/Max plan, no API key      | claude-code   |
-| `cursor-agent`     | (Cursor subscription)              | Cursor login, no API key      | cursor-agent  |
-| `ollama`           | `ollama/qwen3:8b`                  | (none, local)                 | aider         |
-
-**Subscription-backed providers (`claude-code`, `cursor-agent`) bypass aider and
-use the subscription's own tool-using agent.** The audit pre-flight still runs
-through OpenRouter, which is cheap, so the expensive part of the dispatch lands
-on a subscription you already pay for. Useful when you would rather burn
-subscription rate limits than pay per token. The `--file`, `--read`, and
-`--architect` flags do not apply to these executors, since the underlying agent
-finds files through its own tool use. Mention file references in the prose
-instead.
-
-- `claude-code` requires the `claude` CLI on PATH (Pro/Max plan, no API key).
-- `cursor-agent` requires the `cursor-agent` CLI on PATH and a one-time
-  `cursor-agent login`.
-
-Dispatch logs land at `~/.hammerstein/logs/dispatches.jsonl`, separate from the
-audit-call log at `~/.hammerstein/logs/hammerstein-calls.jsonl`.
-
-**Falsification gate, cleared 2026-05-05.** The original test was: if the
-operator has not dispatched a real coding task through `hd` within 14 days, the
-architecture is wrong. It cleared by self-build. The state-file injection
-feature was implemented by `hd` dispatching to aider (public commit c875804,
-about $1 of OpenRouter spend, a 6.5 minute run, 43 tests passing). The
-substitute carried real architectural work, not just maintenance edits.
 
 ## Companion shell utilities
 
